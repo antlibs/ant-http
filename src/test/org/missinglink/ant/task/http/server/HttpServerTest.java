@@ -1,4 +1,4 @@
-package org.missinglink.ant.task.http;
+package org.missinglink.ant.task.http.server;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class HttpServerTest extends AbstractHttpTest {
+public class HttpServerTest extends AbstractHttpServerTest {
 
   public HttpServerTest() {
     super();

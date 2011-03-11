@@ -1,4 +1,4 @@
-package org.missinglink.ant.task.http;
+package org.missinglink.ant.task.http.server;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,7 +18,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.missinglink.ant.task.AbstractTest;
+import org.missinglink.ant.task.http.AbstractTest;
+
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -27,7 +28,7 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
-public abstract class AbstractHttpTest extends AbstractTest {
+public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected static final String PING_CONTEXT = "/ping";
   protected static final String PING_RESPONSE = "pong?";
@@ -41,7 +42,7 @@ public abstract class AbstractHttpTest extends AbstractTest {
   protected HttpServer httpServer;
   protected HttpsServer httpsServer;
 
-  protected AbstractHttpTest() {
+  protected AbstractHttpServerTest() {
     super();
   }
 

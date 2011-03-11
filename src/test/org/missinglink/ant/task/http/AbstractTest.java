@@ -1,4 +1,4 @@
-package org.missinglink.ant.task;
+package org.missinglink.ant.task.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;
