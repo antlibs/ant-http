@@ -1,4 +1,4 @@
-package org.missinglink.ant.task.http;
+package org.missinglink.ant.task;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,11 +14,20 @@ public abstract class AbstractTest {
   protected String inputStreamToString(final InputStream is) throws IOException {
 
     BufferedReader in = new BufferedReader(new InputStreamReader(is));
-    final StringBuilder sb = new StringBuilder();
-    String inputLine;
 
-    while ((inputLine = in.readLine()) != null) {
-      sb.append(inputLine).append("\n");
+    final StringBuilder sb = new StringBuilder();
+    final int pageSize = 1024;
+    final byte[] buf = new byte[pageSize];
+
+    int ret = is.read(buf, 0, pageSize);
+
+    while (ret > 0) {
+      final byte[] bufPage = new byte[ret];
+      for (int i = 0; i < ret; i++) {
+        bufPage[i] = buf[i];
+      }
+      sb.append(new String(bufPage));
+      ret = is.read(buf, 0, pageSize);
     }
     in.close();
 

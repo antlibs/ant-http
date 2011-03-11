@@ -1,8 +1,12 @@
 package org.missinglink.ant.task.http;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +16,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
+
+import org.missinglink.ant.task.AbstractTest;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -76,10 +82,8 @@ public abstract class AbstractHttpTest extends AbstractTest {
     httpsServer.setHttpsConfigurator(new HttpsConfigurator(ssl) {
       public void configure(HttpsParameters params) {
 
-        System.out.println("Here..");
-        
         // get the remote address if needed
-        InetSocketAddress remote = params.getClientAddress();
+        // InetSocketAddress remote = params.getClientAddress();
 
         SSLContext c = getSSLContext();
 
@@ -106,10 +110,9 @@ public abstract class AbstractHttpTest extends AbstractTest {
       @Override
       public void handle(HttpExchange exchange) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(200, 0);
+        exchange.sendResponseHeaders(200, PING_RESPONSE.getBytes().length);
         exchange.getResponseBody().write(PING_RESPONSE.getBytes());
         exchange.getResponseBody().close();
-        exchange.close();
       }
     });
 
@@ -117,35 +120,51 @@ public abstract class AbstractHttpTest extends AbstractTest {
     server.createContext(ECHO_CONTEXT, new HttpHandler() {
       @Override
       public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(200, 0);
+        String responseEntity = "";
         if ("POST".equalsIgnoreCase(exchange.getRequestMethod())
             || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
-          writeEntity(exchange, inputStreamToString(exchange.getRequestBody()));
+          responseEntity = inputStreamToString(exchange.getRequestBody());
         } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-          writeEntity(exchange,
-              getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT));
+          responseEntity = getQueryParams(exchange.getRequestURI()).get(
+              ECHO_TEXT);
         }
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(200, responseEntity.getBytes().length);
+        writeEntity(exchange, responseEntity);
         exchange.close();
       }
 
       protected void writeEntity(final HttpExchange httpExchange,
           final String entity) throws IOException {
         httpExchange.getResponseBody().write(entity.getBytes());
-        httpExchange.getResponseBody().close();
       }
     });
   }
 
-  protected Map<String, String> getQueryParams(final URI uri) {
+  protected Map<String, String> getQueryParams(final URI uri)
+      throws UnsupportedEncodingException {
     final Map<String, String> map = new HashMap<String, String>();
     if (null != uri.getQuery() && uri.getQuery().length() > 0) {
       final String[] params = uri.getQuery().split("&");
       for (final String param : params) {
         final String[] pair = param.split("=");
-        map.put(pair[0], pair.length > 1 ? pair[1] : null);
+        map.put(pair[0], pair.length > 1 ? URLDecoder.decode(pair[1], "UTF-8")
+            : null);
       }
     }
     return map;
+  }
+
+  protected String getHttpServerUri() {
+    return "http://localhost:" + httpServerPort;
+  }
+
+  protected String getHttpsServerUri() {
+    return "https://localhost:" + httpsServerPort;
+  }
+
+  protected String readURL(final URL url) throws IOException {
+    final URLConnection conn = url.openConnection();
+    return inputStreamToString(conn.getInputStream());
   }
 }
