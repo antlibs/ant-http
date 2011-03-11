@@ -1,10 +1,14 @@
 package org.missinglink.ant.task.http;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyStore;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -28,55 +32,59 @@ public class HttpsServerTest extends AbstractHttpTest {
   }
 
   @Test
-  public void echoGet() throws IOException, InterruptedException {
-    final String text = "Hello World";
-
-    String path = getHttpsServerUri() + ECHO_CONTEXT + "?" + ECHO_TEXT + "="
-        + URLEncoder.encode(text, "UTF-8");
+  public void pingGet() throws Exception {
+    String path = getHttpsServerUri() + PING_CONTEXT;
     final URL url = new URL(path);
+    final String response = readHttpsURL(url);
+    Assert.assertEquals(PING_RESPONSE, response);
+  }
 
-    final String response = readURL(url);
-
+  @Test
+  public void echoGet() throws Exception {
+    final String text = "Hello World";
+    String path = getHttpsServerUri() + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
+    final URL url = new URL(path);
+    final String response = readHttpsURL(url);
     Assert.assertEquals(text, response);
   }
 
   @Test
-  public void echoPost() throws IOException, InterruptedException {
+  public void echoPost() throws Exception {
     final String text = "Hello World";
-
-    String path = getHttpsServerUri() + ECHO_CONTEXT;
-    final URL url = new URL(path);
-
-    final HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-    con.setRequestMethod("POST");
-    con.setDoOutput(true);
-    final OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
-    out.write(text);
-    out.close();
-
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", text);
     final String response = inputStreamToString(con.getInputStream());
-
     Assert.assertEquals(text, response);
   }
 
   @Test
-  public void echoPut() throws IOException, InterruptedException {
+  public void echoPut() throws Exception {
     final String text = "Hello World";
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", text);
+    final String response = inputStreamToString(con.getInputStream());
+    Assert.assertEquals(text, response);
+  }
 
+  private HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String entity) throws Exception {
     String path = getHttpsServerUri() + ECHO_CONTEXT;
     final URL url = new URL(path);
 
-    final HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 
-    con.setRequestMethod("PUT");
+    KeyStore ks = KeyStore.getInstance("JKS");
+    ks.load(getClass().getResourceAsStream("/keystore.jks"), "password".toCharArray());
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    tmf.init(ks);
+
+    SSLContext ssl = SSLContext.getInstance("TLS");
+    ssl.init(null, tmf.getTrustManagers(), null);
+
+    con.setSSLSocketFactory(ssl.getSocketFactory());
+
+    con.setRequestMethod(method);
     con.setDoOutput(true);
     final OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
-    out.write(text);
+    out.write(entity);
     out.close();
-
-    final String response = inputStreamToString(con.getInputStream());
-
-    Assert.assertEquals(text, response);
+    return con;
   }
 }

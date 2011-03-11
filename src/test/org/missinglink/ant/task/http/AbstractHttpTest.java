@@ -2,16 +2,17 @@ package org.missinglink.ant.task.http;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -70,10 +71,10 @@ public abstract class AbstractHttpTest extends AbstractTest {
     KeyStore ks = KeyStore.getInstance("JKS");
     ks.load(getClass().getResourceAsStream("/keystore.jks"), passphrase);
 
-    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
     kmf.init(ks, passphrase);
 
-    TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
     tmf.init(ks);
 
     SSLContext ssl = SSLContext.getInstance("TLS");
@@ -121,12 +122,10 @@ public abstract class AbstractHttpTest extends AbstractTest {
       @Override
       public void handle(HttpExchange exchange) throws IOException {
         String responseEntity = "";
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())
-            || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+        if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
           responseEntity = inputStreamToString(exchange.getRequestBody());
         } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-          responseEntity = getQueryParams(exchange.getRequestURI()).get(
-              ECHO_TEXT);
+          responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
         }
         exchange.getResponseHeaders().set("Content-Type", "text/plain");
         exchange.sendResponseHeaders(200, responseEntity.getBytes().length);
@@ -134,22 +133,19 @@ public abstract class AbstractHttpTest extends AbstractTest {
         exchange.close();
       }
 
-      protected void writeEntity(final HttpExchange httpExchange,
-          final String entity) throws IOException {
+      protected void writeEntity(final HttpExchange httpExchange, final String entity) throws IOException {
         httpExchange.getResponseBody().write(entity.getBytes());
       }
     });
   }
 
-  protected Map<String, String> getQueryParams(final URI uri)
-      throws UnsupportedEncodingException {
+  protected Map<String, String> getQueryParams(final URI uri) throws UnsupportedEncodingException {
     final Map<String, String> map = new HashMap<String, String>();
     if (null != uri.getQuery() && uri.getQuery().length() > 0) {
       final String[] params = uri.getQuery().split("&");
       for (final String param : params) {
         final String[] pair = param.split("=");
-        map.put(pair[0], pair.length > 1 ? URLDecoder.decode(pair[1], "UTF-8")
-            : null);
+        map.put(pair[0], pair.length > 1 ? URLDecoder.decode(pair[1], "UTF-8") : null);
       }
     }
     return map;
@@ -163,8 +159,24 @@ public abstract class AbstractHttpTest extends AbstractTest {
     return "https://localhost:" + httpsServerPort;
   }
 
-  protected String readURL(final URL url) throws IOException {
-    final URLConnection conn = url.openConnection();
+  protected String readHttpURL(final URL url) throws IOException {
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    return inputStreamToString(conn.getInputStream());
+  }
+
+  protected String readHttpsURL(final URL url) throws Exception {
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+
+    KeyStore ks = KeyStore.getInstance("JKS");
+    ks.load(getClass().getResourceAsStream("/keystore.jks"), "password".toCharArray());
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    tmf.init(ks);
+
+    SSLContext ssl = SSLContext.getInstance("TLS");
+    ssl.init(null, tmf.getTrustManagers(), null);
+
+    conn.setSSLSocketFactory(ssl.getSocketFactory());
+
     return inputStreamToString(conn.getInputStream());
   }
 }
