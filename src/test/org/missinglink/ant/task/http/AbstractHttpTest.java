@@ -3,13 +3,22 @@ package org.missinglink.ant.task.http;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManagerFactory;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsParameters;
+import com.sun.net.httpserver.HttpsServer;
 
 public abstract class AbstractHttpTest extends AbstractTest {
 
@@ -20,20 +29,80 @@ public abstract class AbstractHttpTest extends AbstractTest {
   protected static final String ECHO_TEXT = "text";
 
   protected int httpServerPort = 10080;
+  protected int httpsServerPort = 10443;
+
   protected HttpServer httpServer;
+  protected HttpsServer httpsServer;
 
   protected AbstractHttpTest() {
     super();
   }
 
-  protected void startHttpServer() throws IOException {
+  protected void stopHttpServer() {
+    httpServer.stop(0);
+  }
 
+  protected void stopHttpsServer() {
+    httpsServer.stop(0);
+  }
+
+  protected void startHttpServer() throws IOException {
     final InetSocketAddress addr = new InetSocketAddress(httpServerPort);
     httpServer = HttpServer.create(addr, 0);
     httpServer.setExecutor(Executors.newCachedThreadPool());
+    attachHttpHandlers(httpServer);
+    httpServer.start();
+  }
+
+  protected void startHttpsServer() throws Exception {
+    final InetSocketAddress addr = new InetSocketAddress(httpsServerPort);
+    httpsServer = HttpsServer.create(addr, 0);
+    httpsServer.setExecutor(Executors.newCachedThreadPool());
+    attachHttpHandlers(httpsServer);
+
+    char[] passphrase = "password".toCharArray();
+    KeyStore ks = KeyStore.getInstance("JKS");
+    ks.load(getClass().getResourceAsStream("/keystore.jks"), passphrase);
+
+    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+    kmf.init(ks, passphrase);
+
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+    tmf.init(ks);
+
+    SSLContext ssl = SSLContext.getInstance("TLS");
+    ssl.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+    httpsServer.setHttpsConfigurator(new HttpsConfigurator(ssl) {
+      public void configure(HttpsParameters params) {
+
+        System.out.println("Here..");
+        
+        // get the remote address if needed
+        InetSocketAddress remote = params.getClientAddress();
+
+        SSLContext c = getSSLContext();
+
+        // get the default parameters
+        SSLParameters sslparams = c.getDefaultSSLParameters();
+        // if (remote.equals (...) ) {
+        // modify the default set for client x
+        // }
+
+        params.setSSLParameters(sslparams);
+        // statement above could throw IAE if any params invalid.
+        // eg. if app has a UI and parameters supplied by a user.
+
+      }
+    });
+
+    httpsServer.start();
+  }
+
+  protected void attachHttpHandlers(final HttpServer server) {
 
     // ping handler
-    httpServer.createContext(PING_CONTEXT, new HttpHandler() {
+    server.createContext(PING_CONTEXT, new HttpHandler() {
       @Override
       public void handle(HttpExchange exchange) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "text/plain");
@@ -45,7 +114,7 @@ public abstract class AbstractHttpTest extends AbstractTest {
     });
 
     // echo handler
-    httpServer.createContext(ECHO_CONTEXT, new HttpHandler() {
+    server.createContext(ECHO_CONTEXT, new HttpHandler() {
       @Override
       public void handle(HttpExchange exchange) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "text/plain");
@@ -66,8 +135,6 @@ public abstract class AbstractHttpTest extends AbstractTest {
         httpExchange.getResponseBody().close();
       }
     });
-
-    httpServer.start();
   }
 
   protected Map<String, String> getQueryParams(final URI uri) {

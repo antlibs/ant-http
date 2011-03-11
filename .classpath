@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/.svn/*" kind="src" path="src/java"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="resources/ssl"/>
 	<classpathentry excluding="**/.svn/*" kind="src" path="src/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/apache-ant/apache-ant-1.8.2.jar" sourcepath="lib/apache-ant/apache-ant-1.8.2-sources.jar"/>
