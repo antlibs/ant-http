@@ -292,22 +292,9 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     httpsServer.setHttpsConfigurator(new HttpsConfigurator(ssl) {
       @Override
       public void configure(final HttpsParameters params) {
-
-        // get the remote address if needed
-        // InetSocketAddress remote = params.getClientAddress();
-
         final SSLContext c = getSSLContext();
-
-        // get the default parameters
         final SSLParameters sslparams = c.getDefaultSSLParameters();
-        // if (remote.equals (...) ) {
-        // modify the default set for client x
-        // }
-
         params.setSSLParameters(sslparams);
-        // statement above could throw IAE if any params invalid.
-        // eg. if app has a UI and parameters supplied by a user.
-
       }
     });
 
