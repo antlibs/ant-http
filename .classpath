@@ -4,5 +4,6 @@
 	<classpathentry excluding="**/.svn/*" kind="src" path="src/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/apache-ant/apache-ant-1.8.2.jar" sourcepath="lib/apache-ant/apache-ant-1.8.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-4.8.2.jar" sourcepath="lib/junit/junit-4.8.2-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
