@@ -242,8 +242,33 @@ public class HttpServerTest extends AbstractHttpServerTest {
   public void pingGet() throws Exception {
     final String path = getHttpServerUri() + PING_CONTEXT;
     final URL url = new URL(path);
-    final String response = readHttpURL(url);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    final String response = inputStreamToString(conn.getInputStream());
     Assert.assertEquals(PING_RESPONSE, response);
+  }
+
+  @Test
+  public void pingSecureGetAuthFailure() throws Exception {
+    final String path = getHttpServerUri() + SECURE_CONTEXT + PING_CONTEXT;
+    final URL url = new URL(path);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    try {
+      inputStreamToString(conn.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
+    }
+  }
+
+  @Test
+  public void pingSecureGet() throws Exception {
+    final String path = getHttpServerUri() + SECURE_CONTEXT + PING_CONTEXT;
+    final URL url = new URL(path);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    addAuthenticationHeader(conn);
+    final String response = inputStreamToString(conn.getInputStream());
+    Assert.assertEquals(PING_RESPONSE, response);
+
   }
 
   @Test
@@ -251,14 +276,60 @@ public class HttpServerTest extends AbstractHttpServerTest {
     final String text = "Hello World";
     final String path = getHttpServerUri() + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
     final URL url = new URL(path);
-    final String response = readHttpURL(url);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    final String response = inputStreamToString(conn.getInputStream());
+    Assert.assertEquals(text, response);
+  }
+
+  @Test
+  public void echoGetSecureAuthFailure() throws IOException, InterruptedException {
+    final String text = "Hello World";
+    final String path = getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
+    final URL url = new URL(path);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    try {
+      inputStreamToString(conn.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
+    }
+  }
+
+  @Test
+  public void echoGetSecure() throws IOException, InterruptedException {
+    final String text = "Hello World";
+    final String path = getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
+    final URL url = new URL(path);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    addAuthenticationHeader(conn);
+    final String response = inputStreamToString(conn.getInputStream());
     Assert.assertEquals(text, response);
   }
 
   @Test
   public void echoPost() throws IOException, InterruptedException {
     final String text = "Hello World";
-    final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", text);
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", getHttpServerUri() + ECHO_CONTEXT, text, false);
+    final String response = inputStreamToString(con.getInputStream());
+    Assert.assertEquals(text, response);
+  }
+
+  @Test
+  public void echoPostSecureAuthFailure() throws IOException, InterruptedException {
+    final String text = "Hello World";
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
+    try {
+      inputStreamToString(con.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
+    }
+  }
+
+  @Test
+  public void echoPostSecure() throws IOException, InterruptedException {
+    final String text = "Hello World";
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
     final String response = inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
@@ -266,16 +337,40 @@ public class HttpServerTest extends AbstractHttpServerTest {
   @Test
   public void echoPut() throws IOException, InterruptedException {
     final String text = "Hello World";
-    final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", text);
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + ECHO_CONTEXT, text, false);
     final String response = inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
 
-  private HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String entity) throws MalformedURLException, IOException, ProtocolException {
-    final String path = getHttpServerUri() + ECHO_CONTEXT;
+  @Test
+  public void echoPutSecureAuthFailure() throws IOException, InterruptedException {
+    final String text = "Hello World";
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
+    try {
+      inputStreamToString(con.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
+    }
+  }
+
+  @Test
+  public void echoPutSecure() throws IOException, InterruptedException {
+    final String text = "Hello World";
+    final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
+    final String response = inputStreamToString(con.getInputStream());
+    Assert.assertEquals(text, response);
+  }
+
+  protected HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String path, final String entity, final boolean auth) throws MalformedURLException,
+      IOException, ProtocolException {
     final URL url = new URL(path);
 
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+    if (auth) {
+      addAuthenticationHeader(con);
+    }
 
     con.setRequestMethod(method);
     con.setDoOutput(true);

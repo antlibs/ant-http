@@ -204,6 +204,8 @@
 
 package org.missinglink.ant.task.http.server;
 
+import com.sun.net.httpserver.BasicAuthenticator;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -231,6 +233,8 @@ import javax.net.ssl.TrustManagerFactory;
 
 import org.missinglink.ant.task.http.AbstractTest;
 
+import sun.misc.BASE64Encoder;
+
 /**
  * 
  * @author alex.sherwin
@@ -243,6 +247,11 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected static final String ECHO_CONTEXT = "/echo";
   protected static final String ECHO_TEXT = "text";
+
+  protected static final String SECURE_CONTEXT = "/secure";
+
+  protected static final String USERNAME = "user";
+  protected static final String PASSWORD = "password";
 
   protected int httpServerPort = 10080;
   protected int httpsServerPort = 10443;
@@ -314,6 +323,18 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
       }
     });
 
+    // secure ping handler
+    final HttpContext securePingContext = server.createContext(SECURE_CONTEXT + PING_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(200, PING_RESPONSE.getBytes().length);
+        exchange.getResponseBody().write(PING_RESPONSE.getBytes());
+        exchange.getResponseBody().close();
+      }
+    });
+    securePingContext.setAuthenticator(getBasicAuthenticator());
+
     // echo handler
     server.createContext(ECHO_CONTEXT, new HttpHandler() {
       @Override
@@ -334,6 +355,28 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
         httpExchange.getResponseBody().write(entity.getBytes());
       }
     });
+
+    // secure echo handler
+    final HttpContext secureEchoContext = server.createContext(SECURE_CONTEXT + ECHO_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        String responseEntity = "";
+        if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+          responseEntity = inputStreamToString(exchange.getRequestBody());
+        } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+          responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
+        }
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(200, responseEntity.getBytes().length);
+        writeEntity(exchange, responseEntity);
+        exchange.close();
+      }
+
+      protected void writeEntity(final HttpExchange httpExchange, final String entity) throws IOException {
+        httpExchange.getResponseBody().write(entity.getBytes());
+      }
+    });
+    secureEchoContext.setAuthenticator(getBasicAuthenticator());
   }
 
   protected Map<String, String> getQueryParams(final URI uri) throws UnsupportedEncodingException {
@@ -356,10 +399,10 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     return "https://localhost:" + httpsServerPort;
   }
 
-  protected String readHttpURL(final URL url) throws IOException {
-    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    return inputStreamToString(conn.getInputStream());
-  }
+  // protected String readHttpURL(final URL url) throws IOException {
+  // final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+  // return inputStreamToString(conn.getInputStream());
+  // }
 
   protected String readHttpsURL(final URL url) throws Exception {
     final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -375,5 +418,23 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     conn.setSSLSocketFactory(ssl.getSocketFactory());
 
     return inputStreamToString(conn.getInputStream());
+  }
+
+  protected BasicAuthenticator getBasicAuthenticator() {
+    return new BasicAuthenticator("Test Realm") {
+      @Override
+      public boolean checkCredentials(final String username, final String password) {
+        if (USERNAME.equals(username) && PASSWORD.equals(password)) {
+          return true;
+        }
+        return false;
+      }
+    };
+  }
+
+  protected void addAuthenticationHeader(final HttpURLConnection con) {
+    final String userpass = USERNAME + ":" + PASSWORD;
+    final String basicAuth = "Basic " + new String(new BASE64Encoder().encode(userpass.getBytes()));
+    con.setRequestProperty("Authorization", basicAuth);
   }
 }
