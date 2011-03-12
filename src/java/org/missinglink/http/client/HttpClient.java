@@ -253,12 +253,26 @@ public class HttpClient {
 
   protected static final String UTF_8 = "UTF-8";
 
+  // HTTP methods
+  public static final String GET = "GET";
+  public static final String POST = "POST";
+  public static final String PUT = "PUT";
+  public static final String TRACE = "TRACE";
+  public static final String OPTIONS = "OPTIONS";
+  public static final String HEAD = "HEAD";
+  public static final String DELETE = "DELETE";
+
+  // HTTP headers
+  public static final String ACCEPT = "Accept";
+  public static final String CONTENT_TYPE = "Content-Type";
+
   protected String protocol;
   protected String host;
   protected Integer port;
   protected StringBuilder context = new StringBuilder();
   protected String extension;
   protected String query;
+  protected String method = GET;
 
   protected Map<String, String> queryUnencoded = new HashMap<String, String>();
   protected Map<String, String> queryEncoded = new HashMap<String, String>();
@@ -457,6 +471,29 @@ public class HttpClient {
       }
       return this;
     }
+
+    /**
+     * Add an "Accept" header to the {@link HttpClient}.
+     * 
+     * @param value
+     * @return
+     */
+    public HttpClientBuilder accept(final String value) {
+      httpClient.headers.put(ACCEPT, value);
+      return this;
+    }
+
+    /**
+     * Add an "Content-Type" header to the {@link HttpClient}.
+     * 
+     * @param value
+     * @return
+     */
+    public HttpClientBuilder contentType(final String value) {
+      httpClient.headers.put(CONTENT_TYPE, value);
+      return this;
+    }
+
   }
 
 }

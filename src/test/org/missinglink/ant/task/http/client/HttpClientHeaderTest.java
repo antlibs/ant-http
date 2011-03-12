@@ -247,4 +247,20 @@ public class HttpClientHeaderTest {
     Assert.assertEquals("value", httpClient.getHeaders().get("header"));
   }
 
+  @Test
+  public void testAcceptHeader() throws InvalidUriException {
+    final HttpClient httpClient = HttpClient.uri("http://host/context").accept("application/xml").toHttpClient();
+    Assert.assertEquals(1, httpClient.getHeaders().size());
+    Assert.assertTrue(httpClient.getHeaders().containsKey(HttpClient.ACCEPT));
+    Assert.assertEquals("application/xml", httpClient.getHeaders().get(HttpClient.ACCEPT));
+  }
+  
+  @Test
+  public void testContentTypeHeader() throws InvalidUriException {
+    final HttpClient httpClient = HttpClient.uri("http://host/context").contentType("application/xml").toHttpClient();
+    Assert.assertEquals(1, httpClient.getHeaders().size());
+    Assert.assertTrue(httpClient.getHeaders().containsKey(HttpClient.CONTENT_TYPE));
+    Assert.assertEquals("application/xml", httpClient.getHeaders().get(HttpClient.CONTENT_TYPE));
+  }
+
 }
