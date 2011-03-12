@@ -273,6 +273,8 @@ public class HttpClient {
   protected String extension;
   protected String query;
   protected String method = GET;
+  protected String username;
+  protected String password;
 
   protected Map<String, String> queryUnencoded = new HashMap<String, String>();
   protected Map<String, String> queryEncoded = new HashMap<String, String>();
@@ -348,6 +350,20 @@ public class HttpClient {
    */
   public String getMethod() {
     return method;
+  }
+
+  /**
+   * @return the username
+   */
+  public String getUsername() {
+    return username;
+  }
+
+  /**
+   * @return the password
+   */
+  public String getPassword() {
+    return password;
   }
 
   /**
@@ -586,6 +602,19 @@ public class HttpClient {
      */
     public HttpClientBuilder head() {
       httpClient.method = HEAD;
+      return this;
+    }
+
+    /**
+     * Set the authentication credentials to use on the {@link HttpClient}.
+     * 
+     * @param username
+     * @param password
+     * @return
+     */
+    public HttpClientBuilder credentials(final String username, final String password) {
+      httpClient.username = username;
+      httpClient.password = password;
       return this;
     }
 
