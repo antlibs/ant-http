@@ -204,9 +204,14 @@
 
 package org.missinglink.http.client;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -246,12 +251,17 @@ public class HttpClient {
    */
   public static final Pattern URL_REGEX = Pattern.compile("([Hh][Tt][Tt][Pp][Ss]?)://([^/:]+):?([0-9]+)?(/[^\\?.]*)?\\.?([^\\?.]*)\\??(.*)?");
 
+  protected static final String UTF_8 = "UTF-8";
+
   protected String protocol;
   protected String host;
   protected Integer port;
   protected StringBuilder context = new StringBuilder();
   protected String extension;
   protected String query;
+
+  protected Map<String, String> queryUnencoded = new HashMap<String, String>();
+  protected Map<String, String> queryEncoded = new HashMap<String, String>();
 
   protected HttpClient() {
     super();
@@ -297,6 +307,20 @@ public class HttpClient {
   }
 
   /**
+   * @return the queryUnencoded
+   */
+  public Map<String, String> getQueryUnencoded() {
+    return queryUnencoded;
+  }
+
+  /**
+   * @return the queryEncoded
+   */
+  public Map<String, String> getQueryEncoded() {
+    return queryEncoded;
+  }
+
+  /**
    * {@link HttpClient} builder.
    * 
    * @author alex.sherwin
@@ -337,8 +361,37 @@ public class HttpClient {
         httpClient.context.append(StringUtils.defaultString(m.group(4), ""));
         httpClient.extension = StringUtils.defaultString(m.group(5), null);
         httpClient.query = StringUtils.defaultString(m.group(6), null);
+        parseQuery(httpClient.query);
+
       } catch (final Throwable t) {
         throw new InvalidUriException(t);
+      }
+    }
+
+    /**
+     * Parse a query string into its components, split components by "&" and
+     * their key, value parts with "="
+     * 
+     * @param query
+     */
+    protected void parseQuery(final String query) {
+      if (null != query && query.length() > 0) {
+        final String[] queryParts = query.split("&");
+        for (final String queryPart : queryParts) {
+          final String[] keyValue = queryPart.split("=");
+          httpClient.queryUnencoded.put(keyValue[0], keyValue.length > 1 ? keyValue[1] : null);
+        }
+      }
+      for (final Entry<String, String> entry : httpClient.queryUnencoded.entrySet()) {
+        httpClient.queryEncoded.put(entry.getKey(), encode(entry.getValue()));
+      }
+    }
+
+    protected String encode(final String str) {
+      try {
+        return null == str ? null : URLEncoder.encode(str, UTF_8);
+      } catch (UnsupportedEncodingException e) {
+        return null;
       }
     }
 
@@ -361,6 +414,22 @@ public class HttpClient {
     public HttpClientBuilder context(final String context) {
       if (null != context && context.length() > 0) {
         httpClient.context.append(context);
+      }
+      return this;
+    }
+
+    /**
+     * Add a query parameter to the {@link HttpClient}. The value can be null,
+     * and is null safe for null params (no-op).
+     * 
+     * @param param
+     * @param value
+     * @return
+     */
+    public HttpClientBuilder query(final String param, final String value) {
+      if (null != param) {
+        httpClient.queryUnencoded.put(param, value);
+        httpClient.queryEncoded.put(param, encode(value));
       }
       return this;
     }
