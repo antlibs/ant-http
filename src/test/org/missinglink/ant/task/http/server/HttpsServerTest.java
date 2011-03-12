@@ -204,15 +204,12 @@
 
 package org.missinglink.ant.task.http.server;
 
-import java.io.OutputStreamWriter;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.KeyStore;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -244,8 +241,36 @@ public class HttpsServerTest extends AbstractHttpServerTest {
   public void pingGet() throws Exception {
     final String path = getHttpsServerUri() + PING_CONTEXT;
     final URL url = new URL(path);
-    final String response = readHttpsURL(url);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    final String response = inputStreamToString(conn.getInputStream());
     Assert.assertEquals(PING_RESPONSE, response);
+  }
+
+  @Test
+  public void pingSecureGetAuthFailure() throws Exception {
+    final String path = getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT;
+    final URL url = new URL(path);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    try {
+      inputStreamToString(conn.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
+    }
+  }
+
+  @Test
+  public void pingSecureGet() throws Exception {
+    final String path = getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT;
+    final URL url = new URL(path);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    addAuthenticationHeader(conn);
+    final String response = inputStreamToString(conn.getInputStream());
+    Assert.assertEquals(PING_RESPONSE, response);
+
   }
 
   @Test
@@ -253,14 +278,63 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final String text = "Hello World";
     final String path = getHttpsServerUri() + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
     final URL url = new URL(path);
-    final String response = readHttpsURL(url);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    final String response = inputStreamToString(conn.getInputStream());
+    Assert.assertEquals(text, response);
+  }
+
+  @Test
+  public void echoGetSecureAuthFailure() throws Exception {
+    final String text = "Hello World";
+    final String path = getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
+    final URL url = new URL(path);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    try {
+      inputStreamToString(conn.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
+    }
+  }
+
+  @Test
+  public void echoGetSecure() throws Exception {
+    final String text = "Hello World";
+    final String path = getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
+    final URL url = new URL(path);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    addAuthenticationHeader(conn);
+    final String response = inputStreamToString(conn.getInputStream());
     Assert.assertEquals(text, response);
   }
 
   @Test
   public void echoPost() throws Exception {
     final String text = "Hello World";
-    final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", text);
+    final HttpsURLConnection con = createAndWriteToHttpsURLConnection("POST", getHttpsServerUri() + ECHO_CONTEXT, text, false);
+    final String response = inputStreamToString(con.getInputStream());
+    Assert.assertEquals(text, response);
+  }
+
+  @Test
+  public void echoPostSecureAuthFailure() throws Exception {
+    final String text = "Hello World";
+    final HttpsURLConnection con = createAndWriteToHttpsURLConnection("POST", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
+    try {
+      inputStreamToString(con.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
+    }
+  }
+
+  @Test
+  public void echoPostSecure() throws Exception {
+    final String text = "Hello World";
+    final HttpsURLConnection con = createAndWriteToHttpsURLConnection("POST", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
     final String response = inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
@@ -268,32 +342,28 @@ public class HttpsServerTest extends AbstractHttpServerTest {
   @Test
   public void echoPut() throws Exception {
     final String text = "Hello World";
-    final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", text);
+    final HttpsURLConnection con = createAndWriteToHttpsURLConnection("PUT", getHttpsServerUri() + ECHO_CONTEXT, text, false);
     final String response = inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
 
-  private HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String entity) throws Exception {
-    final String path = getHttpsServerUri() + ECHO_CONTEXT;
-    final URL url = new URL(path);
+  @Test
+  public void echoPutSecureAuthFailure() throws Exception {
+    final String text = "Hello World";
+    final HttpsURLConnection con = createAndWriteToHttpsURLConnection("PUT", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
+    try {
+      inputStreamToString(con.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
+    }
+  }
 
-    final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-
-    final KeyStore ks = KeyStore.getInstance("JKS");
-    ks.load(getClass().getResourceAsStream("/keystore.jks"), "password".toCharArray());
-    final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-    tmf.init(ks);
-
-    final SSLContext ssl = SSLContext.getInstance("TLS");
-    ssl.init(null, tmf.getTrustManagers(), null);
-
-    con.setSSLSocketFactory(ssl.getSocketFactory());
-
-    con.setRequestMethod(method);
-    con.setDoOutput(true);
-    final OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
-    out.write(entity);
-    out.close();
-    return con;
+  @Test
+  public void echoPutSecure() throws Exception {
+    final String text = "Hello World";
+    final HttpsURLConnection con = createAndWriteToHttpsURLConnection("PUT", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
+    final String response = inputStreamToString(con.getInputStream());
+    Assert.assertEquals(text, response);
   }
 }

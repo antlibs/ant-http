@@ -214,9 +214,12 @@ import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -404,8 +407,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   // return inputStreamToString(conn.getInputStream());
   // }
 
-  protected String readHttpsURL(final URL url) throws Exception {
-    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+  protected void attachSSLSocketFactory(final HttpsURLConnection conn) throws Exception {
 
     final KeyStore ks = KeyStore.getInstance("JKS");
     ks.load(getClass().getResourceAsStream("/keystore.jks"), "password".toCharArray());
@@ -416,8 +418,6 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     ssl.init(null, tmf.getTrustManagers(), null);
 
     conn.setSSLSocketFactory(ssl.getSocketFactory());
-
-    return inputStreamToString(conn.getInputStream());
   }
 
   protected BasicAuthenticator getBasicAuthenticator() {
@@ -436,5 +436,50 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final String userpass = USERNAME + ":" + PASSWORD;
     final String basicAuth = "Basic " + new String(new BASE64Encoder().encode(userpass.getBytes()));
     con.setRequestProperty("Authorization", basicAuth);
+  }
+
+  protected HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String path, final String entity, final boolean auth) throws MalformedURLException,
+      IOException, ProtocolException {
+    final URL url = new URL(path);
+
+    final HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+    if (auth) {
+      addAuthenticationHeader(con);
+    }
+
+    con.setRequestMethod(method);
+    con.setDoOutput(true);
+    final OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
+    out.write(entity);
+    out.close();
+    return con;
+  }
+
+  protected HttpsURLConnection createAndWriteToHttpsURLConnection(final String method, final String path, final String entity, final boolean auth) throws Exception {
+    final URL url = new URL(path);
+
+    final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+
+    if (auth) {
+      addAuthenticationHeader(con);
+    }
+
+    final KeyStore ks = KeyStore.getInstance("JKS");
+    ks.load(getClass().getResourceAsStream("/keystore.jks"), "password".toCharArray());
+    final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    tmf.init(ks);
+
+    final SSLContext ssl = SSLContext.getInstance("TLS");
+    ssl.init(null, tmf.getTrustManagers(), null);
+
+    con.setSSLSocketFactory(ssl.getSocketFactory());
+
+    con.setRequestMethod(method);
+    con.setDoOutput(true);
+    final OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
+    out.write(entity);
+    out.close();
+    return con;
   }
 }

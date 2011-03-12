@@ -205,10 +205,7 @@
 package org.missinglink.ant.task.http.server;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -360,23 +357,5 @@ public class HttpServerTest extends AbstractHttpServerTest {
     final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
     final String response = inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
-  }
-
-  protected HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String path, final String entity, final boolean auth) throws MalformedURLException,
-      IOException, ProtocolException {
-    final URL url = new URL(path);
-
-    final HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-    if (auth) {
-      addAuthenticationHeader(con);
-    }
-
-    con.setRequestMethod(method);
-    con.setDoOutput(true);
-    final OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
-    out.write(entity);
-    out.close();
-    return con;
   }
 }
