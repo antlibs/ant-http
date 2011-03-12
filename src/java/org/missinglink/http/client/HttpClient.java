@@ -263,6 +263,8 @@ public class HttpClient {
   protected Map<String, String> queryUnencoded = new HashMap<String, String>();
   protected Map<String, String> queryEncoded = new HashMap<String, String>();
 
+  protected Map<String, String> headers = new HashMap<String, String>();
+
   protected HttpClient() {
     super();
   }
@@ -318,6 +320,13 @@ public class HttpClient {
    */
   public Map<String, String> getQueryEncoded() {
     return queryEncoded;
+  }
+
+  /**
+   * @return the headers
+   */
+  public Map<String, String> getHeaders() {
+    return headers;
   }
 
   /**
@@ -427,9 +436,24 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder query(final String param, final String value) {
-      if (null != param) {
+      if (null != param && param.length() > 0) {
         httpClient.queryUnencoded.put(param, value);
         httpClient.queryEncoded.put(param, encode(value));
+      }
+      return this;
+    }
+
+    /**
+     * Add a header to the {@link HttpClient}. The value can be null, and is
+     * null safe for header values (no-op).
+     * 
+     * @param header
+     * @param value
+     * @return
+     */
+    public HttpClientBuilder header(final String header, final String value) {
+      if (null != header && header.length() > 0) {
+        httpClient.headers.put(header, value);
       }
       return this;
     }
