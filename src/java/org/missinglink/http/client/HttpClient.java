@@ -344,6 +344,13 @@ public class HttpClient {
   }
 
   /**
+   * @return the method
+   */
+  public String getMethod() {
+    return method;
+  }
+
+  /**
    * {@link HttpClient} builder.
    * 
    * @author alex.sherwin
@@ -491,6 +498,94 @@ public class HttpClient {
      */
     public HttpClientBuilder contentType(final String value) {
       httpClient.headers.put(CONTENT_TYPE, value);
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder method(final String method) {
+      httpClient.method = method;
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient} to {@link HttpClient#GET}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder get() {
+      httpClient.method = GET;
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient} to {@link HttpClient#POST}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder post() {
+      httpClient.method = POST;
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient} to {@link HttpClient#PUT}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder put() {
+      httpClient.method = PUT;
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient} to {@link HttpClient#TRACE}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder trace() {
+      httpClient.method = TRACE;
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient} to {@link HttpClient#OPTIONS}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder options() {
+      httpClient.method = OPTIONS;
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient} to {@link HttpClient#DELETE}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder delete() {
+      httpClient.method = DELETE;
+      return this;
+    }
+
+    /**
+     * Set the method on the {@link HttpClient} to {@link HttpClient#HEAD}.
+     * 
+     * @param method
+     * @return
+     */
+    public HttpClientBuilder head() {
+      httpClient.method = HEAD;
       return this;
     }
 
