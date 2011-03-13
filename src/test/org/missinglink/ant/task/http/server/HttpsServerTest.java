@@ -215,6 +215,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.missinglink.tools.StreamUtils;
 
 /**
  * 
@@ -243,7 +244,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final URL url = new URL(path);
     final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
     attachSSLSocketFactory(conn);
-    final String response = inputStreamToString(conn.getInputStream());
+    final String response = StreamUtils.inputStreamToString(conn.getInputStream());
     Assert.assertEquals(PING_RESPONSE, response);
   }
 
@@ -254,7 +255,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
     attachSSLSocketFactory(conn);
     try {
-      inputStreamToString(conn.getInputStream());
+      StreamUtils.inputStreamToString(conn.getInputStream());
       Assert.assertTrue("Authentication should have failed", false);
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
@@ -268,7 +269,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
     attachSSLSocketFactory(conn);
     addAuthenticationHeader(conn);
-    final String response = inputStreamToString(conn.getInputStream());
+    final String response = StreamUtils.inputStreamToString(conn.getInputStream());
     Assert.assertEquals(PING_RESPONSE, response);
 
   }
@@ -280,7 +281,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final URL url = new URL(path);
     final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
     attachSSLSocketFactory(conn);
-    final String response = inputStreamToString(conn.getInputStream());
+    final String response = StreamUtils.inputStreamToString(conn.getInputStream());
     Assert.assertEquals(text, response);
   }
 
@@ -292,7 +293,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
     attachSSLSocketFactory(conn);
     try {
-      inputStreamToString(conn.getInputStream());
+      StreamUtils.inputStreamToString(conn.getInputStream());
       Assert.assertTrue("Authentication should have failed", false);
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
@@ -307,7 +308,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
     attachSSLSocketFactory(conn);
     addAuthenticationHeader(conn);
-    final String response = inputStreamToString(conn.getInputStream());
+    final String response = StreamUtils.inputStreamToString(conn.getInputStream());
     Assert.assertEquals(text, response);
   }
 
@@ -315,7 +316,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
   public void echoPost() throws Exception {
     final String text = "Hello World";
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("POST", getHttpsServerUri() + ECHO_CONTEXT, text, false);
-    final String response = inputStreamToString(con.getInputStream());
+    final String response = StreamUtils.inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
 
@@ -324,7 +325,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final String text = "Hello World";
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("POST", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {
-      inputStreamToString(con.getInputStream());
+      StreamUtils.inputStreamToString(con.getInputStream());
       Assert.assertTrue("Authentication should have failed", false);
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
@@ -335,7 +336,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
   public void echoPostSecure() throws Exception {
     final String text = "Hello World";
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("POST", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
-    final String response = inputStreamToString(con.getInputStream());
+    final String response = StreamUtils.inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
 
@@ -343,7 +344,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
   public void echoPut() throws Exception {
     final String text = "Hello World";
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("PUT", getHttpsServerUri() + ECHO_CONTEXT, text, false);
-    final String response = inputStreamToString(con.getInputStream());
+    final String response = StreamUtils.inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
 
@@ -352,7 +353,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final String text = "Hello World";
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("PUT", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {
-      inputStreamToString(con.getInputStream());
+      StreamUtils.inputStreamToString(con.getInputStream());
       Assert.assertTrue("Authentication should have failed", false);
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
@@ -363,7 +364,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
   public void echoPutSecure() throws Exception {
     final String text = "Hello World";
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("PUT", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
-    final String response = inputStreamToString(con.getInputStream());
+    final String response = StreamUtils.inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
 }

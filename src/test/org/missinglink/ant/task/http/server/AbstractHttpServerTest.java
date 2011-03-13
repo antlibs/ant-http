@@ -235,6 +235,7 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.missinglink.ant.task.http.AbstractTest;
+import org.missinglink.tools.StreamUtils;
 
 import sun.misc.BASE64Encoder;
 
@@ -344,7 +345,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
       public void handle(final HttpExchange exchange) throws IOException {
         String responseEntity = "";
         if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
-          responseEntity = inputStreamToString(exchange.getRequestBody());
+          responseEntity = StreamUtils.inputStreamToString(exchange.getRequestBody());
         } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
           responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
         }
@@ -365,7 +366,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
       public void handle(final HttpExchange exchange) throws IOException {
         String responseEntity = "";
         if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
-          responseEntity = inputStreamToString(exchange.getRequestBody());
+          responseEntity = StreamUtils.inputStreamToString(exchange.getRequestBody());
         } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
           responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
         }
@@ -404,7 +405,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   // protected String readHttpURL(final URL url) throws IOException {
   // final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-  // return inputStreamToString(conn.getInputStream());
+  // return StreamUtils.inputStreamToString(conn.getInputStream());
   // }
 
   protected void attachSSLSocketFactory(final HttpsURLConnection conn) throws Exception {

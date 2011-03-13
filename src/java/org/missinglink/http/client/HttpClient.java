@@ -206,6 +206,7 @@ package org.missinglink.http.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -220,8 +221,10 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.missinglink.http.exception.InvalidStreamException;
 import org.missinglink.http.exception.InvalidUriException;
 import org.missinglink.tools.NumberUtils;
+import org.missinglink.tools.StreamUtils;
 import org.missinglink.tools.StringUtils;
 
 /**
@@ -302,6 +305,16 @@ public class HttpClient {
 
   public HttpClientBuilder build() {
     return new HttpClientBuilder(this);
+  }
+
+  public String getEntityAsString() throws IOException {
+    if (null == entity || entity.available() == 0) {
+      return null;
+    }
+    entity.mark(entity.available());
+    final String tmp = StreamUtils.inputStreamToString(entity);
+    entity.reset();
+    return tmp;
   }
 
   public String getProtocol() {
@@ -635,7 +648,10 @@ public class HttpClient {
      * @param is
      * @return
      */
-    public HttpClientBuilder entity(final InputStream is) {
+    public HttpClientBuilder entity(final InputStream is) throws InvalidStreamException {
+      if (null != is && !is.markSupported()) {
+        throw new InvalidStreamException("InputStream of type [" + is.getClass().getName() + "] does not support marking");
+      }
       httpClient.entity = is;
       return this;
     }

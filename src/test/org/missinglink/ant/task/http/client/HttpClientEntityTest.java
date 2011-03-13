@@ -211,6 +211,7 @@ import java.io.InputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.missinglink.http.client.HttpClient;
+import org.missinglink.http.exception.InvalidStreamException;
 import org.missinglink.http.exception.InvalidUriException;
 
 /**
@@ -224,7 +225,7 @@ public class HttpClientEntityTest {
   }
 
   @Test
-  public void testNullInputStreamEntity() throws InvalidUriException {
+  public void testNullInputStreamEntity() throws InvalidUriException, InvalidStreamException {
     final InputStream is = null;
     final HttpClient httpClient = HttpClient.uri("http://host/context").entity(is).toHttpClient();
     Assert.assertNull(httpClient.getEntity());
@@ -238,7 +239,7 @@ public class HttpClientEntityTest {
   }
 
   @Test
-  public void testInputStreamEntity() throws InvalidUriException, IOException {
+  public void testInputStreamEntity() throws InvalidUriException, IOException, InvalidStreamException {
     final String str = "Hello World";
     final HttpClient httpClient = HttpClient.uri("http://host/context").entity(new ByteArrayInputStream(str.getBytes())).toHttpClient();
     Assert.assertEquals(str.getBytes().length, httpClient.getEntity().available());
@@ -250,4 +251,35 @@ public class HttpClientEntityTest {
     final HttpClient httpClient = HttpClient.uri("http://host/context").entity(str).toHttpClient();
     Assert.assertEquals(str.getBytes().length, httpClient.getEntity().available());
   }
+
+  @Test
+  public void testInputStreamEntityToString() throws InvalidUriException, IOException, InvalidStreamException {
+    final String str = "Hello World";
+    final HttpClient httpClient = HttpClient.uri("http://host/context").entity(new ByteArrayInputStream(str.getBytes())).toHttpClient();
+    Assert.assertEquals(str, httpClient.getEntityAsString());
+  }
+
+  @Test
+  public void testStringEntityToString() throws InvalidUriException, IOException {
+    final String str = "Hello World";
+    final HttpClient httpClient = HttpClient.uri("http://host/context").entity(str).toHttpClient();
+    Assert.assertEquals(str, httpClient.getEntityAsString());
+  }
+
+  @Test
+  public void testInputStreamEntityToStringMultipleReads() throws InvalidUriException, IOException, InvalidStreamException {
+    final String str = "Hello World";
+    final HttpClient httpClient = HttpClient.uri("http://host/context").entity(new ByteArrayInputStream(str.getBytes())).toHttpClient();
+    Assert.assertEquals(str, httpClient.getEntityAsString());
+    Assert.assertEquals(str, httpClient.getEntityAsString());
+  }
+
+  @Test
+  public void testStringEntityToStringMultipleReads() throws InvalidUriException, IOException {
+    final String str = "Hello World";
+    final HttpClient httpClient = HttpClient.uri("http://host/context").entity(str).toHttpClient();
+    Assert.assertEquals(str, httpClient.getEntityAsString());
+    Assert.assertEquals(str, httpClient.getEntityAsString());
+  }
+
 }
