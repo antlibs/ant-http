@@ -204,6 +204,9 @@
 
 package org.missinglink.http.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -275,6 +278,7 @@ public class HttpClient {
   protected String method = GET;
   protected String username;
   protected String password;
+  protected InputStream entity;
 
   protected Map<String, String> queryUnencoded = new HashMap<String, String>();
   protected Map<String, String> queryEncoded = new HashMap<String, String>();
@@ -364,6 +368,13 @@ public class HttpClient {
    */
   public String getPassword() {
     return password;
+  }
+
+  /**
+   * @return the entity
+   */
+  public InputStream getEntity() {
+    return entity;
   }
 
   /**
@@ -615,6 +626,31 @@ public class HttpClient {
     public HttpClientBuilder credentials(final String username, final String password) {
       httpClient.username = username;
       httpClient.password = password;
+      return this;
+    }
+
+    /**
+     * Set the request entity on the {@link HttpClient}.
+     * 
+     * @param is
+     * @return
+     */
+    public HttpClientBuilder entity(final InputStream is) {
+      httpClient.entity = is;
+      return this;
+    }
+
+    /**
+     * Calls {@link #entity(InputStream)} with str wrapped in a
+     * {@link ByteArrayOutputStream}.
+     * 
+     * @param str
+     * @return
+     */
+    public HttpClientBuilder entity(final String str) {
+      if (null != str) {
+        httpClient.entity = new ByteArrayInputStream(str.getBytes());
+      }
       return this;
     }
 
