@@ -202,72 +202,50 @@
  *   limitations under the License.
  */
 
-package org.missinglink.tools;
+package org.missinglink.ant.task.http.client;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.missinglink.ant.task.http.server.AbstractHttpServerTest;
+import org.missinglink.http.client.HttpClient;
+import org.missinglink.http.client.HttpResponse;
+import org.missinglink.http.exception.HttpInvocationException;
+import org.missinglink.http.exception.InvalidUriException;
 
 /**
  * @author alex.sherwin
  * 
  */
-public abstract class StreamUtils {
+public class HttpClientTest extends AbstractHttpServerTest {
 
-  protected StreamUtils() {
+  public HttpClientTest() {
     super();
   }
 
-  public static String inputStreamToString(final InputStream is) throws IOException {
-
-    final BufferedReader in = new BufferedReader(new InputStreamReader(is));
-
-    final StringBuilder sb = new StringBuilder();
-    final int pageSize = 1024;
-    final byte[] buf = new byte[pageSize];
-
-    int ret = is.read(buf, 0, pageSize);
-
-    while (ret > 0) {
-      final byte[] bufPage = new byte[ret];
-      for (int i = 0; i < ret; i++) {
-        bufPage[i] = buf[i];
-      }
-      sb.append(new String(bufPage));
-      ret = is.read(buf, 0, pageSize);
-    }
-    in.close();
-
-    return sb.toString();
+  @Before
+  public void before() throws IOException {
+    startHttpServer();
   }
 
-  public static byte[] inputStreamToByteArray(final InputStream is) throws IOException {
-    return inputStreamToByteArrayOutputStream(is).toByteArray();
+  @After
+  public void after() throws IOException {
+    stopHttpServer();
   }
 
-  public static ByteArrayOutputStream inputStreamToByteArrayOutputStream(final InputStream is) throws IOException {
-
-    final BufferedReader in = new BufferedReader(new InputStreamReader(is));
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-    final int pageSize = 1024;
-    final byte[] buf = new byte[pageSize];
-
-    int ret = is.read(buf, 0, pageSize);
-
-    while (ret > 0) {
-      final byte[] bufPage = new byte[ret];
-      for (int i = 0; i < ret; i++) {
-        bufPage[i] = buf[i];
-      }
-      out.write(bufPage);
-      ret = is.read(buf, 0, pageSize);
-    }
-    in.close();
-
-    return out;
+  @Test
+  public void testGetWithResponseEntity() throws InvalidUriException, HttpInvocationException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + PING_CONTEXT).toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertTrue(response.isResponseEntityWritten());
+    Assert.assertFalse(response.isRequestEntityWritten());
+    Assert.assertFalse(response.isErrorEntityWritten());
+    Assert.assertArrayEquals(PING_RESPONSE.getBytes(), response.getResponseEntity());
+    Assert.assertEquals(PING_RESPONSE, response.getResponseEntityAsString());
+    Assert.assertEquals(200, response.getStatus());
   }
-
 }

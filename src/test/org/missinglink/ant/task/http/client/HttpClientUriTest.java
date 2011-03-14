@@ -290,4 +290,39 @@ public class HttpClientUriTest {
     Assert.assertEquals("/a/b", client.getContext());
   }
 
+  @Test
+  public void testUriNoBuilderMethods() throws InvalidUriException {
+    HttpClient client = HttpClient.uri("http://host").toHttpClient();
+    Assert.assertEquals("http://host/", client.getUri());
+    client = HttpClient.uri("http://host/").toHttpClient();
+    Assert.assertEquals("http://host/", client.getUri());
+    client = HttpClient.uri("http://host/context").toHttpClient();
+    Assert.assertEquals("http://host/context", client.getUri());
+    client = HttpClient.uri("http://host/context/longer").toHttpClient();
+    Assert.assertEquals("http://host/context/longer", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/?qp").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/?qp", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html?qp").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html?qp", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/?qp=").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/?qp", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html?qp=").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html?qp", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/?qp=value").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/?qp=value", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html?qp=value").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html?qp=value", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/?qp=value with spaces").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/?qp=value+with+spaces", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html?qp=value with spaces").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html?qp=value+with+spaces", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/?qp=value with spaces&qp2=value2").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/?qp=value+with+spaces&qp2=value2", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html?qp=value with spaces&qp2=value2").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html?qp=value+with+spaces&qp2=value2", client.getUri());
+  }
 }

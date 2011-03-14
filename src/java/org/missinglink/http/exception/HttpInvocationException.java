@@ -202,72 +202,43 @@
  *   limitations under the License.
  */
 
-package org.missinglink.tools;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+package org.missinglink.http.exception;
 
 /**
  * @author alex.sherwin
  * 
  */
-public abstract class StreamUtils {
+public class HttpInvocationException extends HttpClientException {
 
-  protected StreamUtils() {
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * 
+   */
+  public HttpInvocationException() {
     super();
   }
 
-  public static String inputStreamToString(final InputStream is) throws IOException {
-
-    final BufferedReader in = new BufferedReader(new InputStreamReader(is));
-
-    final StringBuilder sb = new StringBuilder();
-    final int pageSize = 1024;
-    final byte[] buf = new byte[pageSize];
-
-    int ret = is.read(buf, 0, pageSize);
-
-    while (ret > 0) {
-      final byte[] bufPage = new byte[ret];
-      for (int i = 0; i < ret; i++) {
-        bufPage[i] = buf[i];
-      }
-      sb.append(new String(bufPage));
-      ret = is.read(buf, 0, pageSize);
-    }
-    in.close();
-
-    return sb.toString();
+  /**
+   * @param message
+   * @param cause
+   */
+  public HttpInvocationException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public static byte[] inputStreamToByteArray(final InputStream is) throws IOException {
-    return inputStreamToByteArrayOutputStream(is).toByteArray();
+  /**
+   * @param message
+   */
+  public HttpInvocationException(String message) {
+    super(message);
   }
 
-  public static ByteArrayOutputStream inputStreamToByteArrayOutputStream(final InputStream is) throws IOException {
-
-    final BufferedReader in = new BufferedReader(new InputStreamReader(is));
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-    final int pageSize = 1024;
-    final byte[] buf = new byte[pageSize];
-
-    int ret = is.read(buf, 0, pageSize);
-
-    while (ret > 0) {
-      final byte[] bufPage = new byte[ret];
-      for (int i = 0; i < ret; i++) {
-        bufPage[i] = buf[i];
-      }
-      out.write(bufPage);
-      ret = is.read(buf, 0, pageSize);
-    }
-    in.close();
-
-    return out;
+  /**
+   * @param cause
+   */
+  public HttpInvocationException(Throwable cause) {
+    super(cause);
   }
 
 }

@@ -204,6 +204,12 @@
 
 package org.missinglink.http.client;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Wraps the response of an HTTP request.
  * 
@@ -212,10 +218,283 @@ package org.missinglink.http.client;
  */
 public class HttpResponse {
 
-  protected int status;
+  protected HttpClient httpClient;
 
-  public HttpResponse() {
+  protected int status;
+  protected String message;
+
+  protected byte[] responseEntity;
+  protected byte[] errorEntity;
+
+  protected boolean requestEntityWritten;
+  protected boolean responseEntityWritten;
+  protected boolean errorEntityWritten;
+
+  protected String contentEncoding;
+  protected String contentType;
+  protected int contentLength;
+  protected Date date;
+  protected Date expires;
+  protected Date lastModified;
+
+  protected Map<String, List<String>> headers = new HashMap<String, List<String>>();
+
+  public HttpResponse(final HttpClient httpClient) {
     super();
+    this.httpClient = httpClient;
+  }
+
+  public List<String> getHeader(final String header) {
+    if (headers.containsKey(header)) {
+      return headers.get(header);
+    }
+    return null;
+  }
+
+  public String getHeaderSingleValue(final String header) {
+    if (headers.containsKey(header) && null != headers.get(header) && headers.get(header).size() > 0) {
+      return headers.get(header).get(0);
+    }
+    return null;
+  }
+
+  /**
+   * @return the headers
+   */
+  public Map<String, List<String>> getHeaders() {
+    return headers;
+  }
+
+  /**
+   * @param headers
+   *          the headers to set
+   */
+  public void setHeaders(Map<String, List<String>> headers) {
+    this.headers = headers;
+  }
+
+  /**
+   * @return the expires
+   */
+  public Date getExpires() {
+    return expires;
+  }
+
+  /**
+   * @param expires
+   *          the expires to set
+   */
+  public void setExpires(Date expires) {
+    this.expires = expires;
+  }
+
+  /**
+   * @return the lastModified
+   */
+  public Date getLastModified() {
+    return lastModified;
+  }
+
+  /**
+   * @param lastModified
+   *          the lastModified to set
+   */
+  public void setLastModified(Date lastModified) {
+    this.lastModified = lastModified;
+  }
+
+  /**
+   * @return the httpClient
+   */
+  public HttpClient getHttpClient() {
+    return httpClient;
+  }
+
+  /**
+   * @param httpClient
+   *          the httpClient to set
+   */
+  public void setHttpClient(HttpClient httpClient) {
+    this.httpClient = httpClient;
+  }
+
+  /**
+   * @return the status
+   */
+  public int getStatus() {
+    return status;
+  }
+
+  /**
+   * @param status
+   *          the status to set
+   */
+  public void setStatus(int status) {
+    this.status = status;
+  }
+
+  /**
+   * @return the responseEntity
+   */
+  public byte[] getResponseEntity() {
+    return responseEntity;
+  }
+
+  public String getResponseEntityAsString() throws IOException {
+    if (null != responseEntity && responseEntity.length > 0) {
+      return new String(responseEntity);
+    }
+    return null;
+  }
+
+  /**
+   * @param responseEntity
+   *          the responseEntity to set
+   */
+  public void setResponseEntity(byte[] responseEntity) {
+    this.responseEntity = responseEntity;
+  }
+
+  /**
+   * @return the requestEntityWritten
+   */
+  public boolean isRequestEntityWritten() {
+    return requestEntityWritten;
+  }
+
+  /**
+   * @param requestEntityWritten
+   *          the requestEntityWritten to set
+   */
+  public void setRequestEntityWritten(boolean requestEntityWritten) {
+    this.requestEntityWritten = requestEntityWritten;
+  }
+
+  /**
+   * @return the responseEntityWritten
+   */
+  public boolean isResponseEntityWritten() {
+    return responseEntityWritten;
+  }
+
+  /**
+   * @param responseEntityWritten
+   *          the responseEntityWritten to set
+   */
+  public void setResponseEntityWritten(boolean responseEntityWritten) {
+    this.responseEntityWritten = responseEntityWritten;
+  }
+
+  /**
+   * @return the errorEntity
+   */
+  public byte[] getErrorEntity() {
+    return errorEntity;
+  }
+
+  public String getErrorEntityAsString() throws IOException {
+    if (null != errorEntity && errorEntity.length > 0) {
+      return new String(errorEntity);
+    }
+    return null;
+  }
+
+  /**
+   * @param errorEntity
+   *          the errorEntity to set
+   */
+  public void setErrorEntity(byte[] errorEntity) {
+    this.errorEntity = errorEntity;
+  }
+
+  /**
+   * @return the errorEntityWritten
+   */
+  public boolean isErrorEntityWritten() {
+    return errorEntityWritten;
+  }
+
+  /**
+   * @param errorEntityWritten
+   *          the errorEntityWritten to set
+   */
+  public void setErrorEntityWritten(boolean errorEntityWritten) {
+    this.errorEntityWritten = errorEntityWritten;
+  }
+
+  /**
+   * @return the message
+   */
+  public String getMessage() {
+    return message;
+  }
+
+  /**
+   * @param message
+   *          the message to set
+   */
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  /**
+   * @return the contentEncoding
+   */
+  public String getContentEncoding() {
+    return contentEncoding;
+  }
+
+  /**
+   * @param contentEncoding
+   *          the contentEncoding to set
+   */
+  public void setContentEncoding(String contentEncoding) {
+    this.contentEncoding = contentEncoding;
+  }
+
+  /**
+   * @return the contentType
+   */
+  public String getContentType() {
+    return contentType;
+  }
+
+  /**
+   * @param contentType
+   *          the contentType to set
+   */
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
+
+  /**
+   * @return the contentLength
+   */
+  public int getContentLength() {
+    return contentLength;
+  }
+
+  /**
+   * @param contentLength
+   *          the contentLength to set
+   */
+  public void setContentLength(int contentLength) {
+    this.contentLength = contentLength;
+  }
+
+  /**
+   * @return the date
+   */
+  public Date getDate() {
+    return date;
+  }
+
+  /**
+   * @param date
+   *          the date to set
+   */
+  public void setDate(Date date) {
+    this.date = date;
   }
 
 }

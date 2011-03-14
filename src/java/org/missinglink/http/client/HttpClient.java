@@ -208,12 +208,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyStore;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -221,11 +224,14 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.missinglink.http.exception.HttpInvocationException;
 import org.missinglink.http.exception.InvalidStreamException;
 import org.missinglink.http.exception.InvalidUriException;
 import org.missinglink.tools.NumberUtils;
 import org.missinglink.tools.StreamUtils;
 import org.missinglink.tools.StringUtils;
+
+import sun.misc.BASE64Encoder;
 
 /**
  * HTTP client which wraps core Java classes {@link URL},
@@ -258,6 +264,10 @@ public class HttpClient {
   public static final Pattern URL_REGEX = Pattern.compile("([Hh][Tt][Tt][Pp][Ss]?)://([^/:]+):?([0-9]+)?(/[^\\?.]*)?\\.?([^\\?.]*)\\??(.*)?");
 
   protected static final String UTF_8 = "UTF-8";
+
+  // HTTP protocols
+  public static final String HTTP = "http";
+  public static final String HTTPS = "https";
 
   // HTTP methods
   public static final String GET = "GET";
@@ -303,10 +313,21 @@ public class HttpClient {
     return builder;
   }
 
+  /**
+   * Enter building mode.
+   * 
+   * @return
+   */
   public HttpClientBuilder build() {
     return new HttpClientBuilder(this);
   }
 
+  /**
+   * Return the {@link #entity} {@link InputStream} as a String.
+   * 
+   * @return
+   * @throws IOException
+   */
   public String getEntityAsString() throws IOException {
     if (null == entity || entity.available() == 0) {
       return null;
@@ -317,6 +338,125 @@ public class HttpClient {
     return tmp;
   }
 
+  /**
+   * Invoke the HTTP service represented by this {@link HttpClient}.
+   * 
+   * @return
+   */
+  public HttpResponse invoke() throws HttpInvocationException {
+    try {
+      final HttpResponse response = new HttpResponse(this);
+      final String uri = getUri();
+      final URL url = new URL(uri);
+
+      final HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+      httpUrlConnection.setDoInput(true);
+
+      // set method
+      httpUrlConnection.setRequestMethod(method);
+
+      // if HTTPS, check for HTTPS options
+      if (HTTPS.equalsIgnoreCase(protocol)) {
+
+      }
+
+      // if username is set, add BASIC authentication header
+      if (null != username && username.length() > 0) {
+        final String userpass = username + ":" + (null == password ? "" : password);
+        final String basicAuth = "Basic " + new String(new BASE64Encoder().encode(userpass.getBytes()));
+        httpUrlConnection.setRequestProperty("Authorization", basicAuth);
+      }
+
+      // if an entity is set, write it to the connection
+      if (null != entity && entity.available() > 0) {
+        httpUrlConnection.setDoOutput(true);
+        final OutputStreamWriter writer = new OutputStreamWriter(httpUrlConnection.getOutputStream());
+        final String entityAsString = getEntityAsString();
+        writer.write(entityAsString);
+        writer.close();
+        response.setRequestEntityWritten(true);
+      }
+
+      // read the response entity
+      final InputStream responseEntityInputStream = httpUrlConnection.getInputStream();
+      if (null != responseEntityInputStream && responseEntityInputStream.available() > 0) {
+        response.setResponseEntity(StreamUtils.inputStreamToByteArray(responseEntityInputStream));
+        response.setResponseEntityWritten(true);
+      }
+
+      // read the error entity
+      final InputStream errorEntityInputStream = httpUrlConnection.getErrorStream();
+      if (null != errorEntityInputStream && errorEntityInputStream.available() > 0) {
+        response.setErrorEntity(StreamUtils.inputStreamToByteArray(errorEntityInputStream));
+        response.setErrorEntityWritten(true);
+      }
+
+      response.setStatus(httpUrlConnection.getResponseCode());
+      response.setMessage(httpUrlConnection.getResponseMessage());
+
+      response.setContentEncoding(httpUrlConnection.getContentEncoding());
+      response.setContentLength(httpUrlConnection.getContentLength());
+      response.setContentType(httpUrlConnection.getContentType());
+      response.setDate(new Date(httpUrlConnection.getDate()));
+      response.setExpires(new Date(httpUrlConnection.getExpiration()));
+      response.setLastModified(new Date(httpUrlConnection.getLastModified()));
+
+      if (null != httpUrlConnection.getHeaderFields() && httpUrlConnection.getHeaderFields().size() > 0) {
+        for (final Entry<String, List<String>> entry : httpUrlConnection.getHeaderFields().entrySet()) {
+          response.getHeaders().put(entry.getKey(), entry.getValue());
+        }
+      }
+
+      httpUrlConnection.disconnect();
+
+      return response;
+    } catch (Throwable t) {
+      throw new HttpInvocationException(t);
+    }
+  }
+
+  /**
+   * Build and return the URI.
+   * 
+   * @return
+   */
+  public String getUri() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append(protocol.toLowerCase()).append("://").append(host);
+    if (null != port) {
+      sb.append(":").append(port);
+    }
+    if (null != context && context.length() > 0) {
+      sb.append(context);
+    } else {
+      sb.append("/");
+    }
+    if (null != extension) {
+      sb.append(".").append(extension);
+    }
+    if (queryEncoded.size() > 0) {
+      sb.append("?");
+      boolean first = true;
+      for (final Entry<String, String> qp : queryEncoded.entrySet()) {
+        if (first) {
+          first = false;
+        } else {
+          sb.append("&");
+        }
+        sb.append(qp.getKey());
+        if (null != qp.getValue()) {
+          sb.append("=").append(qp.getValue());
+        }
+      }
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Return the protocol (http/https).
+   * 
+   * @return
+   */
   public String getProtocol() {
     return protocol;
   }
