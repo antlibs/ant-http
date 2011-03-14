@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="ml-ant-http" default="dist" basedir=".">
+
+  <property name="ml-ant-http.lib.dir" location="lib"/>
+  <property name="ml-ant-http.src.dir" location="src"/>
+  <property name="ml-ant-http.java.src.dir" location="${ml-ant-http.src.dir}/java"/>
+  <property name="ml-ant-http.test.src.dir" location="${ml-ant-http.src.dir}/test"/>
+  <property name="ml-ant-http.build.dir" location="build"/>
+  <property name="ml-ant-http.build.classes.dir" location="${ml-ant-http.build.dir}/classes"/>
+  <property name="ml-ant-http.dist.dir" location="dist"/>
+  <property name="ml-ant-http.resources.dir" location="resources"/>
+  <property name="ml-ant-http.license.dir" location="${ml-ant-http.resources.dir}/license"/>
+  <property name="ml-ant-http.license.file" value="license.txt"/>
+  <property name="ml-ant-http.dist.jar.name" value="ml-ant-http"/>
+  <property name="ml-ant-http.dist.jar.version" value="1.0"/>
+
+  <fileset id="ml-ant-http.compile.libs" dir="${ml-ant-http.lib.dir}">
+    <include name="apache-ant/apache-ant-1.8.2.jar"/>
+    <include name="junit/junit-4.8.2.jar"/>
+  </fileset>
+
+  <path id="ml-ant-http.compile.classpath">
+    <fileset refid="ml-ant-http.compile.libs"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="${ml-ant-http.build.dir}"/>
+    <delete dir="${ml-ant-http.dist.dir}"/>
+  </target>
+
+  <target name="init">
+    <mkdir dir="${ml-ant-http.build.dir}"/>
+    <mkdir dir="${ml-ant-http.build.classes.dir}"/>
+    <mkdir dir="${ml-ant-http.dist.dir}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac debug="yes" destdir="${ml-ant-http.build.classes.dir}" classpathref="ml-ant-http.compile.classpath" includeantruntime="false">
+      <src path="${ml-ant-http.java.src.dir}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
+    <jar destfile="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}.jar" basedir="${ml-ant-http.build.classes.dir}"/>
+  </target>
+
+  <target name="jar.src" depends="compile">
+    <mkdir dir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
+    <jar destfile="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}-sources.jar" basedir="${ml-ant-http.java.src.dir}"/>
+  </target>
+
+  <target name="copy.dist.files" depends="compile">
+    <mkdir dir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
+    
+    <!-- license -->
+    <copy filtering="false" flatten="false" todir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}">
+      <fileset dir="${ml-ant-http.license.dir}">
+        <include name="${ml-ant-http.license.file}"/>
+      </fileset>
+    </copy>
+    
+  </target>
+
+  <target name="dist" depends="compile,jar,jar.src,copy.dist.files"/>
+
+</project>

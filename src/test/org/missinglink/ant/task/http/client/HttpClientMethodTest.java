@@ -207,6 +207,7 @@ package org.missinglink.ant.task.http.client;
 import org.junit.Assert;
 import org.junit.Test;
 import org.missinglink.http.client.HttpClient;
+import org.missinglink.http.client.HttpMethod;
 import org.missinglink.http.exception.InvalidUriException;
 
 /**
@@ -222,55 +223,49 @@ public class HttpClientMethodTest {
   @Test
   public void testDefaultMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").toHttpClient();
-    Assert.assertEquals(HttpClient.GET, httpClient.getMethod());
-  }
-
-  @Test
-  public void testArbitraryMethod() throws InvalidUriException {
-    final HttpClient httpClient = HttpClient.uri("http://host/context").method("TEST").toHttpClient();
-    Assert.assertEquals("TEST", httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.GET, httpClient.getMethod());
   }
 
   @Test
   public void testGetMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").get().toHttpClient();
-    Assert.assertEquals(HttpClient.GET, httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.GET, httpClient.getMethod());
   }
 
   @Test
   public void testPostMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").post().toHttpClient();
-    Assert.assertEquals(HttpClient.POST, httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.POST, httpClient.getMethod());
   }
 
   @Test
   public void testPutMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").put().toHttpClient();
-    Assert.assertEquals(HttpClient.PUT, httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.PUT, httpClient.getMethod());
   }
 
   @Test
   public void testHeadMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").head().toHttpClient();
-    Assert.assertEquals(HttpClient.HEAD, httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.HEAD, httpClient.getMethod());
   }
 
   @Test
   public void testOptionsMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").options().toHttpClient();
-    Assert.assertEquals(HttpClient.OPTIONS, httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.OPTIONS, httpClient.getMethod());
   }
 
   @Test
   public void testTraceMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").trace().toHttpClient();
-    Assert.assertEquals(HttpClient.TRACE, httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.TRACE, httpClient.getMethod());
   }
 
   @Test
   public void testDeleteMethod() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").delete().toHttpClient();
-    Assert.assertEquals(HttpClient.DELETE, httpClient.getMethod());
+    Assert.assertEquals(HttpMethod.DELETE, httpClient.getMethod());
   }
 
 }

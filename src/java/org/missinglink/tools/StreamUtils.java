@@ -220,6 +220,13 @@ public abstract class StreamUtils {
     super();
   }
 
+  /**
+   * Read from an {@link InputStream} and return it as a String.
+   * 
+   * @param is
+   * @return
+   * @throws IOException
+   */
   public static String inputStreamToString(final InputStream is) throws IOException {
 
     final BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -243,10 +250,25 @@ public abstract class StreamUtils {
     return sb.toString();
   }
 
+  /**
+   * Read from an {@link InputStream} and return it as a {@link byte[]} array.
+   * 
+   * @param is
+   * @return
+   * @throws IOException
+   */
   public static byte[] inputStreamToByteArray(final InputStream is) throws IOException {
     return inputStreamToByteArrayOutputStream(is).toByteArray();
   }
 
+  /**
+   * Read from an {@link InputStream} and return it as a
+   * {@link ByteArrayOutputStream}.
+   * 
+   * @param is
+   * @return
+   * @throws IOException
+   */
   public static ByteArrayOutputStream inputStreamToByteArrayOutputStream(final InputStream is) throws IOException {
 
     final BufferedReader in = new BufferedReader(new InputStreamReader(is));

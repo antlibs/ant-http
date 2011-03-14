@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ant-tasks" basedir="." default="help">
+
+  <!-- libs -->
+  <property name="ml-ant-http.jar" value="ml-ant-http-1.0.jar"/>
+
+  <!-- runtime libs -->
+  <fileset id="runtime.libs" dir=".">
+    <include name="${ml-ant-http.jar}"/>
+  </fileset>
+  
+  <path id="runtime.classpath">
+    <fileset refid="runtime.libs"/>
+  </path>
+
+  <!-- taskdef -->
+  <taskdef name="http" classname="org.missinglink.ant.task.http.HttpClientTask">
+    <classpath refid="runtime.classpath"/>
+  </taskdef>
+
+  <!-- GET -->
+  <target name="http-get">
+    <http url="http://www.google.com/zz?qp1=value1" method="GET">
+      <credentials username="user" password="passwd"/>
+      <headers>
+        <header name="Accept" value="text/plain,application/xml,*/*"/>
+      </headers>
+      <query>
+        <parameter name="qp2" value="value2"/>
+        <parameter name="qp3" value="value3"/>
+      </query>
+    </http>
+  </target>
+  
+</project>

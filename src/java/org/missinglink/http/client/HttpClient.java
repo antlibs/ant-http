@@ -273,15 +273,6 @@ public class HttpClient {
   public static final String HTTP = "http";
   public static final String HTTPS = "https";
 
-  // HTTP methods
-  public static final String GET = "GET";
-  public static final String POST = "POST";
-  public static final String PUT = "PUT";
-  public static final String TRACE = "TRACE";
-  public static final String OPTIONS = "OPTIONS";
-  public static final String HEAD = "HEAD";
-  public static final String DELETE = "DELETE";
-
   // HTTP headers
   public static final String ACCEPT = "Accept";
   public static final String CONTENT_TYPE = "Content-Type";
@@ -292,7 +283,7 @@ public class HttpClient {
   protected StringBuilder context = new StringBuilder();
   protected String extension;
   protected String query;
-  protected String method = GET;
+  protected HttpMethod method = HttpMethod.GET;
   protected String username;
   protected String password;
   protected InputStream entity;
@@ -359,7 +350,7 @@ public class HttpClient {
       httpUrlConnection.setDoInput(true);
 
       // set method
-      httpUrlConnection.setRequestMethod(method);
+      httpUrlConnection.setRequestMethod(method.name());
 
       // if HTTPS, check for HTTPS options
       if (HTTPS.equalsIgnoreCase(protocol)) {
@@ -398,7 +389,7 @@ public class HttpClient {
         if (null != responseEntityInputStream) {
           response.setEntity(StreamUtils.inputStreamToByteArray(responseEntityInputStream));
         }
-      } catch (IOException e) {
+      } catch (final IOException e) {
         // ignore
       }
 
@@ -427,9 +418,9 @@ public class HttpClient {
       httpUrlConnection.disconnect();
 
       return response;
-    } catch (SSLHandshakeException e) {
+    } catch (final SSLHandshakeException e) {
       throw new HttpCertificateException(e);
-    } catch (Throwable t) {
+    } catch (final Throwable t) {
       throw new HttpInvocationException(t);
     }
   }
@@ -538,7 +529,7 @@ public class HttpClient {
   /**
    * @return the method
    */
-  public String getMethod() {
+  public HttpMethod getMethod() {
     return method;
   }
 
@@ -633,7 +624,7 @@ public class HttpClient {
     protected String encode(final String str) {
       try {
         return null == str ? null : URLEncoder.encode(str, UTF_8);
-      } catch (UnsupportedEncodingException e) {
+      } catch (final UnsupportedEncodingException e) {
         return null;
       }
     }
@@ -720,7 +711,7 @@ public class HttpClient {
      * @param method
      * @return
      */
-    public HttpClientBuilder method(final String method) {
+    public HttpClientBuilder method(final HttpMethod method) {
       httpClient.method = method;
       return this;
     }
@@ -732,7 +723,7 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder get() {
-      httpClient.method = GET;
+      httpClient.method = HttpMethod.GET;
       return this;
     }
 
@@ -743,7 +734,7 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder post() {
-      httpClient.method = POST;
+      httpClient.method = HttpMethod.POST;
       return this;
     }
 
@@ -754,7 +745,7 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder put() {
-      httpClient.method = PUT;
+      httpClient.method = HttpMethod.PUT;
       return this;
     }
 
@@ -765,7 +756,7 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder trace() {
-      httpClient.method = TRACE;
+      httpClient.method = HttpMethod.TRACE;
       return this;
     }
 
@@ -776,7 +767,7 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder options() {
-      httpClient.method = OPTIONS;
+      httpClient.method = HttpMethod.OPTIONS;
       return this;
     }
 
@@ -787,7 +778,7 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder delete() {
-      httpClient.method = DELETE;
+      httpClient.method = HttpMethod.DELETE;
       return this;
     }
 
@@ -798,7 +789,7 @@ public class HttpClient {
      * @return
      */
     public HttpClientBuilder head() {
-      httpClient.method = HEAD;
+      httpClient.method = HttpMethod.HEAD;
       return this;
     }
 
