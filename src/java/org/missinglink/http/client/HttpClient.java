@@ -223,6 +223,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.missinglink.http.exception.HttpInvocationException;
 import org.missinglink.http.exception.InvalidStreamException;
@@ -292,6 +294,8 @@ public class HttpClient {
   protected String username;
   protected String password;
   protected InputStream entity;
+  protected InputStream keyStore;
+  protected String keyStorePassword;
 
   protected Map<String, String> queryUnencoded = new HashMap<String, String>();
   protected Map<String, String> queryEncoded = new HashMap<String, String>();
@@ -357,7 +361,17 @@ public class HttpClient {
 
       // if HTTPS, check for HTTPS options
       if (HTTPS.equalsIgnoreCase(protocol)) {
+        if (null != keyStore) {
+          final KeyStore ks = KeyStore.getInstance("JKS");
+          ks.load(keyStore, null == keyStorePassword ? new char[]{} : keyStorePassword.toCharArray());
+          final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+          tmf.init(ks);
 
+          final SSLContext ssl = SSLContext.getInstance("TLS");
+          ssl.init(null, tmf.getTrustManagers(), null);
+
+          ((HttpsURLConnection) httpUrlConnection).setSSLSocketFactory(ssl.getSocketFactory());
+        }
       }
 
       // if username is set, add BASIC authentication header
@@ -368,7 +382,7 @@ public class HttpClient {
       }
 
       // if an entity is set, write it to the connection
-      if (null != entity && entity.available() > 0) {
+      if (null != entity) {
         httpUrlConnection.setDoOutput(true);
         final OutputStreamWriter writer = new OutputStreamWriter(httpUrlConnection.getOutputStream());
         final String entityAsString = getEntityAsString();
@@ -379,7 +393,7 @@ public class HttpClient {
       // read the response entity
       try {
         final InputStream responseEntityInputStream = httpUrlConnection.getInputStream();
-        if (null != responseEntityInputStream && responseEntityInputStream.available() > 0) {
+        if (null != responseEntityInputStream) {
           response.setEntity(StreamUtils.inputStreamToByteArray(responseEntityInputStream));
         }
       } catch (IOException e) {
@@ -388,7 +402,7 @@ public class HttpClient {
 
       // read the error entity
       final InputStream errorEntityInputStream = httpUrlConnection.getErrorStream();
-      if (null != errorEntityInputStream && errorEntityInputStream.available() > 0) {
+      if (null != errorEntityInputStream) {
         response.setEntity(StreamUtils.inputStreamToByteArray(errorEntityInputStream));
       }
 
@@ -480,6 +494,20 @@ public class HttpClient {
 
   public String getQuery() {
     return query;
+  }
+
+  /**
+   * @return the keyStore
+   */
+  public InputStream getKeyStore() {
+    return keyStore;
+  }
+
+  /**
+   * @return the keyStorePassword
+   */
+  public String getKeyStorePassword() {
+    return keyStorePassword;
   }
 
   /**
@@ -808,6 +836,12 @@ public class HttpClient {
       if (null != str) {
         httpClient.entity = new ByteArrayInputStream(str.getBytes());
       }
+      return this;
+    }
+
+    public HttpClientBuilder keyStore(final InputStream is, final String password) {
+      httpClient.keyStore = is;
+      httpClient.keyStorePassword = password;
       return this;
     }
 
