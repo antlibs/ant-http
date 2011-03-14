@@ -223,12 +223,7 @@ public class HttpResponse {
   protected int status;
   protected String message;
 
-  protected byte[] responseEntity;
-  protected byte[] errorEntity;
-
-  protected boolean requestEntityWritten;
-  protected boolean responseEntityWritten;
-  protected boolean errorEntityWritten;
+  protected byte[] entity;
 
   protected String contentEncoding;
   protected String contentType;
@@ -336,13 +331,13 @@ public class HttpResponse {
   /**
    * @return the responseEntity
    */
-  public byte[] getResponseEntity() {
-    return responseEntity;
+  public byte[] getEntity() {
+    return entity;
   }
 
-  public String getResponseEntityAsString() throws IOException {
-    if (null != responseEntity && responseEntity.length > 0) {
-      return new String(responseEntity);
+  public String getEntityAsString() throws IOException {
+    if (null != entity && entity.length > 0) {
+      return new String(entity);
     }
     return null;
   }
@@ -351,75 +346,8 @@ public class HttpResponse {
    * @param responseEntity
    *          the responseEntity to set
    */
-  public void setResponseEntity(byte[] responseEntity) {
-    this.responseEntity = responseEntity;
-  }
-
-  /**
-   * @return the requestEntityWritten
-   */
-  public boolean isRequestEntityWritten() {
-    return requestEntityWritten;
-  }
-
-  /**
-   * @param requestEntityWritten
-   *          the requestEntityWritten to set
-   */
-  public void setRequestEntityWritten(boolean requestEntityWritten) {
-    this.requestEntityWritten = requestEntityWritten;
-  }
-
-  /**
-   * @return the responseEntityWritten
-   */
-  public boolean isResponseEntityWritten() {
-    return responseEntityWritten;
-  }
-
-  /**
-   * @param responseEntityWritten
-   *          the responseEntityWritten to set
-   */
-  public void setResponseEntityWritten(boolean responseEntityWritten) {
-    this.responseEntityWritten = responseEntityWritten;
-  }
-
-  /**
-   * @return the errorEntity
-   */
-  public byte[] getErrorEntity() {
-    return errorEntity;
-  }
-
-  public String getErrorEntityAsString() throws IOException {
-    if (null != errorEntity && errorEntity.length > 0) {
-      return new String(errorEntity);
-    }
-    return null;
-  }
-
-  /**
-   * @param errorEntity
-   *          the errorEntity to set
-   */
-  public void setErrorEntity(byte[] errorEntity) {
-    this.errorEntity = errorEntity;
-  }
-
-  /**
-   * @return the errorEntityWritten
-   */
-  public boolean isErrorEntityWritten() {
-    return errorEntityWritten;
-  }
-
-  /**
-   * @param errorEntityWritten
-   *          the errorEntityWritten to set
-   */
-  public void setErrorEntityWritten(boolean errorEntityWritten) {
-    this.errorEntityWritten = errorEntityWritten;
+  public void setEntity(byte[] responseEntity) {
+    this.entity = responseEntity;
   }
 
   /**

@@ -252,6 +252,9 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   protected static final String ECHO_CONTEXT = "/echo";
   protected static final String ECHO_TEXT = "text";
 
+  protected static final String INTERNAL_SERER_ERROR_CONTEXT = "/500";
+  protected static final String INTERNAL_SERER_ERROR_RESPONSE = "Internal Server Error";
+
   protected static final String SECURE_CONTEXT = "/secure";
 
   protected static final String USERNAME = "user";
@@ -381,6 +384,29 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
       }
     });
     secureEchoContext.setAuthenticator(getBasicAuthenticator());
+
+    // 500 handler
+    server.createContext(INTERNAL_SERER_ERROR_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(500, INTERNAL_SERER_ERROR_RESPONSE.getBytes().length);
+        exchange.getResponseBody().write(INTERNAL_SERER_ERROR_RESPONSE.getBytes());
+        exchange.getResponseBody().close();
+      }
+    });
+
+    // secure 500 handler
+    final HttpContext secure500Context = server.createContext(SECURE_CONTEXT + INTERNAL_SERER_ERROR_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(500, INTERNAL_SERER_ERROR_RESPONSE.getBytes().length);
+        exchange.getResponseBody().write(INTERNAL_SERER_ERROR_RESPONSE.getBytes());
+        exchange.getResponseBody().close();
+      }
+    });
+    secure500Context.setAuthenticator(getBasicAuthenticator());
   }
 
   protected Map<String, String> getQueryParams(final URI uri) throws UnsupportedEncodingException {

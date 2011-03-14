@@ -374,21 +374,22 @@ public class HttpClient {
         final String entityAsString = getEntityAsString();
         writer.write(entityAsString);
         writer.close();
-        response.setRequestEntityWritten(true);
       }
 
       // read the response entity
-      final InputStream responseEntityInputStream = httpUrlConnection.getInputStream();
-      if (null != responseEntityInputStream && responseEntityInputStream.available() > 0) {
-        response.setResponseEntity(StreamUtils.inputStreamToByteArray(responseEntityInputStream));
-        response.setResponseEntityWritten(true);
+      try {
+        final InputStream responseEntityInputStream = httpUrlConnection.getInputStream();
+        if (null != responseEntityInputStream && responseEntityInputStream.available() > 0) {
+          response.setEntity(StreamUtils.inputStreamToByteArray(responseEntityInputStream));
+        }
+      } catch (IOException e) {
+        // ignore
       }
 
       // read the error entity
       final InputStream errorEntityInputStream = httpUrlConnection.getErrorStream();
       if (null != errorEntityInputStream && errorEntityInputStream.available() > 0) {
-        response.setErrorEntity(StreamUtils.inputStreamToByteArray(errorEntityInputStream));
-        response.setErrorEntityWritten(true);
+        response.setEntity(StreamUtils.inputStreamToByteArray(errorEntityInputStream));
       }
 
       response.setStatus(httpUrlConnection.getResponseCode());
@@ -397,9 +398,9 @@ public class HttpClient {
       response.setContentEncoding(httpUrlConnection.getContentEncoding());
       response.setContentLength(httpUrlConnection.getContentLength());
       response.setContentType(httpUrlConnection.getContentType());
-      response.setDate(new Date(httpUrlConnection.getDate()));
-      response.setExpires(new Date(httpUrlConnection.getExpiration()));
-      response.setLastModified(new Date(httpUrlConnection.getLastModified()));
+      response.setDate(0L == httpUrlConnection.getDate() ? null : new Date(httpUrlConnection.getDate()));
+      response.setExpires(0L == httpUrlConnection.getExpiration() ? null : new Date(httpUrlConnection.getExpiration()));
+      response.setLastModified(0L == httpUrlConnection.getLastModified() ? null : new Date(httpUrlConnection.getLastModified()));
 
       if (null != httpUrlConnection.getHeaderFields() && httpUrlConnection.getHeaderFields().size() > 0) {
         for (final Entry<String, List<String>> entry : httpUrlConnection.getHeaderFields().entrySet()) {
