@@ -224,8 +224,10 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.missinglink.http.exception.HttpCertificateException;
 import org.missinglink.http.exception.HttpInvocationException;
 import org.missinglink.http.exception.InvalidStreamException;
 import org.missinglink.http.exception.InvalidUriException;
@@ -347,7 +349,7 @@ public class HttpClient {
    * 
    * @return
    */
-  public HttpResponse invoke() throws HttpInvocationException {
+  public HttpResponse invoke() throws HttpInvocationException, HttpCertificateException {
     try {
       final HttpResponse response = new HttpResponse(this);
       final String uri = getUri();
@@ -425,6 +427,8 @@ public class HttpClient {
       httpUrlConnection.disconnect();
 
       return response;
+    } catch (SSLHandshakeException e) {
+      throw new HttpCertificateException(e);
     } catch (Throwable t) {
       throw new HttpInvocationException(t);
     }

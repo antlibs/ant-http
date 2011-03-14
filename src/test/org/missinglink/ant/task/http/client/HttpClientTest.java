@@ -213,8 +213,7 @@ import org.junit.Test;
 import org.missinglink.ant.task.http.server.AbstractHttpServerTest;
 import org.missinglink.http.client.HttpClient;
 import org.missinglink.http.client.HttpResponse;
-import org.missinglink.http.exception.HttpInvocationException;
-import org.missinglink.http.exception.InvalidUriException;
+import org.missinglink.http.exception.HttpClientException;
 
 /**
  * @author alex.sherwin
@@ -237,7 +236,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testGetWithEntity() throws InvalidUriException, HttpInvocationException, IOException {
+  public void testGetWithEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + PING_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -247,7 +246,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testGetSecureWithEntityAuthFailure() throws InvalidUriException, HttpInvocationException, IOException {
+  public void testGetSecureWithEntityAuthFailure() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + PING_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -255,7 +254,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testGetSecureWithEntity() throws InvalidUriException, HttpInvocationException, IOException {
+  public void testGetSecureWithEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + PING_CONTEXT).credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -265,7 +264,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test404() throws InvalidUriException, HttpInvocationException, IOException {
+  public void test404() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + "/doesnt/exist").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -273,7 +272,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test500() throws InvalidUriException, HttpInvocationException, IOException {
+  public void test500() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + INTERNAL_SERER_ERROR_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -282,7 +281,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test500Secured() throws InvalidUriException, HttpInvocationException, IOException {
+  public void test500Secured() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + INTERNAL_SERER_ERROR_CONTEXT).credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -291,7 +290,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPostWithResponseEntity() throws InvalidUriException, HttpInvocationException, IOException {
+  public void testPostWithResponseEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + ECHO_CONTEXT).post().entity("Hello World").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -300,7 +299,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPostSecuredWithResponseEntity() throws InvalidUriException, HttpInvocationException, IOException {
+  public void testPostSecuredWithResponseEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).post().entity("Hello World").credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -309,7 +308,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPutWithResponseEntity() throws InvalidUriException, HttpInvocationException, IOException {
+  public void testPutWithResponseEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + ECHO_CONTEXT).put().entity("Hello World").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -318,7 +317,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPutSecuredWithResponseEntity() throws InvalidUriException, HttpInvocationException, IOException {
+  public void testPutSecuredWithResponseEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).put().entity("Hello World").credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
