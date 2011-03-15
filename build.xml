@@ -93,6 +93,7 @@
     <copy filtering="false" flatten="true" todir="${ml-ant-http.dist.jar.dir}">
       <fileset dir="${ml-ant-http.resources.dir}">
         <include name="ant/build-sample.xml"/>
+        <include name="doc/readme.pdf"/>
       </fileset>
     </copy>
   </target>
