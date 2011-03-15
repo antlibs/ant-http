@@ -205,9 +205,12 @@
 package org.missinglink.ant.task.http;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.missinglink.http.client.HttpClient;
 import org.missinglink.http.client.HttpClient.HttpClientBuilder;
@@ -230,6 +233,12 @@ public class HttpClientTask extends Task {
   protected EntityNode entity;
   protected HeadersNode headers;
   protected QueryNode query;
+  protected boolean printRequest;
+  protected boolean printResponse;
+  protected boolean printRequestHeaders = true;
+  protected boolean printResponseHeaders = true;
+  protected int expected = 200;
+  protected boolean failOnUnexpected = true;
 
   // http task parameters
   protected HttpClient httpClient;
@@ -247,11 +256,11 @@ public class HttpClientTask extends Task {
 
     // invoke HttpClient
     HttpResponse response = null;
-    log("HTTP Client Invocation");
-    log("**********************");
+    log("********************");
+    log("HTTP Request");
+    log("********************");
     log("URL:\t\t" + httpClient.getUri());
     log("Method:\t\t" + httpClient.getMethod().name());
-    log("Request Entity:\t" + (null == httpClient.getEntity() ? "no" : "yes"));
     log("Credentials:\t" + (null == httpClient.getUsername() ? "no" : "yes"));
     if (httpClient.getHeaders().size() > 0) {
       log("Headers:\t\tyes");
@@ -269,6 +278,17 @@ public class HttpClientTask extends Task {
     } else {
       log("Query Parameters:\tno");
     }
+    log("Entity:\t\t" + (null == httpClient.getEntity() ? "no" : "yes"));
+    if (null != httpClient.getEntity() && printRequest) {
+      try {
+        log("------ BEGIN ENTITY ------");
+        log(httpClient.getEntityAsString());
+        log("------ END ENTITY ------");
+      } catch (IOException e) {
+        log(e, Project.MSG_ERR);
+        throw new BuildException(e);
+      }
+    }
 
     try {
       response = httpClient.invoke();
@@ -281,8 +301,41 @@ public class HttpClientTask extends Task {
     }
 
     if (null != response) {
-      log("**********************");
-      log("Response status: " + response.getStatus());
+      log("");
+      log("********************");
+      log("HTTP Response");
+      log("********************");
+      log("Status:\t\t" + response.getStatus());
+      if (response.getHeaders().size() > 0) {
+        log("Headers:\t\tyes");
+        for (final Entry<String, List<String>> entry : response.getHeaders().entrySet()) {
+          for (final String value : entry.getValue()) {
+            if (null == entry.getKey()) {
+              log("\t" + value);
+            } else {
+              log("\t" + entry.getKey() + ": " + value);
+            }
+          }
+        }
+      } else {
+        log("Headers:\t\tno");
+      }
+
+      log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"));
+      if (null != response.getEntity() && printResponse) {
+        try {
+          log("------ BEGIN ENTITY ------");
+          log(response.getEntityAsString());
+          log("------ END ENTITY ------");
+        } catch (IOException e) {
+          log(e, Project.MSG_ERR);
+          throw new BuildException(e);
+        }
+      }
+
+      if (response.getStatus() != expected && failOnUnexpected) {
+        throw new BuildException("Expected Status [" + expected + "] but got [" + response.getStatus() + "]");
+      }
     }
   }
 
@@ -370,4 +423,27 @@ public class HttpClientTask extends Task {
     this.method = method;
   }
 
+  public void setPrintrequest(final boolean printRequest) {
+    this.printRequest = printRequest;
+  }
+
+  public void setPrintresponse(final boolean printResponse) {
+    this.printResponse = printResponse;
+  }
+
+  public void setExpected(final int expected) {
+    this.expected = expected;
+  }
+
+  public void setFailonunexpected(final boolean failOnUnexpected) {
+    this.failOnUnexpected = failOnUnexpected;
+  }
+
+  public void setPrintresponseheaders(final boolean printResponseHeaders) {
+    this.printResponseHeaders = printResponseHeaders;
+  }
+
+  public void setPrintrequestheaders(final boolean printRequestHeaders) {
+    this.printRequestHeaders = printRequestHeaders;
+  }
 }
