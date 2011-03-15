@@ -219,7 +219,17 @@ public abstract class StringUtils {
    * 
    * @param in
    * @param defaultString
-   * @return
+   * @return The String
+   * 
+   *         <pre>
+   * in
+   * </pre>
+   * 
+   *         if it is not null or empty, otherwise the value of
+   * 
+   *         <pre>
+   * defaultString
+   * </pre>
    */
   public static String defaultString(final String in, final String defaultString) {
     return null == in || in.length() == 0 ? defaultString : in;

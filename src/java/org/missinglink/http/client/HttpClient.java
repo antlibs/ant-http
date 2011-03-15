@@ -302,7 +302,7 @@ public class HttpClient {
    * Start building a {@link HttpClient} instance.
    * 
    * @param uri
-   * @return
+   * @return Returns the {@link HttpClientBuilder}
    */
   public static HttpClientBuilder uri(final String uri) throws InvalidUriException {
     final HttpClientBuilder builder = new HttpClientBuilder(new HttpClient(), uri);
@@ -312,7 +312,7 @@ public class HttpClient {
   /**
    * Enter building mode.
    * 
-   * @return
+   * @return Returns the {@link HttpClientBuilder}
    */
   public HttpClientBuilder build() {
     return new HttpClientBuilder(this);
@@ -321,7 +321,7 @@ public class HttpClient {
   /**
    * Return the {@link #entity} {@link InputStream} as a String.
    * 
-   * @return
+   * @return Convert the request entity as a String
    * @throws IOException
    */
   public String getEntityAsString() throws IOException {
@@ -337,7 +337,7 @@ public class HttpClient {
   /**
    * Invoke the HTTP service represented by this {@link HttpClient}.
    * 
-   * @return
+   * @return The {@link HttpResponse} for the HTTP invocation
    */
   public HttpResponse invoke() throws HttpInvocationException, HttpCertificateException {
     try {
@@ -427,7 +427,7 @@ public class HttpClient {
   /**
    * Build and return the URI.
    * 
-   * @return
+   * @return The URI fully constructed and encoded
    */
   public String getUri() {
     final StringBuilder sb = new StringBuilder();
@@ -464,28 +464,48 @@ public class HttpClient {
   /**
    * Return the protocol (http/https).
    * 
-   * @return
+   * @return The HTTP protocol
    */
   public String getProtocol() {
     return protocol;
   }
 
+  /**
+   * 
+   * @return The HTTP host
+   */
   public String getHost() {
     return host;
   }
 
+  /**
+   * 
+   * @return The HTTP port
+   */
   public Integer getPort() {
     return port;
   }
 
+  /**
+   * 
+   * @return The HTTP context
+   */
   public String getContext() {
     return context.toString();
   }
 
+  /**
+   * 
+   * @return The HTTP extension (i.e. file extension [e.g. html])
+   */
   public String getExtension() {
     return extension;
   }
 
+  /**
+   * 
+   * @return The query string when the {@link HttpClientBuilder} was created
+   */
   public String getQuery() {
     return query;
   }
@@ -631,7 +651,7 @@ public class HttpClient {
     /**
      * Return the current {@link HttpClient} that this builder represents.
      * 
-     * @return
+     * @return The {@link HttpClient} this {@link HttpClientBuilder} represents.
      */
     public HttpClient toHttpClient() {
       return httpClient;
@@ -642,7 +662,7 @@ public class HttpClient {
      * strings will have no effect (no-op).
      * 
      * @param context
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder context(final String context) {
       if (null != context && context.length() > 0) {
@@ -657,7 +677,7 @@ public class HttpClient {
      * 
      * @param param
      * @param value
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder query(final String param, final String value) {
       if (null != param && param.length() > 0) {
@@ -673,7 +693,7 @@ public class HttpClient {
      * 
      * @param header
      * @param value
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder header(final String header, final String value) {
       if (null != header && header.length() > 0) {
@@ -686,7 +706,7 @@ public class HttpClient {
      * Add an "Accept" header to the {@link HttpClient}.
      * 
      * @param value
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder accept(final String value) {
       httpClient.headers.put(ACCEPT, value);
@@ -697,7 +717,7 @@ public class HttpClient {
      * Add an "Content-Type" header to the {@link HttpClient}.
      * 
      * @param value
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder contentType(final String value) {
       httpClient.headers.put(CONTENT_TYPE, value);
@@ -708,7 +728,7 @@ public class HttpClient {
      * Set the method on the {@link HttpClient}.
      * 
      * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder method(final HttpMethod method) {
       httpClient.method = method;
@@ -716,10 +736,9 @@ public class HttpClient {
     }
 
     /**
-     * Set the method on the {@link HttpClient} to {@link HttpClient#GET}.
+     * Set the method on the {@link HttpClient} to {@link HttpMethod#GET}.
      * 
-     * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder get() {
       httpClient.method = HttpMethod.GET;
@@ -727,10 +746,9 @@ public class HttpClient {
     }
 
     /**
-     * Set the method on the {@link HttpClient} to {@link HttpClient#POST}.
+     * Set the method on the {@link HttpClient} to {@link HttpMethod#POST}.
      * 
-     * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder post() {
       httpClient.method = HttpMethod.POST;
@@ -738,10 +756,9 @@ public class HttpClient {
     }
 
     /**
-     * Set the method on the {@link HttpClient} to {@link HttpClient#PUT}.
+     * Set the method on the {@link HttpClient} to {@link HttpMethod#PUT}.
      * 
-     * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder put() {
       httpClient.method = HttpMethod.PUT;
@@ -749,10 +766,9 @@ public class HttpClient {
     }
 
     /**
-     * Set the method on the {@link HttpClient} to {@link HttpClient#TRACE}.
+     * Set the method on the {@link HttpClient} to {@link HttpMethod#TRACE}.
      * 
-     * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder trace() {
       httpClient.method = HttpMethod.TRACE;
@@ -760,10 +776,9 @@ public class HttpClient {
     }
 
     /**
-     * Set the method on the {@link HttpClient} to {@link HttpClient#OPTIONS}.
+     * Set the method on the {@link HttpClient} to {@link HttpMethod#OPTIONS}.
      * 
-     * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder options() {
       httpClient.method = HttpMethod.OPTIONS;
@@ -771,10 +786,9 @@ public class HttpClient {
     }
 
     /**
-     * Set the method on the {@link HttpClient} to {@link HttpClient#DELETE}.
+     * Set the method on the {@link HttpClient} to {@link HttpMethod#DELETE}.
      * 
-     * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder delete() {
       httpClient.method = HttpMethod.DELETE;
@@ -782,10 +796,9 @@ public class HttpClient {
     }
 
     /**
-     * Set the method on the {@link HttpClient} to {@link HttpClient#HEAD}.
+     * Set the method on the {@link HttpClient} to {@link HttpMethod#HEAD}.
      * 
-     * @param method
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder head() {
       httpClient.method = HttpMethod.HEAD;
@@ -797,7 +810,7 @@ public class HttpClient {
      * 
      * @param username
      * @param password
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder credentials(final String username, final String password) {
       httpClient.username = username;
@@ -809,7 +822,7 @@ public class HttpClient {
      * Set the request entity on the {@link HttpClient}.
      * 
      * @param is
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder entity(final InputStream is) throws InvalidStreamException {
       if (null != is && !is.markSupported()) {
@@ -824,7 +837,7 @@ public class HttpClient {
      * {@link ByteArrayOutputStream}.
      * 
      * @param str
-     * @return
+     * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder entity(final String str) {
       if (null != str) {
@@ -833,6 +846,13 @@ public class HttpClient {
       return this;
     }
 
+    /**
+     * Set the {@link InputStream} to use when creating a {@link KeyStore}
+     * 
+     * @param is
+     * @param password
+     * @return The new {@link HttpClientBuilder}
+     */
     public HttpClientBuilder keyStore(final InputStream is, final String password) {
       httpClient.keyStore = is;
       httpClient.keyStorePassword = password;

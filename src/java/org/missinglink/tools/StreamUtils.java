@@ -224,7 +224,7 @@ public abstract class StreamUtils {
    * Read from an {@link InputStream} and return it as a String.
    * 
    * @param is
-   * @return
+   * @return A String created from reading the {@link InputStream}
    * @throws IOException
    */
   public static String inputStreamToString(final InputStream is) throws IOException {
@@ -251,10 +251,22 @@ public abstract class StreamUtils {
   }
 
   /**
-   * Read from an {@link InputStream} and return it as a {@link byte[]} array.
+   * Read from an {@link InputStream} and return it as a
+   * 
+   * <pre>
+   * byte[]
+   * </pre>
+   * 
+   * array.
    * 
    * @param is
-   * @return
+   * @return A
+   * 
+   *         <pre>
+   * byte[]
+   * </pre>
+   * 
+   *         array created from reading the {@link InputStream}
    * @throws IOException
    */
   public static byte[] inputStreamToByteArray(final InputStream is) throws IOException {
@@ -266,7 +278,8 @@ public abstract class StreamUtils {
    * {@link ByteArrayOutputStream}.
    * 
    * @param is
-   * @return
+   * @return A {@link ByteArrayOutputStream} created from reading the
+   *         {@link InputStream}
    * @throws IOException
    */
   public static ByteArrayOutputStream inputStreamToByteArrayOutputStream(final InputStream is) throws IOException {

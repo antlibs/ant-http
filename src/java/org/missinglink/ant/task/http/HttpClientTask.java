@@ -204,6 +204,8 @@
 
 package org.missinglink.ant.task.http;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -283,7 +285,7 @@ public class HttpClientTask extends Task {
       try {
         log("------ BEGIN ENTITY ------");
         log(httpClient.getEntityAsString());
-        log("------ END ENTITY ------");
+        log("------- END ENTITY -------");
       } catch (IOException e) {
         log(e, Project.MSG_ERR);
         throw new BuildException(e);
@@ -326,7 +328,7 @@ public class HttpClientTask extends Task {
         try {
           log("------ BEGIN ENTITY ------");
           log(response.getEntityAsString());
-          log("------ END ENTITY ------");
+          log("------- END ENTITY -------");
         } catch (IOException e) {
           log(e, Project.MSG_ERR);
           throw new BuildException(e);
@@ -374,7 +376,18 @@ public class HttpClientTask extends Task {
       if (null != entity && entity.isValid()) {
         // prefer file
         if (null != entity.getFile()) {
-          builder = builder.entity(new FileInputStream(entity.getFile()));
+          final FileInputStream is = new FileInputStream(entity.getFile());
+          final ByteArrayOutputStream os = new ByteArrayOutputStream();
+          byte[] buf = new byte[1024];
+          try {
+            for (int num; (num = is.read(buf)) != -1;) {
+              os.write(buf, 0, num);
+            }
+          } catch (IOException e) {
+            throw new BuildException(e);
+          }
+
+          builder = builder.entity(new ByteArrayInputStream(os.toByteArray()));
         } else {
           builder = builder.entity(entity.getText());
         }

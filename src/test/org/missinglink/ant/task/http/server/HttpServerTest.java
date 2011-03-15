@@ -237,6 +237,11 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
+  public void run() throws InterruptedException {
+    Thread.sleep(1000 * 60 * 10);
+  }
+
+  @Test
   public void pingGet() throws Exception {
     final String path = getHttpServerUri() + PING_CONTEXT;
     final URL url = new URL(path);

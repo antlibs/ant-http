@@ -7,12 +7,15 @@
   <property name="ml-ant-http.test.src.dir" location="${ml-ant-http.src.dir}/test"/>
   <property name="ml-ant-http.build.dir" location="build"/>
   <property name="ml-ant-http.build.classes.dir" location="${ml-ant-http.build.dir}/classes"/>
+  <property name="ml-ant-http.build.docs.dir" location="${ml-ant-http.build.dir}/docs"/>
   <property name="ml-ant-http.dist.dir" location="dist"/>
   <property name="ml-ant-http.resources.dir" location="resources"/>
   <property name="ml-ant-http.license.dir" location="${ml-ant-http.resources.dir}/license"/>
   <property name="ml-ant-http.license.file" value="license.txt"/>
   <property name="ml-ant-http.dist.jar.name" value="ml-ant-http"/>
   <property name="ml-ant-http.dist.jar.version" value="1.0"/>
+  <property name="ml-ant-http.dist.jar.dir" location="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
+  <property name="ml-ant-http.dist.doc.zip" location="${ml-ant-http.dist.jar.dir}/${ml-ant-http.dist.jar.name}-api-${ml-ant-http.dist.jar.version}.zip"/>
 
   <fileset id="ml-ant-http.compile.libs" dir="${ml-ant-http.lib.dir}">
     <include name="apache-ant/apache-ant-1.8.2.jar"/>
@@ -31,7 +34,9 @@
   <target name="init">
     <mkdir dir="${ml-ant-http.build.dir}"/>
     <mkdir dir="${ml-ant-http.build.classes.dir}"/>
+    <mkdir dir="${ml-ant-http.build.docs.dir}"/>
     <mkdir dir="${ml-ant-http.dist.dir}"/>
+    <mkdir dir="${ml-ant-http.dist.jar.dir}"/>
   </target>
 
   <target name="compile" depends="init">
@@ -41,27 +46,59 @@
   </target>
 
   <target name="jar" depends="compile">
-    <mkdir dir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
-    <jar destfile="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}.jar" basedir="${ml-ant-http.build.classes.dir}"/>
+    <jar destfile="${ml-ant-http.dist.jar.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}.jar" basedir="${ml-ant-http.build.classes.dir}">
+      <metainf dir="${ml-ant-http.license.dir}">
+        <include name="${ml-ant-http.license.file}"/>
+      </metainf>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+      </manifest>
+    </jar>
   </target>
 
   <target name="jar.src" depends="compile">
-    <mkdir dir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
-    <jar destfile="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}-sources.jar" basedir="${ml-ant-http.java.src.dir}"/>
+    <jar destfile="${ml-ant-http.dist.jar.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}-sources.jar" basedir="${ml-ant-http.java.src.dir}">
+      <metainf dir="${ml-ant-http.license.dir}">
+        <include name="${ml-ant-http.license.file}"/>
+      </metainf>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+      </manifest>
+    </jar>
   </target>
 
-  <target name="copy.dist.files" depends="compile">
-    <mkdir dir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
-    
+  <target name="javadoc" depends="init">
+    <javadoc destdir="${ml-ant-http.build.docs.dir}" author="true" version="true" use="true" windowtitle="missing link ant http task ${ml-ant-http.dist.jar.version}">
+
+      <packageset dir="${ml-ant-http.java.src.dir}" defaultexcludes="yes">
+        <include name="org/missinglink/**"/>
+      </packageset>
+
+      <doctitle><![CDATA[<h1>missing link ant http task ${ml-ant-http.dist.jar.version}</h1>]]></doctitle>
+      <bottom><![CDATA[<i>missing link ant http task ${ml-ant-http.dist.jar.version}</i>]]></bottom>
+      <tag name="todo" scope="all" description="To do:"/>
+      <link href="http://download.oracle.com/javase/6/docs/api/"/>
+    </javadoc>
+
+    <zip destfile="${ml-ant-http.dist.doc.zip}" basedir="${ml-ant-http.build.docs.dir}"/>
+  </target>
+
+  <target name="copy.dist.files" depends="compile">    
     <!-- license -->
-    <copy filtering="false" flatten="false" todir="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}">
+    <copy filtering="false" flatten="false" todir="${ml-ant-http.dist.jar.dir}">
       <fileset dir="${ml-ant-http.license.dir}">
         <include name="${ml-ant-http.license.file}"/>
       </fileset>
     </copy>
-    
+    <copy filtering="false" flatten="true" todir="${ml-ant-http.dist.jar.dir}">
+      <fileset dir="${ml-ant-http.resources.dir}">
+        <include name="ant/build-sample.xml"/>
+      </fileset>
+    </copy>
   </target>
 
-  <target name="dist" depends="compile,jar,jar.src,copy.dist.files"/>
+  <target name="dist" depends="compile,jar,jar.src,copy.dist.files,javadoc">
+    <zip destfile="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}.zip" basedir="${ml-ant-http.dist.jar.dir}"/>
+  </target>
 
 </project>
