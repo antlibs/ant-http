@@ -227,6 +227,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.missinglink.http.encoding.Base64;
 import org.missinglink.http.exception.HttpCertificateException;
 import org.missinglink.http.exception.HttpInvocationException;
 import org.missinglink.http.exception.InvalidStreamException;
@@ -234,8 +235,6 @@ import org.missinglink.http.exception.InvalidUriException;
 import org.missinglink.tools.NumberUtils;
 import org.missinglink.tools.StreamUtils;
 import org.missinglink.tools.StringUtils;
-
-import sun.misc.BASE64Encoder;
 
 /**
  * HTTP client which wraps core Java classes {@link URL},
@@ -370,7 +369,7 @@ public class HttpClient {
       // if username is set, add BASIC authentication header
       if (null != username && username.length() > 0) {
         final String userpass = username + ":" + (null == password ? "" : password);
-        final String basicAuth = "Basic " + new String(new BASE64Encoder().encode(userpass.getBytes()));
+        final String basicAuth = "Basic " + new String(Base64.encodeBytes(userpass.getBytes()));
         httpUrlConnection.setRequestProperty("Authorization", basicAuth);
       }
 

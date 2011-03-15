@@ -235,9 +235,8 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.missinglink.ant.task.http.AbstractTest;
+import org.missinglink.http.encoding.Base64;
 import org.missinglink.tools.StreamUtils;
-
-import sun.misc.BASE64Encoder;
 
 /**
  * 
@@ -461,7 +460,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected void addAuthenticationHeader(final HttpURLConnection con) {
     final String userpass = USERNAME + ":" + PASSWORD;
-    final String basicAuth = "Basic " + new String(new BASE64Encoder().encode(userpass.getBytes()));
+    final String basicAuth = "Basic " + new String(Base64.encodeBytes(userpass.getBytes()));
     con.setRequestProperty("Authorization", basicAuth);
   }
 
