@@ -264,7 +264,7 @@ public class HttpResponse {
    * @param headers
    *          the headers to set
    */
-  public void setHeaders(Map<String, List<String>> headers) {
+  public void setHeaders(final Map<String, List<String>> headers) {
     this.headers = headers;
   }
 
@@ -279,7 +279,7 @@ public class HttpResponse {
    * @param expires
    *          the expires to set
    */
-  public void setExpires(Date expires) {
+  public void setExpires(final Date expires) {
     this.expires = expires;
   }
 
@@ -294,7 +294,7 @@ public class HttpResponse {
    * @param lastModified
    *          the lastModified to set
    */
-  public void setLastModified(Date lastModified) {
+  public void setLastModified(final Date lastModified) {
     this.lastModified = lastModified;
   }
 
@@ -309,7 +309,7 @@ public class HttpResponse {
    * @param httpClient
    *          the httpClient to set
    */
-  public void setHttpClient(HttpClient httpClient) {
+  public void setHttpClient(final HttpClient httpClient) {
     this.httpClient = httpClient;
   }
 
@@ -324,7 +324,7 @@ public class HttpResponse {
    * @param status
    *          the status to set
    */
-  public void setStatus(int status) {
+  public void setStatus(final int status) {
     this.status = status;
   }
 
@@ -346,7 +346,7 @@ public class HttpResponse {
    * @param responseEntity
    *          the responseEntity to set
    */
-  public void setEntity(byte[] responseEntity) {
+  public void setEntity(final byte[] responseEntity) {
     this.entity = responseEntity;
   }
 
@@ -361,7 +361,7 @@ public class HttpResponse {
    * @param message
    *          the message to set
    */
-  public void setMessage(String message) {
+  public void setMessage(final String message) {
     this.message = message;
   }
 
@@ -376,7 +376,7 @@ public class HttpResponse {
    * @param contentEncoding
    *          the contentEncoding to set
    */
-  public void setContentEncoding(String contentEncoding) {
+  public void setContentEncoding(final String contentEncoding) {
     this.contentEncoding = contentEncoding;
   }
 
@@ -391,7 +391,7 @@ public class HttpResponse {
    * @param contentType
    *          the contentType to set
    */
-  public void setContentType(String contentType) {
+  public void setContentType(final String contentType) {
     this.contentType = contentType;
   }
 
@@ -406,7 +406,7 @@ public class HttpResponse {
    * @param contentLength
    *          the contentLength to set
    */
-  public void setContentLength(int contentLength) {
+  public void setContentLength(final int contentLength) {
     this.contentLength = contentLength;
   }
 
@@ -421,7 +421,7 @@ public class HttpResponse {
    * @param date
    *          the date to set
    */
-  public void setDate(Date date) {
+  public void setDate(final Date date) {
     this.date = date;
   }
 

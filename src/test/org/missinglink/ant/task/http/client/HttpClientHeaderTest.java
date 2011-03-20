@@ -254,7 +254,7 @@ public class HttpClientHeaderTest {
     Assert.assertTrue(httpClient.getHeaders().containsKey(HttpClient.ACCEPT));
     Assert.assertEquals("application/xml", httpClient.getHeaders().get(HttpClient.ACCEPT));
   }
-  
+
   @Test
   public void testContentTypeHeader() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").contentType("application/xml").toHttpClient();

@@ -250,7 +250,7 @@ public class HttpClientTask extends Task {
   }
 
   @Override
-  public void execute() throws BuildException {
+  public void execute() {
     super.execute();
 
     // setup HttpClient
@@ -286,7 +286,7 @@ public class HttpClientTask extends Task {
         log("------ BEGIN ENTITY ------");
         log(httpClient.getEntityAsString());
         log("------- END ENTITY -------");
-      } catch (IOException e) {
+      } catch (final IOException e) {
         log(e, Project.MSG_ERR);
         throw new BuildException(e);
       }
@@ -329,7 +329,7 @@ public class HttpClientTask extends Task {
           log("------ BEGIN ENTITY ------");
           log(response.getEntityAsString());
           log("------- END ENTITY -------");
-        } catch (IOException e) {
+        } catch (final IOException e) {
           log(e, Project.MSG_ERR);
           throw new BuildException(e);
         }
@@ -341,7 +341,7 @@ public class HttpClientTask extends Task {
     }
   }
 
-  protected void initHttpClient() throws BuildException {
+  protected void initHttpClient() {
     try {
       HttpClientBuilder builder = HttpClient.uri(url);
 
@@ -378,12 +378,12 @@ public class HttpClientTask extends Task {
         if (null != entity.getFile()) {
           final FileInputStream is = new FileInputStream(entity.getFile());
           final ByteArrayOutputStream os = new ByteArrayOutputStream();
-          byte[] buf = new byte[1024];
+          final byte[] buf = new byte[1024];
           try {
             for (int num; (num = is.read(buf)) != -1;) {
               os.write(buf, 0, num);
             }
-          } catch (IOException e) {
+          } catch (final IOException e) {
             throw new BuildException(e);
           }
 

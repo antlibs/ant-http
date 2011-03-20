@@ -218,8 +218,6 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -464,8 +462,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     con.setRequestProperty("Authorization", basicAuth);
   }
 
-  protected HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String path, final String entity, final boolean auth) throws MalformedURLException,
-      IOException, ProtocolException {
+  protected HttpURLConnection createAndWriteToHttpURLConnection(final String method, final String path, final String entity, final boolean auth) throws IOException {
     final URL url = new URL(path);
 
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();

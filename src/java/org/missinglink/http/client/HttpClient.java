@@ -205,7 +205,6 @@
 package org.missinglink.http.client;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -834,7 +833,7 @@ public class HttpClient {
 
     /**
      * Calls {@link #entity(InputStream)} with str wrapped in a
-     * {@link ByteArrayOutputStream}.
+     * {@link ByteArrayInputStream}.
      * 
      * @param str
      * @return The new {@link HttpClientBuilder}

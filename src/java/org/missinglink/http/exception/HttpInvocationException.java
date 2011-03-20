@@ -223,21 +223,21 @@ public class HttpInvocationException extends HttpClientException {
    * @param message
    * @param cause
    */
-  public HttpInvocationException(String message, Throwable cause) {
+  public HttpInvocationException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
   /**
    * @param message
    */
-  public HttpInvocationException(String message) {
+  public HttpInvocationException(final String message) {
     super(message);
   }
 
   /**
    * @param cause
    */
-  public HttpInvocationException(Throwable cause) {
+  public HttpInvocationException(final Throwable cause) {
     super(cause);
   }
 

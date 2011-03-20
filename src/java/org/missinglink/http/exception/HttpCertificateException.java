@@ -223,21 +223,21 @@ public class HttpCertificateException extends HttpClientException {
    * @param message
    * @param cause
    */
-  public HttpCertificateException(String message, Throwable cause) {
+  public HttpCertificateException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
   /**
    * @param message
    */
-  public HttpCertificateException(String message) {
+  public HttpCertificateException(final String message) {
     super(message);
   }
 
   /**
    * @param cause
    */
-  public HttpCertificateException(Throwable cause) {
+  public HttpCertificateException(final Throwable cause) {
     super(cause);
   }
 

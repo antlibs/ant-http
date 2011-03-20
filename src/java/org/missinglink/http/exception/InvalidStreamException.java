@@ -223,21 +223,21 @@ public class InvalidStreamException extends HttpClientException {
    * @param message
    * @param cause
    */
-  public InvalidStreamException(String message, Throwable cause) {
+  public InvalidStreamException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
   /**
    * @param message
    */
-  public InvalidStreamException(String message) {
+  public InvalidStreamException(final String message) {
     super(message);
   }
 
   /**
    * @param cause
    */
-  public InvalidStreamException(Throwable cause) {
+  public InvalidStreamException(final Throwable cause) {
     super(cause);
   }
 
