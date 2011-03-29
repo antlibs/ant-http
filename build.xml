@@ -13,7 +13,7 @@
   <property name="ml-ant-http.license.dir" location="${ml-ant-http.resources.dir}/license"/>
   <property name="ml-ant-http.license.file" value="license.txt"/>
   <property name="ml-ant-http.dist.jar.name" value="ml-ant-http"/>
-  <property name="ml-ant-http.dist.jar.version" value="1.0"/>
+  <property name="ml-ant-http.dist.jar.version" value="1.1"/>
   <property name="ml-ant-http.dist.jar.dir" location="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
   <property name="ml-ant-http.dist.doc.zip" location="${ml-ant-http.dist.jar.dir}/${ml-ant-http.dist.jar.name}-api-${ml-ant-http.dist.jar.version}.zip"/>
 
