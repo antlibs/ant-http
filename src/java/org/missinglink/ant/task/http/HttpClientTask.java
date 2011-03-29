@@ -206,7 +206,9 @@ package org.missinglink.ant.task.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
@@ -229,6 +231,7 @@ public class HttpClientTask extends Task {
 
   // ant parameters
   protected String url;
+  protected File outFile;
   protected HttpMethod method;
   protected CredentialsNode credentials;
   protected KeyStoreNode keystore;
@@ -323,15 +326,26 @@ public class HttpClientTask extends Task {
         log("Headers:\t\tno");
       }
 
-      log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"));
-      if (null != response.getEntity() && printResponse) {
+      if (null == outFile) {
+        log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"));
+        if (null != response.getEntity() && printResponse) {
+          try {
+            log("------ BEGIN ENTITY ------");
+            log(response.getEntityAsString());
+            log("------- END ENTITY -------");
+          } catch (final IOException e) {
+            log(e, Project.MSG_ERR);
+            throw new BuildException(e);
+          }
+        }
+      } else if (null != response.getEntity()) {
+        log("Entity written to file:\t" + outFile.getAbsolutePath());
         try {
-          log("------ BEGIN ENTITY ------");
-          log(response.getEntityAsString());
-          log("------- END ENTITY -------");
-        } catch (final IOException e) {
-          log(e, Project.MSG_ERR);
-          throw new BuildException(e);
+          final FileOutputStream fos = new FileOutputStream(outFile);
+          fos.write(response.getEntity());
+          fos.close();
+        } catch (final Throwable t) {
+          throw new BuildException("Failed to write response entity to file: " + outFile.getAbsolutePath(), t);
         }
       }
 
@@ -426,6 +440,14 @@ public class HttpClientTask extends Task {
 
   public void setUrl(final String url) {
     this.url = url;
+  }
+
+  public File getOutfile() {
+    return outFile;
+  }
+
+  public void setOutfile(final File outFile) {
+    this.outFile = outFile;
   }
 
   public HttpMethod getMethod() {

@@ -214,6 +214,7 @@ import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -256,6 +257,12 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected static final String USERNAME = "user";
   protected static final String PASSWORD = "password";
+
+  protected static final String HW_ZIP_CONTEXT = "/hwzip";
+  protected static final String HW_PNG_CONTEXT = "/hwpng";
+
+  protected static final String HW_ZIP = "hw.zip";
+  protected static final String HW_PNG = "hw.png";
 
   protected int httpServerPort = 10080;
   protected int httpsServerPort = 10443;
@@ -404,6 +411,60 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
       }
     });
     secure500Context.setAuthenticator(getBasicAuthenticator());
+
+    // hw zip handler
+    server.createContext(HW_ZIP_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        final InputStream is = getClass().getResourceAsStream(HW_ZIP);
+        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
+        exchange.getResponseHeaders().set("Content-Type", "application/zip");
+        exchange.sendResponseHeaders(200, bytes.length);
+        exchange.getResponseBody().write(bytes);
+        exchange.getResponseBody().close();
+      }
+    });
+
+    // secure hw zip handler
+    final HttpContext hwZipContext = server.createContext(SECURE_CONTEXT + HW_ZIP_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        final InputStream is = getClass().getResourceAsStream(HW_ZIP);
+        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
+        exchange.getResponseHeaders().set("Content-Type", "application/zip");
+        exchange.sendResponseHeaders(200, bytes.length);
+        exchange.getResponseBody().write(bytes);
+        exchange.getResponseBody().close();
+      }
+    });
+    hwZipContext.setAuthenticator(getBasicAuthenticator());
+
+    // hw png handler
+    server.createContext(HW_PNG_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        final InputStream is = getClass().getResourceAsStream(HW_PNG);
+        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
+        exchange.getResponseHeaders().set("Content-Type", "image/png");
+        exchange.sendResponseHeaders(200, bytes.length);
+        exchange.getResponseBody().write(bytes);
+        exchange.getResponseBody().close();
+      }
+    });
+
+    // secure hw png handler
+    final HttpContext hwPngContext = server.createContext(SECURE_CONTEXT + HW_PNG_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        final InputStream is = getClass().getResourceAsStream(HW_PNG);
+        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
+        exchange.getResponseHeaders().set("Content-Type", "image/png");
+        exchange.sendResponseHeaders(200, bytes.length);
+        exchange.getResponseBody().write(bytes);
+        exchange.getResponseBody().close();
+      }
+    });
+    hwPngContext.setAuthenticator(getBasicAuthenticator());
   }
 
   protected Map<String, String> getQueryParams(final URI uri) throws UnsupportedEncodingException {

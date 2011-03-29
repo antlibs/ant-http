@@ -367,4 +367,41 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final String response = StreamUtils.inputStreamToString(con.getInputStream());
     Assert.assertEquals(text, response);
   }
+
+  @Test
+  public void helloWorldZipGet() throws Exception {
+    final String path = getHttpsServerUri() + HW_ZIP_CONTEXT;
+    final URL url = new URL(path);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    final byte[] response = StreamUtils.inputStreamToByteArray(conn.getInputStream());
+    final byte[] hwZip = StreamUtils.inputStreamToByteArray(getClass().getResourceAsStream(HW_ZIP));
+    Assert.assertArrayEquals(hwZip, response);
+  }
+
+  @Test
+  public void helloWorldZipGetAuthFailure() throws Exception {
+    final String path = getHttpsServerUri() + SECURE_CONTEXT + HW_ZIP_CONTEXT;
+    final URL url = new URL(path);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    try {
+      StreamUtils.inputStreamToByteArray(conn.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
+    }
+  }
+
+  @Test
+  public void helloWorldZipSecureGet() throws Exception {
+    final String path = getHttpsServerUri() + SECURE_CONTEXT + HW_ZIP_CONTEXT;
+    final URL url = new URL(path);
+    final HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+    attachSSLSocketFactory(conn);
+    addAuthenticationHeader(conn);
+    final byte[] response = StreamUtils.inputStreamToByteArray(conn.getInputStream());
+    final byte[] hwZip = StreamUtils.inputStreamToByteArray(getClass().getResourceAsStream(HW_ZIP));
+    Assert.assertArrayEquals(hwZip, response);
+  }
 }

@@ -266,7 +266,6 @@ public class HttpServerTest extends AbstractHttpServerTest {
     addAuthenticationHeader(conn);
     final String response = StreamUtils.inputStreamToString(conn.getInputStream());
     Assert.assertEquals(PING_RESPONSE, response);
-
   }
 
   @Test
@@ -353,10 +352,36 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoPutSecure() throws IOException, InterruptedException {
-    final String text = "Hello World";
-    final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
-    final String response = StreamUtils.inputStreamToString(con.getInputStream());
-    Assert.assertEquals(text, response);
+  public void helloWorldZipGet() throws Exception {
+    final String path = getHttpServerUri() + HW_ZIP_CONTEXT;
+    final URL url = new URL(path);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    final byte[] response = StreamUtils.inputStreamToByteArray(conn.getInputStream());
+    final byte[] hwZip = StreamUtils.inputStreamToByteArray(getClass().getResourceAsStream(HW_ZIP));
+    Assert.assertArrayEquals(hwZip, response);
+  }
+
+  @Test
+  public void helloWorldZipGetAuthFailure() throws Exception {
+    final String path = getHttpServerUri() + SECURE_CONTEXT + HW_ZIP_CONTEXT;
+    final URL url = new URL(path);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    try {
+      StreamUtils.inputStreamToByteArray(conn.getInputStream());
+      Assert.assertTrue("Authentication should have failed", false);
+    } catch (final IOException e) {
+      Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
+    }
+  }
+
+  @Test
+  public void helloWorldZipSecureGet() throws Exception {
+    final String path = getHttpServerUri() + SECURE_CONTEXT + HW_ZIP_CONTEXT;
+    final URL url = new URL(path);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    addAuthenticationHeader(conn);
+    final byte[] response = StreamUtils.inputStreamToByteArray(conn.getInputStream());
+    final byte[] hwZip = StreamUtils.inputStreamToByteArray(getClass().getResourceAsStream(HW_ZIP));
+    Assert.assertArrayEquals(hwZip, response);
   }
 }
