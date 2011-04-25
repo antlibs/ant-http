@@ -372,6 +372,13 @@ public class HttpClient {
         httpUrlConnection.setRequestProperty("Authorization", basicAuth);
       }
 
+      // set headers
+      if (null != headers && headers.size() > 0) {
+        for (final Entry<String, String> header : headers.entrySet()) {
+          httpUrlConnection.setRequestProperty(header.getKey(), header.getValue());
+        }
+      }
+
       // if an entity is set, write it to the connection
       if (null != entity) {
         httpUrlConnection.setDoOutput(true);
