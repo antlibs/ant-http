@@ -267,7 +267,7 @@ public class HttpClientTask extends Task {
     final String uri = httpClient.getUri();
     log("URL:\t\t" + uri);
     log("Method:\t\t" + httpClient.getMethod().name());
-    if (credentials.isValid()) {
+    if (null != credentials && credentials.isValid()) {
       log("Credentials:\t" + (credentials.isShow() ? credentials.getUsername() + " / " + credentials.getPassword() : "[hidden]"));
     }
     if (httpClient.getHeaders().size() > 0) {
