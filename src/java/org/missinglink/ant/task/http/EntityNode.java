@@ -214,6 +214,7 @@ public class EntityNode {
 
   protected String text;
   protected File file;
+  protected boolean binary = false;
 
   public EntityNode() {
     super();
@@ -233,6 +234,14 @@ public class EntityNode {
 
   public String getText() {
     return text;
+  }
+
+  public void setBinary(final boolean binary) {
+    this.binary = binary;
+  }
+
+  public boolean getBinary() {
+    return binary;
   }
 
   public boolean isValid() {

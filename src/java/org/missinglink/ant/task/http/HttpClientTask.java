@@ -401,9 +401,9 @@ public class HttpClientTask extends Task {
             throw new BuildException(e);
           }
 
-          builder = builder.entity(new ByteArrayInputStream(os.toByteArray()));
+          builder = builder.entity(new ByteArrayInputStream(os.toByteArray()), entity.getBinary());
         } else {
-          builder = builder.entity(entity.getText());
+          builder = builder.entity(entity.getText(), entity.getBinary());
         }
       }
 

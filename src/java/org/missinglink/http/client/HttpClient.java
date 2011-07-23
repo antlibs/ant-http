@@ -265,6 +265,7 @@ public class HttpClient {
   protected String username;
   protected String password;
   protected InputStream entity;
+  protected boolean binaryEntity = false;
   protected InputStream keyStore;
   protected String keyStorePassword;
 
@@ -310,6 +311,22 @@ public class HttpClient {
     final String tmp = StreamUtils.inputStreamToString(entity);
     entity.reset();
     return tmp;
+  }
+
+  /**
+   * Return the {@link #entity} {@link InputStream} as byte array.
+   * 
+   * @return Convert the request entity as a byte array
+   * @throws IOException
+   */
+  public byte[] getEntityAsByteArray() throws IOException {
+    if (null == entity || entity.available() == 0) {
+      return null;
+    }
+    entity.mark(entity.available());
+    final byte[] result = StreamUtils.inputStreamToByteArray(entity);
+    entity.reset();
+    return result;
   }
 
   /**
@@ -360,11 +377,19 @@ public class HttpClient {
 
       // if an entity is set, write it to the connection
       if (null != entity) {
+
         httpUrlConnection.setDoOutput(true);
-        final OutputStreamWriter writer = new OutputStreamWriter(httpUrlConnection.getOutputStream());
-        final String entityAsString = getEntityAsString();
-        writer.write(entityAsString);
-        writer.close();
+
+        // if entity is binary then put raw data into output stream
+        if (binaryEntity) {
+          httpUrlConnection.getOutputStream().write(getEntityAsByteArray());
+          httpUrlConnection.getOutputStream().close();
+        } else {
+          final OutputStreamWriter writer = new OutputStreamWriter(httpUrlConnection.getOutputStream());
+          final String entityAsString = getEntityAsString();
+          writer.write(entityAsString);
+          writer.close();
+        }
       }
 
       // read the response entity
@@ -765,14 +790,30 @@ public class HttpClient {
      * Set the request entity on the {@link HttpClient}.
      * 
      * @param is
+     * @param binary
+     *          tell whether or not the entity has to be considered as binary
+     *          stream
      * @return The new {@link HttpClientBuilder}
      */
-    public HttpClientBuilder entity(final InputStream is) throws InvalidStreamException {
+    public HttpClientBuilder entity(final InputStream is, final boolean binary) throws InvalidStreamException {
       if (null != is && !is.markSupported()) {
         throw new InvalidStreamException("InputStream of type [" + is.getClass().getName() + "] does not support marking");
       }
       httpClient.entity = is;
+      httpClient.binaryEntity = binary;
       return this;
+    }
+
+    /**
+     * Set the request entity on the {@link HttpClient}. This method is a
+     * wrapper to {@link #entity(InputStream, boolean)} with binary set to false
+     * 
+     * @param is
+     * @return The new {@link HttpClientBuilder}
+     * @throws InvalidStreamException
+     */
+    public HttpClientBuilder entity(final InputStream is) throws InvalidStreamException {
+      return entity(is, false);
     }
 
     /**
@@ -780,13 +821,27 @@ public class HttpClient {
      * {@link ByteArrayInputStream}.
      * 
      * @param str
+     * @param binary
+     *          tell whether or not the entity has to be considered as binary
+     *          stream
+     * @return The new {@link HttpClientBuilder}
+     */
+    public HttpClientBuilder entity(final String str, final boolean binary) {
+      if (null != str) {
+        httpClient.entity = new ByteArrayInputStream(str.getBytes());
+        httpClient.binaryEntity = binary;
+      }
+      return this;
+    }
+
+    /**
+     * Calls {@link #entity(String, boolean)} with binary set to false
+     * 
+     * @param str
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder entity(final String str) {
-      if (null != str) {
-        httpClient.entity = new ByteArrayInputStream(str.getBytes());
-      }
-      return this;
+      return entity(str, false);
     }
 
     /**
