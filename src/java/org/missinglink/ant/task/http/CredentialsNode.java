@@ -212,6 +212,7 @@ public class CredentialsNode {
 
   protected String username;
   protected String password;
+  protected boolean show = false;
 
   public CredentialsNode() {
     super();
@@ -231,6 +232,14 @@ public class CredentialsNode {
 
   public void setPassword(final String password) {
     this.password = password;
+  }
+
+  public boolean isShow() {
+    return show;
+  }
+
+  public void setShow(final boolean show) {
+    this.show = show;
   }
 
   public boolean isValid() {
