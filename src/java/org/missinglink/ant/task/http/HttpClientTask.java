@@ -264,7 +264,8 @@ public class HttpClientTask extends Task {
     log("********************");
     log("HTTP Request");
     log("********************");
-    log("URL:\t\t" + httpClient.getUri());
+    final String uri = httpClient.getUri();
+    log("URL:\t\t" + uri);
     log("Method:\t\t" + httpClient.getMethod().name());
     log("Credentials:\t" + (null == httpClient.getUsername() ? "no" : "yes"));
     if (httpClient.getHeaders().size() > 0) {
@@ -350,7 +351,7 @@ public class HttpClientTask extends Task {
       }
 
       if (response.getStatus() != expected && failOnUnexpected) {
-        throw new BuildException("Expected Status [" + expected + "] but got [" + response.getStatus() + "]");
+        throw new BuildException("Expected Status [" + expected + "] but got [" + response.getStatus() + "] for URI [" + uri + "]");
       }
     }
   }
