@@ -210,6 +210,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyStore;
@@ -218,8 +219,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -231,9 +230,7 @@ import org.missinglink.http.exception.HttpCertificateException;
 import org.missinglink.http.exception.HttpInvocationException;
 import org.missinglink.http.exception.InvalidStreamException;
 import org.missinglink.http.exception.InvalidUriException;
-import org.missinglink.tools.NumberUtils;
 import org.missinglink.tools.StreamUtils;
-import org.missinglink.tools.StringUtils;
 
 /**
  * HTTP client which wraps core Java classes {@link URL},
@@ -250,21 +247,6 @@ import org.missinglink.tools.StringUtils;
  */
 public class HttpClient {
 
-  /**
-   * Regex to match URLs, groups:
-   * 
-   * <ul>
-   * <li>1: protocol (http/https)</li>
-   * <li>2: host (ip/dns)</li>
-   * <li>3: port (may be null)</li>
-   * <li>4: context</li>
-   * <li>5: extension</li>
-   * <li>6: query</li>
-   * </ul>
-   * 
-   */
-  public static final Pattern URL_REGEX = Pattern.compile("([Hh][Tt][Tt][Pp][Ss]?)://([^/:]+):?([0-9]+)?(/[^\\?.]*)?\\.?([^\\?.]*)\\??(.*)?");
-
   protected static final String UTF_8 = "UTF-8";
 
   // HTTP protocols
@@ -278,9 +260,7 @@ public class HttpClient {
   protected String protocol;
   protected String host;
   protected Integer port;
-  protected StringBuilder context = new StringBuilder();
-  protected String extension;
-  protected String query;
+  protected String path;
   protected HttpMethod method = HttpMethod.GET;
   protected String username;
   protected String password;
@@ -304,8 +284,7 @@ public class HttpClient {
    * @return Returns the {@link HttpClientBuilder}
    */
   public static HttpClientBuilder uri(final String uri) throws InvalidUriException {
-    final HttpClientBuilder builder = new HttpClientBuilder(new HttpClient(), uri);
-    return builder;
+    return new HttpClientBuilder(new HttpClient(), uri);
   }
 
   /**
@@ -441,13 +420,10 @@ public class HttpClient {
     if (null != port) {
       sb.append(":").append(port);
     }
-    if (null != context && context.length() > 0) {
-      sb.append(context);
+    if (null != path && path.length() > 0) {
+      sb.append(path);
     } else {
       sb.append("/");
-    }
-    if (null != extension) {
-      sb.append(".").append(extension);
     }
     if (queryEncoded.size() > 0) {
       sb.append("?");
@@ -468,7 +444,7 @@ public class HttpClient {
   }
 
   /**
-   * Return the protocol (http/https).
+   * getExtension Return the protocol (http/https).
    * 
    * @return The HTTP protocol
    */
@@ -490,30 +466,6 @@ public class HttpClient {
    */
   public Integer getPort() {
     return port;
-  }
-
-  /**
-   * 
-   * @return The HTTP context
-   */
-  public String getContext() {
-    return context.toString();
-  }
-
-  /**
-   * 
-   * @return The HTTP extension (i.e. file extension [e.g. html])
-   */
-  public String getExtension() {
-    return extension;
-  }
-
-  /**
-   * 
-   * @return The query string when the {@link HttpClientBuilder} was created
-   */
-  public String getQuery() {
-    return query;
   }
 
   /**
@@ -608,20 +560,19 @@ public class HttpClient {
      */
     protected void parseUri(final String uri) throws InvalidUriException {
       try {
-        final Matcher m = URL_REGEX.matcher(uri);
+        final int queryIndex = uri.lastIndexOf("?");
+        final boolean uriHasQuery = queryIndex != -1;
+        final String query = uriHasQuery ? uri.substring(queryIndex + 1) : null;
+        final URI safeUri = new URI(uriHasQuery ? uri.substring(0, queryIndex) : uri);
 
-        if (!m.matches()) {
-          throw new InvalidUriException("URI [" + uri + "] did not match regex [" + URL_REGEX.toString() + "]");
+        httpClient.protocol = safeUri.getScheme();
+        httpClient.host = safeUri.getHost();
+        httpClient.port = safeUri.getPort() != -1 ? safeUri.getPort() : null;
+        httpClient.path = safeUri.getPath();
+        parseQuery(query);
+        if (!safeUri.getScheme().toLowerCase().equals("http") && !safeUri.getScheme().toLowerCase().equals("https")) {
+          throw new InvalidUriException(uri);
         }
-
-        httpClient.protocol = m.group(1);
-        httpClient.host = m.group(2);
-        httpClient.port = NumberUtils.defaultInteger(m.group(3), null);
-        httpClient.context.append(StringUtils.defaultString(m.group(4), ""));
-        httpClient.extension = StringUtils.defaultString(m.group(5), null);
-        httpClient.query = StringUtils.defaultString(m.group(6), null);
-        parseQuery(httpClient.query);
-
       } catch (final Throwable t) {
         throw new InvalidUriException(t);
       }
@@ -661,20 +612,6 @@ public class HttpClient {
      */
     public HttpClient toHttpClient() {
       return httpClient;
-    }
-
-    /**
-     * Append to the {@link HttpClient} context. Null safe, entries and empty
-     * strings will have no effect (no-op).
-     * 
-     * @param context
-     * @return The new {@link HttpClientBuilder}
-     */
-    public HttpClientBuilder context(final String context) {
-      if (null != context && context.length() > 0) {
-        httpClient.context.append(context);
-      }
-      return this;
     }
 
     /**

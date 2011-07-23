@@ -232,6 +232,7 @@ public class HttpClientUriTest {
     HttpClient.uri("http://host:80/context/file.html");
     HttpClient.uri("http://host:80/context/file.html?query=value");
     HttpClient.uri("http://host:80/context/file.html?query=value");
+    HttpClient.uri("http://host:80/context.with/periods./here/file-1.0.02.html?query=value");
   }
 
   @Test
@@ -247,47 +248,12 @@ public class HttpClientUriTest {
     HttpClient.uri("https://host:443/context/file.html");
     HttpClient.uri("https://host:443/context/file.html?query=value");
     HttpClient.uri("https://host:443/context/file.html?query=value");
+    HttpClient.uri("https://host:443/context.with/periods./here/file-1.0.02.html?query=value");
   }
 
   @Test(expected = InvalidUriException.class)
-  public void testInvalidProtocolUri() throws InvalidUriException {
+  public void testInvalidProtocolUri() throws Exception {
     HttpClient.uri("htt://host");
-  }
-
-  @Test
-  public void testContext() throws InvalidUriException {
-    final HttpClient client = HttpClient.uri("http://host").toHttpClient();
-    Assert.assertEquals("", client.getContext());
-  }
-
-  @Test
-  public void testContextAppendNull() throws InvalidUriException {
-    final HttpClient client = HttpClient.uri("http://host").context(null).toHttpClient();
-    Assert.assertEquals("", client.getContext());
-  }
-
-  @Test
-  public void testContextAppendEmpty() throws InvalidUriException {
-    final HttpClient client = HttpClient.uri("http://host").context("").toHttpClient();
-    Assert.assertEquals("", client.getContext());
-  }
-
-  @Test
-  public void testContextAppendNoLeadingSlash() throws InvalidUriException {
-    final HttpClient client = HttpClient.uri("http://host").context("a").toHttpClient();
-    Assert.assertEquals("a", client.getContext());
-  }
-
-  @Test
-  public void testContextAppendLeadingSlash() throws InvalidUriException {
-    final HttpClient client = HttpClient.uri("http://host").context("/b").toHttpClient();
-    Assert.assertEquals("/b", client.getContext());
-  }
-
-  @Test
-  public void testContextAppendMultiple() throws InvalidUriException {
-    final HttpClient client = HttpClient.uri("http://host").context("/a").context("/b").toHttpClient();
-    Assert.assertEquals("/a/b", client.getContext());
   }
 
   @Test
