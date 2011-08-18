@@ -234,6 +234,7 @@ public class HttpClientTask extends Task {
   // ant parameters
   protected String url;
   protected String statusProperty;
+  protected String entityProperty;
   protected File outFile;
   protected HttpMethod method;
   protected CredentialsNode credentials;
@@ -355,11 +356,21 @@ public class HttpClientTask extends Task {
         } else {
           log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"), Project.MSG_VERBOSE);
         }
-        if (responseHasEntity && printResponse) {
+        if (responseHasEntity) {
           try {
-            log("------ BEGIN ENTITY ------", Project.MSG_INFO);
-            log(response.getEntityAsString(), Project.MSG_INFO);
-            log("------- END ENTITY -------", Project.MSG_INFO);
+
+            final String respEntity = response.getEntityAsString();
+
+            // Issue 21 - Write entity to a property
+            if (null != getEntityProperty() && getEntityProperty().length() > 0) {
+              getProject().setProperty(getEntityProperty(), respEntity);
+            }
+
+            if (printResponse) {
+              log("------ BEGIN ENTITY ------", Project.MSG_INFO);
+              log(respEntity, Project.MSG_INFO);
+              log("------- END ENTITY -------", Project.MSG_INFO);
+            }
           } catch (final IOException e) {
             log(e, Project.MSG_ERR);
             throw new BuildException(e);
@@ -546,5 +557,13 @@ public class HttpClientTask extends Task {
 
   public void setUpdate(final boolean update) {
     this.update = update;
+  }
+
+  public String getEntityProperty() {
+    return entityProperty;
+  }
+
+  public void setEntityProperty(final String entityProperty) {
+    this.entityProperty = entityProperty;
   }
 }
