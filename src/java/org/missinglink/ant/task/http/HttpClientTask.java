@@ -231,6 +231,7 @@ public class HttpClientTask extends Task {
 
   // ant parameters
   protected String url;
+  protected String statusProperty;
   protected File outFile;
   protected HttpMethod method;
   protected CredentialsNode credentials;
@@ -309,6 +310,12 @@ public class HttpClientTask extends Task {
     }
 
     if (null != response) {
+
+      // Issue 21 - Write status to a property
+      if (null != getStatusProperty() && getStatusProperty().length() > 0) {
+        getProject().setProperty(getStatusProperty(), Integer.toString(response.getStatus()));
+      }
+
       log("");
       log("********************");
       log("HTTP Response");
@@ -487,5 +494,13 @@ public class HttpClientTask extends Task {
 
   public void setPrintrequestheaders(final boolean printRequestHeaders) {
     this.printRequestHeaders = printRequestHeaders;
+  }
+
+  public String getStatusProperty() {
+    return statusProperty;
+  }
+
+  public void setStatusProperty(final String statusProperty) {
+    this.statusProperty = statusProperty;
   }
 }
