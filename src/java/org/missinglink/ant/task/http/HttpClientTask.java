@@ -204,12 +204,14 @@
 
 package org.missinglink.ant.task.http;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -245,6 +247,7 @@ public class HttpClientTask extends Task {
   protected boolean printResponseHeaders = true;
   protected int expected = 200;
   protected boolean failOnUnexpected = true;
+  protected boolean update = true;
 
   // http task parameters
   protected HttpClient httpClient;
@@ -259,6 +262,11 @@ public class HttpClientTask extends Task {
 
     // setup HttpClient
     initHttpClient();
+
+    if (!outputIsAvailable()) {
+      log("Output Entity file " + safeOutFilename() + " already exists, update is set to " + update + ", skipping HTTP request", Project.MSG_INFO);
+      return;
+    }
 
     // invoke HttpClient
     HttpResponse response = null;
@@ -340,13 +348,14 @@ public class HttpClientTask extends Task {
         log("Headers:\t\tno");
       }
 
+      final boolean responseHasEntity = null != response.getEntity();
       if (null == outFile) {
         if (printResponse) {
           log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"), Project.MSG_INFO);
         } else {
           log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"), Project.MSG_VERBOSE);
         }
-        if (null != response.getEntity() && printResponse) {
+        if (responseHasEntity && printResponse) {
           try {
             log("------ BEGIN ENTITY ------", Project.MSG_INFO);
             log(response.getEntityAsString(), Project.MSG_INFO);
@@ -356,10 +365,10 @@ public class HttpClientTask extends Task {
             throw new BuildException(e);
           }
         }
-      } else if (null != response.getEntity()) {
+      } else if (responseHasEntity) {
         log("Entity written to file:\t" + outFile.getAbsolutePath(), Project.MSG_VERBOSE);
         try {
-          final FileOutputStream fos = new FileOutputStream(outFile);
+          final OutputStream fos = new BufferedOutputStream(new FileOutputStream(outFile));
           fos.write(response.getEntity());
           fos.close();
         } catch (final Throwable t) {
@@ -371,6 +380,17 @@ public class HttpClientTask extends Task {
         throw new BuildException("Expected Status [" + expected + "] but got [" + response.getStatus() + "] for URI [" + uri + "]");
       }
     }
+  }
+
+  protected boolean outputIsAvailable() {
+    return outFile == null || !outFile.exists() || update;
+  }
+
+  protected String safeOutFilename() {
+    if (null != outFile) {
+      return outFile.getAbsolutePath();
+    }
+    return "";
   }
 
   protected void initHttpClient() {
@@ -510,5 +530,9 @@ public class HttpClientTask extends Task {
 
   public void setStatusProperty(final String statusProperty) {
     this.statusProperty = statusProperty;
+  }
+
+  public void setUpdate(final boolean update) {
+    this.update = update;
   }
 }
