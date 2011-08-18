@@ -366,11 +366,13 @@ public class HttpClientTask extends Task {
           }
         }
       } else if (responseHasEntity) {
-        log("Entity written to file:\t" + outFile.getAbsolutePath(), Project.MSG_VERBOSE);
         try {
+          mkdirs(outFile);
           final OutputStream fos = new BufferedOutputStream(new FileOutputStream(outFile));
           fos.write(response.getEntity());
+          fos.flush();
           fos.close();
+          log("Entity written to file:\t" + outFile.getAbsolutePath(), Project.MSG_INFO);
         } catch (final Throwable t) {
           throw new BuildException("Failed to write response entity to file: " + outFile.getAbsolutePath(), t);
         }
@@ -391,6 +393,16 @@ public class HttpClientTask extends Task {
       return outFile.getAbsolutePath();
     }
     return "";
+  }
+
+  protected static void mkdirs(final File file) {
+    final File dir = file.getParentFile();
+    if (!dir.exists()) {
+      final boolean mkdirs = dir.mkdirs();
+      if (!mkdirs) {
+        throw new BuildException("Could not make directories for " + dir.getAbsolutePath());
+      }
+    }
   }
 
   protected void initHttpClient() {
