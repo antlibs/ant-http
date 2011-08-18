@@ -214,6 +214,7 @@ public class EntityNode {
 
   protected String text;
   protected File file;
+  protected String value;
   protected boolean binary = false;
 
   public EntityNode() {
@@ -226,6 +227,14 @@ public class EntityNode {
 
   public void setFile(final File file) {
     this.file = file;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(final String value) {
+    this.value = value;
   }
 
   public void addText(final String text) {

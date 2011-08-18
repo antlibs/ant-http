@@ -391,8 +391,8 @@ public class HttpClientTask extends Task {
 
       // set request entity
       if (null != entity && entity.isValid()) {
-        // prefer file
         if (null != entity.getFile()) {
+          // 1. prefer file
           final FileInputStream is = new FileInputStream(entity.getFile());
           final ByteArrayOutputStream os = new ByteArrayOutputStream();
           final byte[] buf = new byte[1024];
@@ -405,7 +405,11 @@ public class HttpClientTask extends Task {
           }
 
           builder = builder.entity(new ByteArrayInputStream(os.toByteArray()), entity.getBinary());
+        } else if (null != entity.getValue() && entity.getValue().length() > 0) {
+          // 2. prefer value attribute
+          builder = builder.entity(entity.getValue());
         } else {
+          // 3. fall back to text content
           builder = builder.entity(entity.getText(), entity.getBinary());
         }
       }
