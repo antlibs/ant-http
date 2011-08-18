@@ -262,37 +262,41 @@ public class HttpClientTask extends Task {
 
     // invoke HttpClient
     HttpResponse response = null;
-    log("********************");
-    log("HTTP Request");
-    log("********************");
+    log("********************", Project.MSG_VERBOSE);
+    log("HTTP Request", Project.MSG_INFO);
+    log("********************", Project.MSG_INFO);
     final String uri = httpClient.getUri();
-    log("URL:\t\t" + uri);
-    log("Method:\t\t" + httpClient.getMethod().name());
+    log("URL:\t\t" + uri, Project.MSG_INFO);
+    log("Method:\t\t" + httpClient.getMethod().name(), Project.MSG_INFO);
     if (null != credentials && credentials.isValid()) {
-      log("Credentials:\t" + (credentials.isShow() ? credentials.getUsername() + " / " + credentials.getPassword() : "[hidden]"));
+      log("Credentials:\t" + (credentials.isShow() ? credentials.getUsername() + " / " + credentials.getPassword() : "[hidden]"), Project.MSG_VERBOSE);
     }
     if (httpClient.getHeaders().size() > 0) {
-      log("Headers:\t\tyes");
+      log("Headers:\t\tyes", Project.MSG_VERBOSE);
       for (final Entry<String, String> entry : httpClient.getHeaders().entrySet()) {
         log("\t" + entry.getKey() + ": " + entry.getValue());
       }
     } else {
-      log("Headers:\t\tno");
+      log("Headers:\t\tno", Project.MSG_VERBOSE);
     }
     if (httpClient.getQueryUnencoded().size() > 0) {
-      log("Query Parameters:\tyes");
+      log("Query Parameters:\tyes", Project.MSG_VERBOSE);
       for (final Entry<String, String> entry : httpClient.getQueryUnencoded().entrySet()) {
-        log("\t" + entry.getKey() + "=" + entry.getValue());
+        log("\t" + entry.getKey() + "=" + entry.getValue(), Project.MSG_VERBOSE);
       }
     } else {
-      log("Query Parameters:\tno");
+      log("Query Parameters:\tno", Project.MSG_VERBOSE);
     }
-    log("Entity:\t\t" + (null == httpClient.getEntity() ? "no" : "yes"));
+    if (printRequest) {
+      log("Entity:\t\t" + (null == httpClient.getEntity() ? "no" : "yes"), Project.MSG_INFO);
+    } else {
+      log("Entity:\t\t" + (null == httpClient.getEntity() ? "no" : "yes"), Project.MSG_VERBOSE);
+    }
     if (null != httpClient.getEntity() && printRequest) {
       try {
-        log("------ BEGIN ENTITY ------");
-        log(httpClient.getEntityAsString());
-        log("------- END ENTITY -------");
+        log("------ BEGIN ENTITY ------", Project.MSG_INFO);
+        log(httpClient.getEntityAsString(), Project.MSG_INFO);
+        log("------- END ENTITY -------", Project.MSG_INFO);
       } catch (final IOException e) {
         log(e, Project.MSG_ERR);
         throw new BuildException(e);
@@ -316,19 +320,19 @@ public class HttpClientTask extends Task {
         getProject().setProperty(getStatusProperty(), Integer.toString(response.getStatus()));
       }
 
-      log("");
-      log("********************");
-      log("HTTP Response");
-      log("********************");
-      log("Status:\t\t" + response.getStatus());
+      log("", Project.MSG_INFO);
+      log("********************", Project.MSG_VERBOSE);
+      log("HTTP Response", Project.MSG_INFO);
+      log("********************", Project.MSG_INFO);
+      log("Status:\t\t" + response.getStatus(), Project.MSG_INFO);
       if (response.getHeaders().size() > 0) {
-        log("Headers:\t\tyes");
+        log("Headers:\t\tyes", Project.MSG_VERBOSE);
         for (final Entry<String, List<String>> entry : response.getHeaders().entrySet()) {
           for (final String value : entry.getValue()) {
             if (null == entry.getKey()) {
-              log("\t" + value);
+              log("\t" + value, Project.MSG_VERBOSE);
             } else {
-              log("\t" + entry.getKey() + ": " + value);
+              log("\t" + entry.getKey() + ": " + value, Project.MSG_VERBOSE);
             }
           }
         }
@@ -337,19 +341,23 @@ public class HttpClientTask extends Task {
       }
 
       if (null == outFile) {
-        log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"));
+        if (printResponse) {
+          log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"), Project.MSG_INFO);
+        } else {
+          log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"), Project.MSG_VERBOSE);
+        }
         if (null != response.getEntity() && printResponse) {
           try {
-            log("------ BEGIN ENTITY ------");
-            log(response.getEntityAsString());
-            log("------- END ENTITY -------");
+            log("------ BEGIN ENTITY ------", Project.MSG_INFO);
+            log(response.getEntityAsString(), Project.MSG_INFO);
+            log("------- END ENTITY -------", Project.MSG_INFO);
           } catch (final IOException e) {
             log(e, Project.MSG_ERR);
             throw new BuildException(e);
           }
         }
       } else if (null != response.getEntity()) {
-        log("Entity written to file:\t" + outFile.getAbsolutePath());
+        log("Entity written to file:\t" + outFile.getAbsolutePath(), Project.MSG_VERBOSE);
         try {
           final FileOutputStream fos = new FileOutputStream(outFile);
           fos.write(response.getEntity());
