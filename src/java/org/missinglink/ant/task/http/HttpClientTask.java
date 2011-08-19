@@ -432,7 +432,7 @@ public class HttpClientTask extends Task {
         }
       }
     } catch (final Exception e) {
-      throw new BuildException(e);
+      log("Unable to determine the Ant log level, please report the issue to the project at http://code.google.com/p/missing-link/issues", Project.MSG_WARN);
     }
     return Project.MSG_INFO;
   }
