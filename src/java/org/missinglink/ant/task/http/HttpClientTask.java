@@ -212,10 +212,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.missinglink.http.client.HttpClient;
@@ -249,12 +251,21 @@ public class HttpClientTask extends Task {
   protected int expected = 200;
   protected boolean failOnUnexpected = true;
   protected boolean update = true;
+  protected int logLevel = Project.MSG_INFO;
 
   // http task parameters
   protected HttpClient httpClient;
 
   public HttpClientTask() {
     super();
+  }
+
+  @Override
+  public void init() {
+    super.init();
+    // Issue 13 - Get the log level at startup so we can use it later to change
+    // the log messages
+    logLevel = getLogLevel();
   }
 
   @Override
@@ -271,12 +282,20 @@ public class HttpClientTask extends Task {
 
     // invoke HttpClient
     HttpResponse response = null;
+
     log("********************", Project.MSG_VERBOSE);
-    log("HTTP Request", Project.MSG_INFO);
-    log("********************", Project.MSG_INFO);
+    log("HTTP Request", Project.MSG_VERBOSE);
+    log("********************", Project.MSG_VERBOSE);
+
     final String uri = httpClient.getUri();
-    log("URL:\t\t" + uri, Project.MSG_INFO);
-    log("Method:\t\t" + httpClient.getMethod().name(), Project.MSG_INFO);
+
+    log("URL:\t\t" + uri, Project.MSG_VERBOSE);
+    log("Method:\t\t" + httpClient.getMethod().name(), Project.MSG_VERBOSE);
+
+    if (isInfo()) {
+      log("HTTP " + httpClient.getMethod().name() + " " + uri, Project.MSG_INFO);
+    }
+
     if (null != credentials && credentials.isValid()) {
       log("Credentials:\t" + (credentials.isShow() ? credentials.getUsername() + " / " + credentials.getPassword() : "[hidden]"), Project.MSG_VERBOSE);
     }
@@ -329,11 +348,16 @@ public class HttpClientTask extends Task {
         getProject().setProperty(getStatusProperty(), Integer.toString(response.getStatus()));
       }
 
-      log("", Project.MSG_INFO);
+      log("", Project.MSG_VERBOSE);
       log("********************", Project.MSG_VERBOSE);
-      log("HTTP Response", Project.MSG_INFO);
-      log("********************", Project.MSG_INFO);
-      log("Status:\t\t" + response.getStatus(), Project.MSG_INFO);
+      log("HTTP Response", Project.MSG_VERBOSE);
+      log("********************", Project.MSG_VERBOSE);
+      log("Status:\t\t" + response.getStatus(), Project.MSG_VERBOSE);
+
+      if (isInfo()) {
+        log("Response Status: " + response.getStatus(), Project.MSG_INFO);
+      }
+
       if (response.getHeaders().size() > 0) {
         log("Headers:\t\tyes", Project.MSG_VERBOSE);
         for (final Entry<String, List<String>> entry : response.getHeaders().entrySet()) {
@@ -393,6 +417,44 @@ public class HttpClientTask extends Task {
         throw new BuildException("Expected Status [" + expected + "] but got [" + response.getStatus() + "] for URI [" + uri + "]");
       }
     }
+  }
+
+  // Issue 13 - This can be used to determine the current logging level,
+  // allowing for different logs altogether for INFO/VERBOSE
+  protected int getLogLevel() {
+    try {
+      for (final Object listener : getProject().getBuildListeners()) {
+        if (DefaultLogger.class.equals(listener.getClass())) {
+          final Field msgOutputLevel = listener.getClass().getDeclaredField("msgOutputLevel");
+          msgOutputLevel.setAccessible(true); // there is no spoon
+          final int logLevel = msgOutputLevel.getInt(listener);
+          return logLevel;
+        }
+      }
+    } catch (final Exception e) {
+      throw new BuildException(e);
+    }
+    return Project.MSG_INFO;
+  }
+
+  /**
+   * For use to fix Issue 13, returns true only if the log level is
+   * {@link Project#MSG_INFO}
+   * 
+   * @return
+   */
+  protected boolean isInfo() {
+    return logLevel == Project.MSG_INFO;
+  }
+
+  /**
+   * For use to fix Issue 13, returns true only if the log level is
+   * {@link Project#MSG_VERBOSE} or {@link Project#MSG_DEBUG}
+   * 
+   * @return
+   */
+  protected boolean isVerbose() {
+    return logLevel == Project.MSG_VERBOSE || logLevel == Project.MSG_DEBUG;
   }
 
   protected boolean outputIsAvailable() {
