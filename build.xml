@@ -9,7 +9,7 @@
   <property name="ml-ant-http.build.classes.dir" location="${ml-ant-http.build.dir}/classes"/>
   <property name="ml-ant-http.build.docs.dir" location="${ml-ant-http.build.dir}/docs"/>
   <property name="ml-ant-http.dist.dir" location="dist"/>
-  <property name="ml-ant-http.resources.dir" location="resources"/>
+  <property name="ml-ant-http.resources.dir" location="src/site/resources"/>
   <property name="ml-ant-http.license.dir" location="${basedir}"/>
   <property name="ml-ant-http.license.file" value="LICENSE"/>
   <property name="ml-ant-http.dist.jar.name" value="ml-ant-http"/>
@@ -83,16 +83,16 @@
     <zip destfile="${ml-ant-http.dist.doc.zip}" basedir="${ml-ant-http.build.docs.dir}"/>
   </target>
 
-  <target name="copy.dist.files" depends="compile">    
+  <target name="copy.dist.files" depends="compile">
     <!-- license -->
     <copy filtering="false" flatten="false" todir="${ml-ant-http.dist.jar.dir}">
       <fileset dir="${ml-ant-http.license.dir}">
         <include name="${ml-ant-http.license.file}"/>
       </fileset>
     </copy>
-    
+
     <filter token="ml-ant-http-version" value="${ml-ant-http.dist.jar.version}"/>
-    
+
     <copy filtering="true" flatten="true" todir="${ml-ant-http.dist.jar.dir}">
       <fileset dir="${ml-ant-http.resources.dir}">
         <include name="ant/build-sample.xml"/>
