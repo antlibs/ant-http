@@ -219,7 +219,7 @@ import org.missinglink.http.exception.HttpClientException;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public class HttpsClientTest extends AbstractHttpServerTest {
 

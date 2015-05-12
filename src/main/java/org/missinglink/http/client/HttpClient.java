@@ -240,10 +240,10 @@ import org.missinglink.tools.StreamUtils;
  * Supports TLS/SSL connections per connection (as opposed to a JVM-wide
  * configuration based on the System Property -Djavax.net.ssl.trustStore) using
  * javax.net.ssl.* classes and {@link KeyStore} instances managed in-memory.
- * 
- * 
+ *
+ *
  * @author alex.sherwin
- * 
+ *
  */
 public class HttpClient {
 
@@ -280,7 +280,7 @@ public class HttpClient {
 
   /**
    * Start building a {@link HttpClient} instance.
-   * 
+   *
    * @param uri
    * @return Returns the {@link HttpClientBuilder}
    */
@@ -290,7 +290,7 @@ public class HttpClient {
 
   /**
    * Enter building mode.
-   * 
+   *
    * @return Returns the {@link HttpClientBuilder}
    */
   public HttpClientBuilder build() {
@@ -299,7 +299,7 @@ public class HttpClient {
 
   /**
    * Return the {@link #entity} {@link InputStream} as a String.
-   * 
+   *
    * @return Convert the request entity as a String
    * @throws IOException
    */
@@ -315,7 +315,7 @@ public class HttpClient {
 
   /**
    * Return the {@link #entity} {@link InputStream} as byte array.
-   * 
+   *
    * @return Convert the request entity as a byte array
    * @throws IOException
    */
@@ -331,7 +331,7 @@ public class HttpClient {
 
   /**
    * Invoke the HTTP service represented by this {@link HttpClient}.
-   * 
+   *
    * @return The {@link HttpResponse} for the HTTP invocation
    */
   public HttpResponse invoke() throws HttpInvocationException, HttpCertificateException {
@@ -436,7 +436,7 @@ public class HttpClient {
 
   /**
    * Build and return the URI.
-   * 
+   *
    * @return The URI fully constructed and encoded
    */
   public String getUri() {
@@ -470,7 +470,7 @@ public class HttpClient {
 
   /**
    * getExtension Return the protocol (http/https).
-   * 
+   *
    * @return The HTTP protocol
    */
   public String getProtocol() {
@@ -478,7 +478,7 @@ public class HttpClient {
   }
 
   /**
-   * 
+   *
    * @return The HTTP host
    */
   public String getHost() {
@@ -486,7 +486,7 @@ public class HttpClient {
   }
 
   /**
-   * 
+   *
    * @return The HTTP port
    */
   public Integer getPort() {
@@ -558,9 +558,9 @@ public class HttpClient {
 
   /**
    * {@link HttpClient} builder.
-   * 
+   *
    * @author alex.sherwin
-   * 
+   *
    */
   public static class HttpClientBuilder {
 
@@ -578,7 +578,7 @@ public class HttpClient {
 
     /**
      * Parse the URI into its components.
-     * 
+     *
      * @param uri
      * @throws InvalidUriException
      *           On any failure/invalid URI
@@ -606,7 +606,7 @@ public class HttpClient {
     /**
      * Parse a query string into its components, split components by "&" and
      * their key, value parts with "="
-     * 
+     *
      * @param query
      */
     protected void parseQuery(final String query) {
@@ -632,7 +632,7 @@ public class HttpClient {
 
     /**
      * Return the current {@link HttpClient} that this builder represents.
-     * 
+     *
      * @return The {@link HttpClient} this {@link HttpClientBuilder} represents.
      */
     public HttpClient toHttpClient() {
@@ -642,7 +642,7 @@ public class HttpClient {
     /**
      * Add a query parameter to the {@link HttpClient}. The value can be null,
      * and is null safe for null params (no-op).
-     * 
+     *
      * @param param
      * @param value
      * @return The new {@link HttpClientBuilder}
@@ -658,7 +658,7 @@ public class HttpClient {
     /**
      * Add a header to the {@link HttpClient}. The value can be null, and is
      * null safe for header values (no-op).
-     * 
+     *
      * @param header
      * @param value
      * @return The new {@link HttpClientBuilder}
@@ -672,7 +672,7 @@ public class HttpClient {
 
     /**
      * Add an "Accept" header to the {@link HttpClient}.
-     * 
+     *
      * @param value
      * @return The new {@link HttpClientBuilder}
      */
@@ -683,7 +683,7 @@ public class HttpClient {
 
     /**
      * Add an "Content-Type" header to the {@link HttpClient}.
-     * 
+     *
      * @param value
      * @return The new {@link HttpClientBuilder}
      */
@@ -694,7 +694,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient}.
-     * 
+     *
      * @param method
      * @return The new {@link HttpClientBuilder}
      */
@@ -705,7 +705,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient} to {@link HttpMethod#GET}.
-     * 
+     *
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder get() {
@@ -715,7 +715,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient} to {@link HttpMethod#POST}.
-     * 
+     *
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder post() {
@@ -725,7 +725,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient} to {@link HttpMethod#PUT}.
-     * 
+     *
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder put() {
@@ -735,7 +735,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient} to {@link HttpMethod#TRACE}.
-     * 
+     *
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder trace() {
@@ -745,7 +745,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient} to {@link HttpMethod#OPTIONS}.
-     * 
+     *
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder options() {
@@ -755,7 +755,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient} to {@link HttpMethod#DELETE}.
-     * 
+     *
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder delete() {
@@ -765,7 +765,7 @@ public class HttpClient {
 
     /**
      * Set the method on the {@link HttpClient} to {@link HttpMethod#HEAD}.
-     * 
+     *
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder head() {
@@ -775,7 +775,7 @@ public class HttpClient {
 
     /**
      * Set the authentication credentials to use on the {@link HttpClient}.
-     * 
+     *
      * @param username
      * @param password
      * @return The new {@link HttpClientBuilder}
@@ -788,7 +788,7 @@ public class HttpClient {
 
     /**
      * Set the request entity on the {@link HttpClient}.
-     * 
+     *
      * @param is
      * @param binary
      *          tell whether or not the entity has to be considered as binary
@@ -807,7 +807,7 @@ public class HttpClient {
     /**
      * Set the request entity on the {@link HttpClient}. This method is a
      * wrapper to {@link #entity(InputStream, boolean)} with binary set to false
-     * 
+     *
      * @param is
      * @return The new {@link HttpClientBuilder}
      * @throws InvalidStreamException
@@ -819,7 +819,7 @@ public class HttpClient {
     /**
      * Calls {@link #entity(InputStream)} with str wrapped in a
      * {@link ByteArrayInputStream}.
-     * 
+     *
      * @param str
      * @param binary
      *          tell whether or not the entity has to be considered as binary
@@ -836,7 +836,7 @@ public class HttpClient {
 
     /**
      * Calls {@link #entity(String, boolean)} with binary set to false
-     * 
+     *
      * @param str
      * @return The new {@link HttpClientBuilder}
      */
@@ -846,7 +846,7 @@ public class HttpClient {
 
     /**
      * Set the {@link InputStream} to use when creating a {@link KeyStore}
-     * 
+     *
      * @param is
      * @param password
      * @return The new {@link HttpClientBuilder}

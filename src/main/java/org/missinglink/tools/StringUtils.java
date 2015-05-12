@@ -206,7 +206,7 @@ package org.missinglink.tools;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public abstract class StringUtils {
 
@@ -216,17 +216,17 @@ public abstract class StringUtils {
 
   /**
    * If in is null or length 0, return defaultString, otherwise return in
-   * 
+   *
    * @param in
    * @param defaultString
    * @return The String
-   * 
+   *
    *         <pre>
    * in
    * </pre>
-   * 
+   *
    *         if it is not null or empty, otherwise the value of
-   * 
+   *
    *         <pre>
    * defaultString
    * </pre>

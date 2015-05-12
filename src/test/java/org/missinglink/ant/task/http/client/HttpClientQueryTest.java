@@ -211,7 +211,7 @@ import org.missinglink.http.exception.InvalidUriException;
 
 /**
  * @author alex
- * 
+ *
  */
 public class HttpClientQueryTest {
 

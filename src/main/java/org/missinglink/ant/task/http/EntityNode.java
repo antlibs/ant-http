@@ -208,7 +208,7 @@ import java.io.File;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public class EntityNode {
 

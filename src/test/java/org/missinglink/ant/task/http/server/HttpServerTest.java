@@ -216,9 +216,9 @@ import org.junit.Test;
 import org.missinglink.tools.StreamUtils;
 
 /**
- * 
+ *
  * @author alex.sherwin
- * 
+ *
  */
 public class HttpServerTest extends AbstractHttpServerTest {
 

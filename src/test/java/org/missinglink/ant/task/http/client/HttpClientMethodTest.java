@@ -212,7 +212,7 @@ import org.missinglink.http.exception.InvalidUriException;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public class HttpClientMethodTest {
 

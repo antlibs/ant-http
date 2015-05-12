@@ -212,9 +212,9 @@ import java.util.Map;
 
 /**
  * Wraps the response of an HTTP request.
- * 
+ *
  * @author alex.sherwin
- * 
+ *
  */
 public class HttpResponse {
 

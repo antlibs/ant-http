@@ -206,7 +206,7 @@ package org.missinglink.http.client;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public enum HttpMethod {
 

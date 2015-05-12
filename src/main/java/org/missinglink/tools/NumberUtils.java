@@ -206,7 +206,7 @@ package org.missinglink.tools;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public abstract class NumberUtils {
 
@@ -217,7 +217,7 @@ public abstract class NumberUtils {
   /**
    * Attempt to convert str to an {@link Integer}, on any failure whatsoever
    * return defaultNumber
-   * 
+   *
    * @param str
    */
   public static Integer defaultInteger(final String str, final Integer defaultNumber) {

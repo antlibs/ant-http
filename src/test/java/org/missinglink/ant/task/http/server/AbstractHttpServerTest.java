@@ -238,9 +238,9 @@ import org.missinglink.http.encoding.Base64;
 import org.missinglink.tools.StreamUtils;
 
 /**
- * 
+ *
  * @author alex.sherwin
- * 
+ *
  */
 public abstract class AbstractHttpServerTest extends AbstractTest {
 

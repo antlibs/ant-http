@@ -209,7 +209,7 @@ import java.util.List;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public class HeadersNode {
 

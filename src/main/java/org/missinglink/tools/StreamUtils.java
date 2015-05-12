@@ -212,7 +212,7 @@ import java.io.InputStreamReader;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public abstract class StreamUtils {
 
@@ -222,7 +222,7 @@ public abstract class StreamUtils {
 
   /**
    * Read from an {@link InputStream} and return it as a String.
-   * 
+   *
    * @param is
    * @return A String created from reading the {@link InputStream}
    * @throws IOException
@@ -252,20 +252,20 @@ public abstract class StreamUtils {
 
   /**
    * Read from an {@link InputStream} and return it as a
-   * 
+   *
    * <pre>
    * byte[]
    * </pre>
-   * 
+   *
    * array.
-   * 
+   *
    * @param is
    * @return A
-   * 
+   *
    *         <pre>
    * byte[]
    * </pre>
-   * 
+   *
    *         array created from reading the {@link InputStream}
    * @throws IOException
    */
@@ -276,7 +276,7 @@ public abstract class StreamUtils {
   /**
    * Read from an {@link InputStream} and return it as a
    * {@link ByteArrayOutputStream}.
-   * 
+   *
    * @param is
    * @return A {@link ByteArrayOutputStream} created from reading the
    *         {@link InputStream}
