@@ -254,12 +254,7 @@ public class EntityNode {
   }
 
   public boolean isValid() {
-    if (null != text && text.length() > 0) {
-      return true;
-    } else if (null != file) {
-      return true;
-    }
-    return false;
+    return null != text && text.length() > 0 || null != file;
   }
 
 }

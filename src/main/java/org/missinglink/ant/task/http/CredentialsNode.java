@@ -243,9 +243,6 @@ public class CredentialsNode {
   }
 
   public boolean isValid() {
-    if (null != username && username.length() > 0) {
-      return true;
-    }
-    return false;
+    return null != username && username.length() > 0;
   }
 }

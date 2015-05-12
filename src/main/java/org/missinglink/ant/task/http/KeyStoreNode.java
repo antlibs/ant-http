@@ -236,10 +236,7 @@ public class KeyStoreNode {
   }
 
   public boolean isValid() {
-    if (null != file) {
-      return true;
-    }
-    return false;
+    return null != file;
   }
 
 }

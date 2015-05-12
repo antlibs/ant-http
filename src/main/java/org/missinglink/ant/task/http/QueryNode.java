@@ -228,10 +228,7 @@ public class QueryNode {
   }
 
   public boolean isValid() {
-    if (parameters.size() > 0) {
-      return true;
-    }
-    return false;
+    return parameters.size() > 0;
   }
 
 }

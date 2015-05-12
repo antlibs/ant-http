@@ -228,10 +228,7 @@ public class HeadersNode {
   }
 
   public boolean isValid() {
-    if (headers.size() > 0) {
-      return true;
-    }
-    return false;
+    return headers.size() > 0;
   }
 
 }

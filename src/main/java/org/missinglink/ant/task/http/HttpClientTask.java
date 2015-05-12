@@ -462,10 +462,7 @@ public class HttpClientTask extends Task {
   }
 
   protected String safeOutFilename() {
-    if (null != outFile) {
-      return outFile.getAbsolutePath();
-    }
-    return "";
+    return null != outFile ? outFile.getAbsolutePath() : "";
   }
 
   protected static void mkdirs(final File file) {
