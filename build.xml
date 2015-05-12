@@ -76,7 +76,7 @@
 
       <doctitle><![CDATA[<h1>missing link ant http task ${ml-ant-http.dist.jar.version}</h1>]]></doctitle>
       <bottom><![CDATA[<i>missing link ant http task ${ml-ant-http.dist.jar.version}</i>]]></bottom>
-      <tag name="todo" scope="all" description="To do:"/>
+      <tag name=".todo" scope="all" description="To do:"/>
       <link href="http://download.oracle.com/javase/6/docs/api/"/>
     </javadoc>
 
