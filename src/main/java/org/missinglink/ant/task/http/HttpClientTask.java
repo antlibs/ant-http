@@ -229,7 +229,7 @@ import org.missinglink.http.exception.HttpInvocationException;
 
 /**
  * @author alex.sherwin
- * 
+ *
  */
 public class HttpClientTask extends Task {
 
@@ -440,8 +440,8 @@ public class HttpClientTask extends Task {
   /**
    * For use to fix Issue 13, returns true only if the log level is
    * {@link Project#MSG_INFO}
-   * 
-   * @return
+   *
+   * @return boolean
    */
   protected boolean isInfo() {
     return logLevel == Project.MSG_INFO;
@@ -450,8 +450,8 @@ public class HttpClientTask extends Task {
   /**
    * For use to fix Issue 13, returns true only if the log level is
    * {@link Project#MSG_VERBOSE} or {@link Project#MSG_DEBUG}
-   * 
-   * @return
+   *
+   * @return boolean
    */
   protected boolean isVerbose() {
     return logLevel == Project.MSG_VERBOSE || logLevel == Project.MSG_DEBUG;
