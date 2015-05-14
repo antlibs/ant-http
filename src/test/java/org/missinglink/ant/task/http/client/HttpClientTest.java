@@ -85,19 +85,19 @@ public class HttpClientTest extends AbstractHttpServerTest {
 
   @Test
   public void test500() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + INTERNAL_SERER_ERROR_CONTEXT).toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + INTERNAL_SERVER_ERROR_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
-    Assert.assertArrayEquals(INTERNAL_SERER_ERROR_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertArrayEquals(INTERNAL_SERVER_ERROR_RESPONSE.getBytes(), response.getEntity());
     Assert.assertEquals(500, response.getStatus());
   }
 
   @Test
   public void test500Secured() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + INTERNAL_SERER_ERROR_CONTEXT).credentials(USERNAME, PASSWORD).toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + INTERNAL_SERVER_ERROR_CONTEXT).credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
-    Assert.assertArrayEquals(INTERNAL_SERER_ERROR_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertArrayEquals(INTERNAL_SERVER_ERROR_RESPONSE.getBytes(), response.getEntity());
     Assert.assertEquals(500, response.getStatus());
   }
 

@@ -94,20 +94,20 @@ public class HttpsClientTest extends AbstractHttpServerTest {
 
   @Test
   public void test500() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + INTERNAL_SERER_ERROR_CONTEXT).keyStore(getKeyStore(), "password").toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + INTERNAL_SERVER_ERROR_CONTEXT).keyStore(getKeyStore(), "password").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
-    Assert.assertArrayEquals(INTERNAL_SERER_ERROR_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertArrayEquals(INTERNAL_SERVER_ERROR_RESPONSE.getBytes(), response.getEntity());
     Assert.assertEquals(500, response.getStatus());
   }
 
   @Test
   public void test500Secured() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + INTERNAL_SERER_ERROR_CONTEXT).credentials(USERNAME, PASSWORD)
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + INTERNAL_SERVER_ERROR_CONTEXT).credentials(USERNAME, PASSWORD)
         .keyStore(getKeyStore(), "password").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
-    Assert.assertArrayEquals(INTERNAL_SERER_ERROR_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertArrayEquals(INTERNAL_SERVER_ERROR_RESPONSE.getBytes(), response.getEntity());
     Assert.assertEquals(500, response.getStatus());
   }
 
@@ -150,6 +150,6 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   protected InputStream getKeyStore() {
-    return getClass().getResourceAsStream("/keystore.jks");
+    return getClass().getResourceAsStream(KEYSTORE);
   }
 }
