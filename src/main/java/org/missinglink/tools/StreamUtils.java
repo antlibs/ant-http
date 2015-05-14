@@ -63,22 +63,12 @@ public abstract class StreamUtils {
   }
 
   /**
-   * Read from an {@link InputStream} and return it as a
-   *
-   * <pre>
-   * byte[]
-   * </pre>
-   *
+   * Read from an {@link InputStream} and return it as a <code>byte[]</code>
    * array.
    *
    * @param is
-   * @return A
-   *
-   *         <pre>
-   * byte[]
-   * </pre>
-   *
-   *         array created from reading the {@link InputStream}
+   * @return A <code>byte[]</code> array created from reading the
+   *         {@link InputStream}
    * @throws IOException
    */
   public static byte[] inputStreamToByteArray(final InputStream is) throws IOException {
