@@ -67,14 +67,16 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected static final String SECURE_CONTEXT = "/secure";
 
+  protected static final String KEYSTORE = "/keystore.jks";
+
   protected static final String USERNAME = "user";
   protected static final String PASSWORD = "password";
 
   protected static final String HW_ZIP_CONTEXT = "/hwzip";
   protected static final String HW_PNG_CONTEXT = "/hwpng";
 
-  protected static final String HW_ZIP = "hw.zip";
-  protected static final String HW_PNG = "hw.png";
+  protected static final String HW_ZIP = "/hw.zip";
+  protected static final String HW_PNG = "/hw.png";
 
   protected int httpServerPort = 10080;
   protected int httpsServerPort = 10443;
@@ -110,7 +112,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
     final char[] passphrase = "password".toCharArray();
     final KeyStore ks = KeyStore.getInstance("JKS");
-    ks.load(getClass().getResourceAsStream("/keystore.jks"), passphrase);
+    ks.load(getClass().getResourceAsStream(KEYSTORE), passphrase);
 
     final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
     kmf.init(ks, passphrase);
@@ -307,7 +309,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   protected void attachSSLSocketFactory(final HttpsURLConnection conn) throws Exception {
 
     final KeyStore ks = KeyStore.getInstance("JKS");
-    ks.load(getClass().getResourceAsStream("/keystore.jks"), "password".toCharArray());
+    ks.load(getClass().getResourceAsStream(KEYSTORE), "password".toCharArray());
     final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
     tmf.init(ks);
 
@@ -362,7 +364,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     }
 
     final KeyStore ks = KeyStore.getInstance("JKS");
-    ks.load(getClass().getResourceAsStream("/keystore.jks"), "password".toCharArray());
+    ks.load(getClass().getResourceAsStream(KEYSTORE), "password".toCharArray());
     final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
     tmf.init(ks);
 
