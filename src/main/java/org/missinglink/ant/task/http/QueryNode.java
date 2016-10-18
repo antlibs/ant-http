@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class QueryNode {
 
-  protected List<QueryParameterNode> parameters = new ArrayList<QueryParameterNode>();
+  protected final List<QueryParameterNode> parameters = new ArrayList<QueryParameterNode>();
 
   public QueryNode() {
     super();

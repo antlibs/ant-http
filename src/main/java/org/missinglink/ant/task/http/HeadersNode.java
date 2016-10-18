@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class HeadersNode {
 
-  protected List<HeaderNode> headers = new ArrayList<HeaderNode>();
+  protected final List<HeaderNode> headers = new ArrayList<HeaderNode>();
 
   public HeadersNode() {
     super();

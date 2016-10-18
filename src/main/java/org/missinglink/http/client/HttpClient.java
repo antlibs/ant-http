@@ -81,10 +81,10 @@ public class HttpClient {
   protected InputStream keyStore;
   protected String keyStorePassword;
 
-  protected Map<String, String> queryUnencoded = new HashMap<String, String>();
-  protected Map<String, String> queryEncoded = new HashMap<String, String>();
+  protected final Map<String, String> queryUnencoded = new HashMap<String, String>();
+  protected final Map<String, String> queryEncoded = new HashMap<String, String>();
 
-  protected Map<String, String> headers = new HashMap<String, String>();
+  protected final Map<String, String> headers = new HashMap<String, String>();
 
   protected HttpClient() {
     super();
@@ -376,7 +376,7 @@ public class HttpClient {
    */
   public static class HttpClientBuilder {
 
-    protected HttpClient httpClient;
+    protected final HttpClient httpClient;
 
     protected HttpClientBuilder(final HttpClient httpClient) {
       this.httpClient = httpClient;

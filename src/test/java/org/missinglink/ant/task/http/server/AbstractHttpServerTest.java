@@ -78,8 +78,8 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   protected static final String HW_ZIP = "/hw.zip";
   protected static final String HW_PNG = "/hw.png";
 
-  protected int httpServerPort = 10080;
-  protected int httpsServerPort = 10443;
+  protected final int httpServerPort = 10080;
+  protected final int httpsServerPort = 10443;
 
   protected HttpServer httpServer;
   protected HttpsServer httpsServer;
