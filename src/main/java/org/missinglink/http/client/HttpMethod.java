@@ -22,6 +22,6 @@ package org.missinglink.http.client;
  */
 public enum HttpMethod {
 
-  GET, POST, PUT, TRACE, OPTIONS, HEAD, DELETE;
+  GET, POST, PUT, TRACE, OPTIONS, HEAD, DELETE
 
 }

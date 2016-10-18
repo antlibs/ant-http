@@ -147,7 +147,7 @@ public class HttpResponse {
     return entity;
   }
 
-  public String getEntityAsString() throws IOException {
+  public String getEntityAsString() {
     if (null != entity && entity.length > 0) {
       return new String(entity);
     }

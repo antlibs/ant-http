@@ -239,8 +239,7 @@ public class HttpClientTask extends Task {
         if (DefaultLogger.class.equals(listener.getClass())) {
           final Field msgOutputLevel = listener.getClass().getDeclaredField("msgOutputLevel");
           msgOutputLevel.setAccessible(true); // there is no spoon
-          final int logLevel = msgOutputLevel.getInt(listener);
-          return logLevel;
+          return msgOutputLevel.getInt(listener);
         }
       }
     } catch (final Exception e) {
@@ -331,6 +330,8 @@ public class HttpClientTask extends Task {
             }
           } catch (final IOException e) {
             throw new BuildException(e);
+          } finally {
+            is.close();
           }
 
           builder = builder.entity(new ByteArrayInputStream(os.toByteArray()), entity.getBinary());

@@ -323,10 +323,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     return new BasicAuthenticator("Test Realm") {
       @Override
       public boolean checkCredentials(final String username, final String password) {
-        if (USERNAME.equals(username) && PASSWORD.equals(password)) {
-          return true;
-        }
-        return false;
+        return USERNAME.equals(username) && PASSWORD.equals(password);
       }
     };
   }
