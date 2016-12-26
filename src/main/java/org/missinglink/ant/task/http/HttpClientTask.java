@@ -193,23 +193,17 @@ public class HttpClientTask extends Task {
           log("Entity:\t\t" + (null == response.getEntity() ? "no" : "yes"), Project.MSG_VERBOSE);
         }
         if (responseHasEntity) {
-          try {
+          final String respEntity = response.getEntityAsString();
 
-            final String respEntity = response.getEntityAsString();
+          // Issue 21 - Write entity to a property
+          if (null != getEntityProperty() && getEntityProperty().length() > 0) {
+            getProject().setProperty(getEntityProperty(), respEntity);
+          }
 
-            // Issue 21 - Write entity to a property
-            if (null != getEntityProperty() && getEntityProperty().length() > 0) {
-              getProject().setProperty(getEntityProperty(), respEntity);
-            }
-
-            if (printResponse) {
-              log("------ BEGIN ENTITY ------", Project.MSG_INFO);
-              log(respEntity, Project.MSG_INFO);
-              log("------- END ENTITY -------", Project.MSG_INFO);
-            }
-          } catch (final IOException e) {
-            log(e, Project.MSG_ERR);
-            throw new BuildException(e);
+          if (printResponse) {
+            log("------ BEGIN ENTITY ------", Project.MSG_INFO);
+            log(respEntity, Project.MSG_INFO);
+            log("------- END ENTITY -------", Project.MSG_INFO);
           }
         }
       } else if (responseHasEntity) {
