@@ -1,37 +1,64 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="ml-ant-http" default="dist" basedir=".">
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2012 the original author or authors.
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
 
-  <property name="ml-ant-http.lib.dir" location="lib"/>
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="ml-ant-http" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <!-- Ivy -->
+  <property name="ivy.version" value="2.4.0"/>
+  <property name="ivy.dir" value="${user.home}/.ivy2/cache/org.apache.ivy/jars"/>
+  <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
+  <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
+  <available property="has.ivy" file="${ivy.dir}/${ivy.jar.name}" type="file"/>
+
+  <target name="get-ivy" description="o Get Ivy jar unless already cached" unless="has.ivy">
+    <mkdir dir="${ivy.dir}"/>
+    <get usetimestamp="true" src="https://repository.apache.org/content/repositories/releases/org/apache/ivy/ivy/${ivy.version}/${ivy.jar.name}"
+         skipexisting="true"
+         dest="${ivy.dir}/${ivy.jar.name}"/>
+  </target>
+
+  <target name="init-ivy" description="o Initialize Ivy" depends="get-ivy">
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpath="${ivy.dir}/${ivy.jar.name}"/>
+    <ivy:settings file="${basedir}/ivy.settings.xml"/>
+  </target>
+
   <property name="ml-ant-http.src.dir" location="src"/>
   <property name="ml-ant-http.java.src.dir" location="${ml-ant-http.src.dir}/main/java"/>
   <property name="ml-ant-http.test.src.dir" location="${ml-ant-http.src.dir}/test/java"/>
+  <property name="ml-ant-http.test.resources.dir" location="${ml-ant-http.src.dir}/test/resources"/>
   <property name="ml-ant-http.build.dir" location="build"/>
   <property name="ml-ant-http.build.classes.dir" location="${ml-ant-http.build.dir}/classes"/>
+  <property name="ml-ant-http.build.test.classes.dir" location="${ml-ant-http.build.dir}/test/classes"/>
   <property name="ml-ant-http.build.docs.dir" location="${ml-ant-http.build.dir}/docs"/>
   <property name="ml-ant-http.dist.dir" location="dist"/>
-  <property name="ml-ant-http.resources.dir" location="src/site/resources"/>
+  <property name="ml-ant-http.site.dir" location="${ml-ant-http.src.dir}/site/resources"/>
   <property name="ml-ant-http.license.dir" location="${basedir}"/>
   <property name="ml-ant-http.license.file" value="LICENSE"/>
   <property name="ml-ant-http.dist.jar.name" value="ml-ant-http"/>
   <property name="ml-ant-http.dist.jar.version" value="1.1.3"/>
   <property name="ml-ant-http.dist.jar.dir" location="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}"/>
   <property name="ml-ant-http.dist.doc.zip" location="${ml-ant-http.dist.jar.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}-api.zip"/>
-
-  <fileset id="ml-ant-http.compile.libs" dir="${ml-ant-http.lib.dir}">
-    <include name="apache-ant/apache-ant-1.8.2.jar"/>
-    <include name="junit/junit-4.8.2.jar"/>
-  </fileset>
-
-  <path id="ml-ant-http.compile.classpath">
-    <fileset refid="ml-ant-http.compile.libs"/>
-  </path>
+  <property name="ml-ant-http.test.report.dir" location="${ml-ant-http.build.dir}/test/report"/>
 
   <target name="clean">
     <delete dir="${ml-ant-http.build.dir}"/>
     <delete dir="${ml-ant-http.dist.dir}"/>
   </target>
 
-  <target name="init">
+  <target name="init" depends="init-ivy">
     <mkdir dir="${ml-ant-http.build.dir}"/>
     <mkdir dir="${ml-ant-http.build.classes.dir}"/>
     <mkdir dir="${ml-ant-http.build.docs.dir}"/>
@@ -39,8 +66,15 @@
     <mkdir dir="${ml-ant-http.dist.jar.dir}"/>
   </target>
 
-  <target name="compile" depends="init">
-    <javac debug="yes" destdir="${ml-ant-http.build.classes.dir}" classpathref="ml-ant-http.compile.classpath" includeantruntime="false">
+  <target name="resolve" depends="init">
+    <ivy:resolve file="ivy.xml"/>
+    <ivy:cachepath pathid="compile.classpath" conf="compile" type="jar"/>
+    <ivy:cachepath pathid="runtime.classpath" conf="runtime" type="jar"/>
+    <ivy:cachepath pathid="test.classpath" conf="test" type="jar"/>
+  </target>
+
+  <target name="compile" depends="resolve">
+    <javac debug="yes" destdir="${ml-ant-http.build.classes.dir}" classpathref="compile.classpath" includeantruntime="false">
       <src path="${ml-ant-http.java.src.dir}"/>
     </javac>
   </target>
@@ -94,12 +128,12 @@
     <filter token="ml-ant-http-version" value="${ml-ant-http.dist.jar.version}"/>
 
     <copy filtering="true" flatten="true" todir="${ml-ant-http.dist.jar.dir}">
-      <fileset dir="${ml-ant-http.resources.dir}">
+      <fileset dir="${ml-ant-http.site.dir}">
         <include name="ant/build-sample.xml"/>
       </fileset>
     </copy>
     <copy filtering="false" flatten="true" todir="${ml-ant-http.dist.jar.dir}">
-      <fileset dir="${ml-ant-http.resources.dir}">
+      <fileset dir="${ml-ant-http.site.dir}">
         <include name="doc/readme.pdf"/>
       </fileset>
     </copy>
@@ -107,6 +141,43 @@
 
   <target name="dist" depends="compile,jar,jar.src,copy.dist.files,javadoc">
     <zip destfile="${ml-ant-http.dist.dir}/${ml-ant-http.dist.jar.name}-${ml-ant-http.dist.jar.version}.zip" basedir="${ml-ant-http.dist.jar.dir}"/>
+  </target>
+
+  <target name="compile-tests" depends="compile">
+    <mkdir dir="${ml-ant-http.build.test.classes.dir}"/>
+    <javac debug="yes" destdir="${ml-ant-http.build.test.classes.dir}" includeantruntime="false">
+      <classpath>
+        <pathelement location="${ml-ant-http.build.classes.dir}"/>
+        <path refid="test.classpath"/>
+      </classpath>
+      <src path="${ml-ant-http.test.src.dir}"/>
+    </javac>
+    <copy todir="${ml-ant-http.build.test.classes.dir}">
+      <fileset dir="${ml-ant-http.test.src.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="test" depends="compile-tests">
+    <mkdir dir="${ml-ant-http.test.report.dir}"/>
+    <junit printsummary="yes" haltonerror="false" haltonfailure="false"
+	   errorproperty="junit.error" failureproperty="junit.failure"
+	   fork="true">
+      <classpath>
+        <pathelement location="${ml-ant-http.test.resources.dir}"/>
+        <pathelement location="${ml-ant-http.build.test.classes.dir}"/>
+        <pathelement location="${ml-ant-http.build.classes.dir}"/>
+        <path refid="test.classpath"/>
+      </classpath>
+      <formatter type="plain" usefile="no"/>
+      <formatter type="xml"/>
+      <batchtest todir="${ml-ant-http.test.report.dir}">
+        <fileset dir="${ml-ant-http.test.src.dir}">
+          <include name="**/*Test.java"/>
+          <exclude name="**/Abstract*Test.java"/>
+          <exclude name="**/*$*"/>
+        </fileset>
+      </batchtest>
+    </junit>
   </target>
 
 </project>
