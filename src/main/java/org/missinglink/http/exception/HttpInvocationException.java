@@ -32,22 +32,22 @@ public class HttpInvocationException extends HttpClientException {
   }
 
   /**
-   * @param message
-   * @param cause
+   * @param message String
+   * @param cause Throwable
    */
   public HttpInvocationException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
   /**
-   * @param message
+   * @param message String
    */
   public HttpInvocationException(final String message) {
     super(message);
   }
 
   /**
-   * @param cause
+   * @param cause Throwable
    */
   public HttpInvocationException(final Throwable cause) {
     super(cause);

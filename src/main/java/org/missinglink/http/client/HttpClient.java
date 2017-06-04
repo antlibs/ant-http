@@ -47,12 +47,12 @@ import org.missinglink.tools.StreamUtils;
 /**
  * HTTP client which wraps core Java classes {@link URL},
  * {@link HttpURLConnection} and {@link HttpsURLConnection} for communication
- * functionality. <br/>
- * <br/>
+ * functionality.
+ * <p>
  * Supports TLS/SSL connections per connection (as opposed to a JVM-wide
  * configuration based on the System Property -Djavax.net.ssl.trustStore) using
  * javax.net.ssl.* classes and {@link KeyStore} instances managed in-memory.
- *
+ * </p>
  *
  * @author alex.sherwin
  *
@@ -93,8 +93,9 @@ public class HttpClient {
   /**
    * Start building a {@link HttpClient} instance.
    *
-   * @param uri
+   * @param uri String
    * @return Returns the {@link HttpClientBuilder}
+   * @throws InvalidUriException if uri is incorrect
    */
   public static HttpClientBuilder uri(final String uri) throws InvalidUriException {
     return new HttpClientBuilder(new HttpClient(), uri);
@@ -113,7 +114,7 @@ public class HttpClient {
    * Return the {@link #entity} {@link InputStream} as a String.
    *
    * @return Convert the request entity as a String
-   * @throws IOException
+   * @throws IOException on failure
    */
   public String getEntityAsString() throws IOException {
     if (null == entity || entity.available() == 0) {
@@ -129,7 +130,7 @@ public class HttpClient {
    * Return the {@link #entity} {@link InputStream} as byte array.
    *
    * @return Convert the request entity as a byte array
-   * @throws IOException
+   * @throws IOException on failure
    */
   public byte[] getEntityAsByteArray() throws IOException {
     if (null == entity || entity.available() == 0) {
@@ -145,6 +146,8 @@ public class HttpClient {
    * Invoke the HTTP service represented by this {@link HttpClient}.
    *
    * @return The {@link HttpResponse} for the HTTP invocation
+   * @throws HttpInvocationException on failure
+   * @throws HttpCertificateException on HTTPS failure
    */
   public HttpResponse invoke() throws HttpInvocationException, HttpCertificateException {
     try {
@@ -290,7 +293,6 @@ public class HttpClient {
   }
 
   /**
-   *
    * @return The HTTP host
    */
   public String getHost() {
@@ -298,7 +300,6 @@ public class HttpClient {
   }
 
   /**
-   *
    * @return The HTTP port
    */
   public Integer getPort() {
@@ -372,7 +373,6 @@ public class HttpClient {
    * {@link HttpClient} builder.
    *
    * @author alex.sherwin
-   *
    */
   public static class HttpClientBuilder {
 
@@ -391,7 +391,7 @@ public class HttpClient {
     /**
      * Parse the URI into its components.
      *
-     * @param uri
+     * @param uri String
      * @throws InvalidUriException
      *           On any failure/invalid URI
      */
@@ -416,10 +416,10 @@ public class HttpClient {
     }
 
     /**
-     * Parse a query string into its components, split components by "&" and
+     * Parse a query string into its components, split components by "&amp;" and
      * their key, value parts with "="
      *
-     * @param query
+     * @param query String
      */
     protected void parseQuery(final String query) {
       if (null != query && query.length() > 0) {
@@ -455,8 +455,8 @@ public class HttpClient {
      * Add a query parameter to the {@link HttpClient}. The value can be null,
      * and is null safe for null params (no-op).
      *
-     * @param param
-     * @param value
+     * @param param String
+     * @param value String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder query(final String param, final String value) {
@@ -471,8 +471,8 @@ public class HttpClient {
      * Add a header to the {@link HttpClient}. The value can be null, and is
      * null safe for header values (no-op).
      *
-     * @param header
-     * @param value
+     * @param header String
+     * @param value String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder header(final String header, final String value) {
@@ -485,7 +485,7 @@ public class HttpClient {
     /**
      * Add an "Accept" header to the {@link HttpClient}.
      *
-     * @param value
+     * @param value String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder accept(final String value) {
@@ -496,7 +496,7 @@ public class HttpClient {
     /**
      * Add an "Content-Type" header to the {@link HttpClient}.
      *
-     * @param value
+     * @param value String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder contentType(final String value) {
@@ -507,7 +507,7 @@ public class HttpClient {
     /**
      * Set the method on the {@link HttpClient}.
      *
-     * @param method
+     * @param method HttpMethod
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder method(final HttpMethod method) {
@@ -588,8 +588,8 @@ public class HttpClient {
     /**
      * Set the authentication credentials to use on the {@link HttpClient}.
      *
-     * @param username
-     * @param password
+     * @param username String
+     * @param password String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder credentials(final String username, final String password) {
@@ -601,11 +601,12 @@ public class HttpClient {
     /**
      * Set the request entity on the {@link HttpClient}.
      *
-     * @param is
-     * @param binary
+     * @param is InputStream
+     * @param binary boolean
      *          tell whether or not the entity has to be considered as binary
      *          stream
      * @return The new {@link HttpClientBuilder}
+     * @throws InvalidStreamException on failure
      */
     public HttpClientBuilder entity(final InputStream is, final boolean binary) throws InvalidStreamException {
       if (null != is && !is.markSupported()) {
@@ -620,9 +621,9 @@ public class HttpClient {
      * Set the request entity on the {@link HttpClient}. This method is a
      * wrapper to {@link #entity(InputStream, boolean)} with binary set to false
      *
-     * @param is
+     * @param is InputStream
      * @return The new {@link HttpClientBuilder}
-     * @throws InvalidStreamException
+     * @throws InvalidStreamException on failure
      */
     public HttpClientBuilder entity(final InputStream is) throws InvalidStreamException {
       return entity(is, false);
@@ -632,8 +633,8 @@ public class HttpClient {
      * Calls {@link #entity(InputStream)} with str wrapped in a
      * {@link ByteArrayInputStream}.
      *
-     * @param str
-     * @param binary
+     * @param str String
+     * @param binary boolean
      *          tell whether or not the entity has to be considered as binary
      *          stream
      * @return The new {@link HttpClientBuilder}
@@ -649,7 +650,7 @@ public class HttpClient {
     /**
      * Calls {@link #entity(String, boolean)} with binary set to false
      *
-     * @param str
+     * @param str String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder entity(final String str) {
@@ -659,8 +660,8 @@ public class HttpClient {
     /**
      * Set the {@link InputStream} to use when creating a {@link KeyStore}
      *
-     * @param is
-     * @param password
+     * @param is InputStream
+     * @param password String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder keyStore(final InputStream is, final String password) {

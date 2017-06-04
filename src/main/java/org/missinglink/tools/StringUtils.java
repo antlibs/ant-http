@@ -29,8 +29,8 @@ public abstract class StringUtils {
   /**
    * If in is null or length 0, return defaultString, otherwise return in
    *
-   * @param in
-   * @param defaultString
+   * @param in String
+   * @param defaultString String
    * @return The String <code>in</code> if it is not null or empty, otherwise
    *         the value of <code>defaultString</code>
    */

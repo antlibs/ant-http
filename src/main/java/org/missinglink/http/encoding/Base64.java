@@ -4,9 +4,8 @@ package org.missinglink.http.encoding;
  * <p>Encodes and decodes to and from Base64 notation.</p>
  * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
  * <p>Example:</p>
- * <code>String encoded = Base64.encode( myByteArray );</code>
- * <br/>
- * <code>byte[] myByteArray = Base64.decode( encoded );</code>
+ * <pre>String encoded = Base64.encode( myByteArray );
+ * byte[] myByteArray = Base64.decode( encoded );</pre>
  * <p>The <tt>options</tt> parameter, which appears in a few places, is used to pass
  * several pieces of information to the encoder. In the "higher level" methods such as
  * encodeBytes( bytes, options ) the options parameter can be used to indicate such
@@ -1317,7 +1316,7 @@ public class Base64 {
                     @Override
                     public Class<?> resolveClass(java.io.ObjectStreamClass streamClass)
                             throws java.io.IOException, ClassNotFoundException {
-                        Class c = Class.forName(streamClass.getName(), false, loader);
+                        Class<?> c = Class.forName(streamClass.getName(), false, loader);
                         if (c == null) {
                             return super.resolveClass(streamClass);
                         } else {

@@ -32,22 +32,22 @@ public class HttpCertificateException extends HttpClientException {
   }
 
   /**
-   * @param message
-   * @param cause
+   * @param message String
+   * @param cause Throwable
    */
   public HttpCertificateException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
   /**
-   * @param message
+   * @param message String
    */
   public HttpCertificateException(final String message) {
     super(message);
   }
 
   /**
-   * @param cause
+   * @param cause Throwable
    */
   public HttpCertificateException(final Throwable cause) {
     super(cause);

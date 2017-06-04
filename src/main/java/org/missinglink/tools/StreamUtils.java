@@ -35,9 +35,9 @@ public abstract class StreamUtils {
   /**
    * Read from an {@link InputStream} and return it as a String.
    *
-   * @param is
+   * @param is InputStream
    * @return A String created from reading the {@link InputStream}
-   * @throws IOException
+   * @throws IOException on failure
    */
   public static String inputStreamToString(final InputStream is) throws IOException {
 
@@ -66,10 +66,10 @@ public abstract class StreamUtils {
    * Read from an {@link InputStream} and return it as a <code>byte[]</code>
    * array.
    *
-   * @param is
+   * @param is InputStream
    * @return A <code>byte[]</code> array created from reading the
    *         {@link InputStream}
-   * @throws IOException
+   * @throws IOException on failure
    */
   public static byte[] inputStreamToByteArray(final InputStream is) throws IOException {
     return inputStreamToByteArrayOutputStream(is).toByteArray();
@@ -79,10 +79,10 @@ public abstract class StreamUtils {
    * Read from an {@link InputStream} and return it as a
    * {@link ByteArrayOutputStream}.
    *
-   * @param is
+   * @param is InputStream
    * @return A {@link ByteArrayOutputStream} created from reading the
    *         {@link InputStream}
-   * @throws IOException
+   * @throws IOException on failure
    */
   public static ByteArrayOutputStream inputStreamToByteArrayOutputStream(final InputStream is) throws IOException {
 

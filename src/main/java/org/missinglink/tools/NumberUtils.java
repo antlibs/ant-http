@@ -30,7 +30,9 @@ public abstract class NumberUtils {
    * Attempt to convert str to an {@link Integer}, on any failure whatsoever
    * return defaultNumber
    *
-   * @param str
+   * @param str String
+   * @param defaultNumber Integer
+   * @return Integer
    */
   public static Integer defaultInteger(final String str, final Integer defaultNumber) {
     try {
