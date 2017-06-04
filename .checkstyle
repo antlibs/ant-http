@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fileset-config file-format-version="1.2.0" simple-config="true" sync-formatter="false">
-  <local-check-config name="missing-link" location="src/main/config/checkstyles.xml" type="project" description="">
+  <local-check-config name="missing-link" location="src/config/checkstyles.xml" type="project" description="">
     <additional-data name="protect-config-file" value="false"/>
   </local-check-config>
   <fileset name="all" enabled="true" check-config-name="missing-link" local="true">
@@ -10,5 +10,4 @@
   <filter name="FilesFromPackage" enabled="true">
     <filter-data value="src/main/java/org/missinglink/http/encoding"/>
   </filter>
-  <filter name="NonSrcDirs" enabled="true"/>
 </fileset-config>
