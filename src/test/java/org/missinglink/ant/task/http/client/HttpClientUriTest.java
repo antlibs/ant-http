@@ -104,5 +104,7 @@ public class HttpClientUriTest {
     Assert.assertEquals("http://host/context/longer/file.html?qp2=value2&qp=value+with+spaces", client.getUri());
     client = HttpClient.uri("http://host/context/longer/file.html?qp3=value3&qp2=value2&qp=value with spaces").toHttpClient();
     Assert.assertEquals("http://host/context/longer/file.html?qp3=value3&qp2=value2&qp=value+with+spaces", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html?qp3=value3&qp2=value=stuff&qp=value").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html?qp3=value3&qp2=value%3Dstuff&qp=value", client.getUri());
   }
 }

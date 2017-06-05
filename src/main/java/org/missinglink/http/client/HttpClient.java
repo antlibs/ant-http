@@ -426,8 +426,9 @@ public class HttpClient {
       if (null != query && query.length() > 0) {
         final String[] queryParts = query.split("&");
         for (final String queryPart : queryParts) {
-          final String[] keyValue = queryPart.split("=");
-          httpClient.queryUnencoded.put(keyValue[0], keyValue.length > 1 ? keyValue[1] : null);
+          final String[] keyValue = queryPart.split("=", 2);
+          httpClient.queryUnencoded.put(keyValue[0],
+                  (keyValue.length > 1 && !keyValue[1].equals("")) ? keyValue[1] : null);
         }
       }
       for (final Entry<String, String> entry : httpClient.queryUnencoded.entrySet()) {
