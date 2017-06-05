@@ -98,9 +98,11 @@ public class HttpClientUriTest {
     Assert.assertEquals("http://host/context/longer/?qp=value+with+spaces", client.getUri());
     client = HttpClient.uri("http://host/context/longer/file.html?qp=value with spaces").toHttpClient();
     Assert.assertEquals("http://host/context/longer/file.html?qp=value+with+spaces", client.getUri());
-    client = HttpClient.uri("http://host/context/longer/?qp=value with spaces&qp2=value2").toHttpClient();
+    client = HttpClient.uri("http://host/context/longer/?qp2=value2&qp=value with spaces").toHttpClient();
     Assert.assertEquals("http://host/context/longer/?qp2=value2&qp=value+with+spaces", client.getUri());
-    client = HttpClient.uri("http://host/context/longer/file.html?qp=value with spaces&qp2=value2").toHttpClient();
+    client = HttpClient.uri("http://host/context/longer/file.html?qp2=value2&qp=value with spaces").toHttpClient();
     Assert.assertEquals("http://host/context/longer/file.html?qp2=value2&qp=value+with+spaces", client.getUri());
+    client = HttpClient.uri("http://host/context/longer/file.html?qp3=value3&qp2=value2&qp=value with spaces").toHttpClient();
+    Assert.assertEquals("http://host/context/longer/file.html?qp3=value3&qp2=value2&qp=value+with+spaces", client.getUri());
   }
 }

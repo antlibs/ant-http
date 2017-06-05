@@ -16,7 +16,7 @@
 
 package org.missinglink.ant.task.http;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class QueryNode {
 
-  protected final List<QueryParameterNode> parameters = new ArrayList<QueryParameterNode>();
+  protected final List<QueryParameterNode> parameters = new LinkedList<QueryParameterNode>();
 
   public QueryNode() {
     super();

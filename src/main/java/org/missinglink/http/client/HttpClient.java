@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -81,8 +82,8 @@ public class HttpClient {
   protected InputStream keyStore;
   protected String keyStorePassword;
 
-  protected final Map<String, String> queryUnencoded = new HashMap<String, String>();
-  protected final Map<String, String> queryEncoded = new HashMap<String, String>();
+  protected final Map<String, String> queryUnencoded = new LinkedHashMap<String, String>();
+  protected final Map<String, String> queryEncoded = new LinkedHashMap<String, String>();
 
   protected final Map<String, String> headers = new HashMap<String, String>();
 
