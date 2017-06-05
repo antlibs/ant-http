@@ -215,7 +215,7 @@ public class HttpClientTask extends Task {
           fos.close();
           log("Entity written to file:\t" + outFile.getAbsolutePath(), Project.MSG_INFO);
         } catch (final Throwable t) {
-          throw new BuildException("Failed to write response entity to file: " + outFile.getAbsolutePath(), t);
+          throw new BuildException("Failed to write response entity to file: " + outFile.getAbsolutePath() + " - " + t.getMessage(), t);
         }
       }
 
