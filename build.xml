@@ -158,7 +158,7 @@
     <mkdir dir="${ml-ant-http.test.report.dir}"/>
     <junit printsummary="yes" haltonerror="false" haltonfailure="false"
 	   errorproperty="junit.error" failureproperty="junit.failure"
-	   fork="true">
+	   fork="true" tempdir="${ml-ant-http.build.dir}">
       <classpath>
         <pathelement location="${ml-ant-http.test.resources.dir}"/>
         <pathelement location="${ml-ant-http.build.test.classes.dir}"/>
