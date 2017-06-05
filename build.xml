@@ -154,7 +154,7 @@
     </copy>
   </target>
 
-  <target name="test" depends="compile-tests">
+  <target name="test-internal" depends="compile-tests">
     <mkdir dir="${ml-ant-http.test.report.dir}"/>
     <junit printsummary="yes" haltonerror="false" haltonfailure="false"
 	   errorproperty="junit.error" failureproperty="junit.failure"
@@ -175,6 +175,22 @@
         </fileset>
       </batchtest>
     </junit>
+  </target>
+
+  <target name="test" depends="test-internal">
+    <fail message="JUnit error (${junit.error}) encountered. See logs (in ${ml-ant-http.test.report.dir}) for details (use the target test-report to run the test with a report)" if="junit.error"/>
+    <fail message="JUnit failure (${junit.failure}) encountered. See logs (in ${ml-ant-http.test.report.dir}) for details (use the target test-report to run the test with a report)" if="junit.failure"/>
+  </target>
+
+  <target name="test-report" depends="test-internal" description="o Make report of JUnit tests">
+    <junitreport todir="${ml-ant-http.test.report.dir}">
+      <fileset dir="${ml-ant-http.test.report.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${ml-ant-http.build.docs.dir}/test-report"/>
+    </junitreport>
+    <fail message="JUnit error (${junit.error}) encountered. See logs (in ${ml-ant-http.test.report.dir}) or report (in ${ml-ant-http.build.docs.dir}/test-report)" if="junit.error"/>
+    <fail message="JUnit failure (${junit.failure}) encountered. See logs (in ${ml-ant-http.test.report.dir}) or report (in ${ml-ant-http.build.docs.dir}/test-report)" if="junit.failure"/>
   </target>
 
 </project>
