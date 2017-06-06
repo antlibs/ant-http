@@ -51,9 +51,7 @@ public abstract class StreamUtils {
 
     while (ret > 0) {
       final byte[] bufPage = new byte[ret];
-      for (int i = 0; i < ret; i++) {
-        bufPage[i] = buf[i];
-      }
+      System.arraycopy(buf, 0, bufPage, 0, ret);
       sb.append(new String(bufPage));
       ret = is.read(buf, 0, pageSize);
     }
@@ -96,9 +94,7 @@ public abstract class StreamUtils {
 
     while (ret > 0) {
       final byte[] bufPage = new byte[ret];
-      for (int i = 0; i < ret; i++) {
-        bufPage[i] = buf[i];
-      }
+      System.arraycopy(buf, 0, bufPage, 0, ret);
       out.write(bufPage);
       ret = is.read(buf, 0, pageSize);
     }
