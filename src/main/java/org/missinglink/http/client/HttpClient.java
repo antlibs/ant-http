@@ -80,6 +80,7 @@ public class HttpClient {
   private InputStream entity;
   private boolean binaryEntity = false;
   private boolean followRedirects = true;
+  private boolean setContentLength = false;
   private InputStream keyStore;
   private String keyStorePassword;
 
@@ -627,6 +628,13 @@ public class HttpClient {
       }
       httpClient.entity = is;
       httpClient.binaryEntity = binary;
+      if (httpClient.setContentLength) {
+        try {
+          header("Content-Length", "" + is.available());
+        } catch (final IOException e) {
+          e.printStackTrace();
+        }
+      }
       return this;
     }
 
@@ -654,8 +662,12 @@ public class HttpClient {
      */
     public HttpClientBuilder entity(final String str, final boolean binary) {
       if (null != str) {
-        httpClient.entity = new ByteArrayInputStream(str.getBytes());
-        httpClient.binaryEntity = binary;
+        try {
+          entity(new ByteArrayInputStream(str.getBytes()), binary);
+        } catch (final InvalidStreamException e) {
+          // should never happen
+          e.printStackTrace();
+        }
       }
       return this;
     }
@@ -683,8 +695,13 @@ public class HttpClient {
       return this;
     }
 
-    public HttpClientBuilder followRedirects(final boolean followRedirects) {
-      httpClient.followRedirects = followRedirects;
+    public HttpClientBuilder followRedirects(final boolean follow) {
+      httpClient.followRedirects = follow;
+      return this;
+    }
+
+    public HttpClientBuilder setContentLength(final boolean setHeader) {
+      httpClient.setContentLength = setHeader;
       return this;
     }
   }

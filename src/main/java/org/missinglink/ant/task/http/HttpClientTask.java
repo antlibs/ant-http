@@ -65,6 +65,7 @@ public class HttpClientTask extends Task {
   private int expected = 200;
   private boolean failOnUnexpected = true;
   private boolean followRedirects = true;
+  private boolean setContentLengthHeader = false;
   private boolean update = true;
   private int logLevel = Project.MSG_INFO;
 
@@ -319,6 +320,7 @@ public class HttpClientTask extends Task {
       }
 
       // set request entity
+      builder.setContentLength(setContentLengthHeader);
       if (null != entity && entity.isValid()) {
         if (null != entity.getFile()) {
           // 1. prefer file
@@ -422,6 +424,10 @@ public class HttpClientTask extends Task {
 
   public void setPrintrequestheaders(final boolean printRequestHeaders) {
     this.printRequestHeaders = printRequestHeaders;
+  }
+
+  public void setSetcontentlengthheader(final boolean setHeader) {
+    this.setContentLengthHeader = setHeader;
   }
 
   public String getStatusProperty() {

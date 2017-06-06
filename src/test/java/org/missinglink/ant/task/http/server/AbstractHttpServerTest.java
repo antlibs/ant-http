@@ -244,7 +244,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final HttpContext hwZipContext = server.createContext(SECURE_CONTEXT + HW_ZIP_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-		zipResponse(exchange);
+        zipResponse(exchange);
       }
     });
     hwZipContext.setAuthenticator(getBasicAuthenticator());
@@ -253,7 +253,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     server.createContext(HW_PNG_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-		imageResponse(exchange);
+        imageResponse(exchange);
       }
     });
 
@@ -261,7 +261,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final HttpContext hwPngContext = server.createContext(SECURE_CONTEXT + HW_PNG_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-		imageResponse(exchange);
+        imageResponse(exchange);
       }
     });
     hwPngContext.setAuthenticator(getBasicAuthenticator());
@@ -301,12 +301,12 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   }
 
   private void imageResponse(HttpExchange exchange) throws IOException {
-	final InputStream is = getClass().getResourceAsStream(HW_PNG);
-	final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
-	exchange.getResponseHeaders().set("Content-Type", "image/png");
-	exchange.sendResponseHeaders(200, bytes.length);
-	exchange.getResponseBody().write(bytes);
-	exchange.getResponseBody().close();
+    final InputStream is = getClass().getResourceAsStream(HW_PNG);
+    final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
+    exchange.getResponseHeaders().set("Content-Type", "image/png");
+    exchange.sendResponseHeaders(200, bytes.length);
+    exchange.getResponseBody().write(bytes);
+    exchange.getResponseBody().close();
   }
 
   private void pingResponse(HttpExchange exchange) throws IOException {

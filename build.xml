@@ -122,6 +122,7 @@
       </fileset>
     </copy>
 
+    <filter token="ml-ant-http-jar-name" value="${ivy.module}"/>
     <filter token="ml-ant-http-version" value="${ivy.revision}"/>
 
     <copy filtering="true" flatten="true" todir="${ml-ant-http.dist.jar.dir}">

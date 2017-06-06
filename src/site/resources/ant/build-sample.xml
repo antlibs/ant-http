@@ -1,12 +1,13 @@
 <?xml version="1.1" encoding="UTF-8"?>
 <project name="ml-ant-http" basedir="." default="http-get">
 
-  <property name="ml-ant-http.jar" value="ml-ant-http-@ml-ant-http-version@.jar"/>
+  <property name="ml-ant-http.jar" value="@ml-ant-http-jar-name@-@ml-ant-http-version@.jar"/>
+  <property name="content" value="hello world"/>
 
   <fileset id="runtime.libs" dir=".">
     <include name="${ml-ant-http.jar}"/>
   </fileset>
-  
+
   <path id="runtime.classpath">
     <fileset refid="runtime.libs"/>
   </path>
@@ -16,7 +17,10 @@
   </taskdef>
 
   <target name="http-get">
-    <http url="http://www.google.com"/>
+    <http url="http://www.google.com" method="PUT" printrequestheaders="true"
+          followredirects="false" setcontentlengthheader="true" expected="405">
+      <entity>${content}</entity>
+    </http>
   </target>
-  
+
 </project>

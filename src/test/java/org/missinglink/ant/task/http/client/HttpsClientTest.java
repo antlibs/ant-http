@@ -140,6 +140,18 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
+  public void testPutWithEntity() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + ECHO_CONTEXT).put().setContentLength(true).entity("Hello World").keyStore(getKeyStore(), "password")
+        .toHttpClient();
+    Assert.assertNotNull(httpClient.getHeaders().get("Content-Length"));
+    Assert.assertEquals(Long.parseLong(httpClient.getHeaders().get("Content-Length")), "Hello World".getBytes().length);
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertArrayEquals("Hello World".getBytes(), response.getEntity());
+    Assert.assertEquals(200, response.getStatus());
+  }
+
+  @Test
   public void testPutSecuredWithResponseEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).put().entity("Hello World").credentials(USERNAME, PASSWORD)
         .keyStore(getKeyStore(), "password").toHttpClient();
