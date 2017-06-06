@@ -341,7 +341,7 @@ public class HttpClientTask extends Task {
           builder = builder.entity(entity.getValue());
         } else {
           // 3. fall back to text content
-          builder = builder.entity(entity.getText(), entity.getBinary());
+          builder = builder.entity(getProject().replaceProperties(entity.getText()), entity.getBinary());
         }
       }
 
