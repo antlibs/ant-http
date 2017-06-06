@@ -24,10 +24,10 @@ import java.io.File;
  */
 public class EntityNode {
 
-  protected String text;
-  protected File file;
-  protected String value;
-  protected boolean binary = false;
+  private String text;
+  private File file;
+  private String value;
+  private boolean binary = false;
 
   public EntityNode() {
     super();

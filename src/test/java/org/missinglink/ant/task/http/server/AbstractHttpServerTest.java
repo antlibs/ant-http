@@ -62,6 +62,15 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   protected static final String ECHO_CONTEXT = "/echo";
   protected static final String ECHO_TEXT = "text";
 
+  protected static final String MOVED_PERM_CONTEXT = "/301";
+  protected static final String MOVED_PERM_RESPONSE = "Moved Permanently";
+
+  protected static final String MOVED_TEMP_CONTEXT = "/302";
+  protected static final String MOVED_TEMP_RESPONSE = "Found";
+
+  protected static final String SEE_OTHER_CONTEXT = "/303";
+  protected static final String SEE_OTHER_RESPONSE = "See Other";
+
   protected static final String INTERNAL_SERVER_ERROR_CONTEXT = "/500";
   protected static final String INTERNAL_SERVER_ERROR_RESPONSE = "Internal Server Error";
 
@@ -136,15 +145,11 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   }
 
   protected void attachHttpHandlers(final HttpServer server) {
-
     // ping handler
     server.createContext(PING_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(200, PING_RESPONSE.getBytes().length);
-        exchange.getResponseBody().write(PING_RESPONSE.getBytes());
-        exchange.getResponseBody().close();
+        pingResponse(exchange);
       }
     });
 
@@ -152,10 +157,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final HttpContext securePingContext = server.createContext(SECURE_CONTEXT + PING_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(200, PING_RESPONSE.getBytes().length);
-        exchange.getResponseBody().write(PING_RESPONSE.getBytes());
-        exchange.getResponseBody().close();
+        pingResponse(exchange);
       }
     });
     securePingContext.setAuthenticator(getBasicAuthenticator());
@@ -164,20 +166,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     server.createContext(ECHO_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        String responseEntity = "";
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
-          responseEntity = StreamUtils.inputStreamToString(exchange.getRequestBody());
-        } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-          responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
-        }
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(200, responseEntity.getBytes().length);
-        writeEntity(exchange, responseEntity);
-        exchange.close();
-      }
-
-      protected void writeEntity(final HttpExchange httpExchange, final String entity) throws IOException {
-        httpExchange.getResponseBody().write(entity.getBytes());
+        echoResponse(exchange);
       }
     });
 
@@ -185,32 +174,52 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final HttpContext secureEchoContext = server.createContext(SECURE_CONTEXT + ECHO_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        String responseEntity = "";
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
-          responseEntity = StreamUtils.inputStreamToString(exchange.getRequestBody());
-        } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-          responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
-        }
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(200, responseEntity.getBytes().length);
-        writeEntity(exchange, responseEntity);
-        exchange.close();
-      }
-
-      protected void writeEntity(final HttpExchange httpExchange, final String entity) throws IOException {
-        httpExchange.getResponseBody().write(entity.getBytes());
+        echoResponse(exchange);
       }
     });
     secureEchoContext.setAuthenticator(getBasicAuthenticator());
+
+    // 301 handler
+    server.createContext(MOVED_PERM_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Location", PING_CONTEXT);
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(301, MOVED_PERM_RESPONSE.getBytes().length);
+        exchange.getResponseBody().write(MOVED_PERM_RESPONSE.getBytes());
+        exchange.getResponseBody().close();
+      }
+    });
+
+    // 302 handler
+    server.createContext(MOVED_TEMP_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Location", PING_CONTEXT);
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(302, MOVED_TEMP_RESPONSE.getBytes().length);
+        exchange.getResponseBody().write(MOVED_TEMP_RESPONSE.getBytes());
+        exchange.getResponseBody().close();
+      }
+    });
+
+    // 303 handler
+    server.createContext(SEE_OTHER_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Location", PING_CONTEXT);
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(303, SEE_OTHER_RESPONSE.getBytes().length);
+        exchange.getResponseBody().write(SEE_OTHER_RESPONSE.getBytes());
+        exchange.getResponseBody().close();
+      }
+    });
 
     // 500 handler
     server.createContext(INTERNAL_SERVER_ERROR_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(500, INTERNAL_SERVER_ERROR_RESPONSE.getBytes().length);
-        exchange.getResponseBody().write(INTERNAL_SERVER_ERROR_RESPONSE.getBytes());
-        exchange.getResponseBody().close();
+        internalErrorResponse(exchange);
       }
     });
 
@@ -218,10 +227,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final HttpContext secure500Context = server.createContext(SECURE_CONTEXT + INTERNAL_SERVER_ERROR_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(500, INTERNAL_SERVER_ERROR_RESPONSE.getBytes().length);
-        exchange.getResponseBody().write(INTERNAL_SERVER_ERROR_RESPONSE.getBytes());
-        exchange.getResponseBody().close();
+        internalErrorResponse(exchange);
       }
     });
     secure500Context.setAuthenticator(getBasicAuthenticator());
@@ -230,12 +236,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     server.createContext(HW_ZIP_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        final InputStream is = getClass().getResourceAsStream(HW_ZIP);
-        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
-        exchange.getResponseHeaders().set("Content-Type", "application/zip");
-        exchange.sendResponseHeaders(200, bytes.length);
-        exchange.getResponseBody().write(bytes);
-        exchange.getResponseBody().close();
+        zipResponse(exchange);
       }
     });
 
@@ -243,12 +244,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final HttpContext hwZipContext = server.createContext(SECURE_CONTEXT + HW_ZIP_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        final InputStream is = getClass().getResourceAsStream(HW_ZIP);
-        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
-        exchange.getResponseHeaders().set("Content-Type", "application/zip");
-        exchange.sendResponseHeaders(200, bytes.length);
-        exchange.getResponseBody().write(bytes);
-        exchange.getResponseBody().close();
+		zipResponse(exchange);
       }
     });
     hwZipContext.setAuthenticator(getBasicAuthenticator());
@@ -257,12 +253,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     server.createContext(HW_PNG_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        final InputStream is = getClass().getResourceAsStream(HW_PNG);
-        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
-        exchange.getResponseHeaders().set("Content-Type", "image/png");
-        exchange.sendResponseHeaders(200, bytes.length);
-        exchange.getResponseBody().write(bytes);
-        exchange.getResponseBody().close();
+		imageResponse(exchange);
       }
     });
 
@@ -270,15 +261,59 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     final HttpContext hwPngContext = server.createContext(SECURE_CONTEXT + HW_PNG_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        final InputStream is = getClass().getResourceAsStream(HW_PNG);
-        final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
-        exchange.getResponseHeaders().set("Content-Type", "image/png");
-        exchange.sendResponseHeaders(200, bytes.length);
-        exchange.getResponseBody().write(bytes);
-        exchange.getResponseBody().close();
+		imageResponse(exchange);
       }
     });
     hwPngContext.setAuthenticator(getBasicAuthenticator());
+  }
+
+  private void echoResponse(HttpExchange exchange) throws IOException {
+    String responseEntity = "";
+    if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+      responseEntity = StreamUtils.inputStreamToString(exchange.getRequestBody());
+    } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+      responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
+    }
+    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(200, responseEntity.getBytes().length);
+    writeEntity(exchange, responseEntity);
+    exchange.close();
+  }
+
+  private void writeEntity(final HttpExchange httpExchange, final String entity) throws IOException {
+    httpExchange.getResponseBody().write(entity.getBytes());
+  }
+
+  private void internalErrorResponse(HttpExchange exchange) throws IOException {
+    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(500, INTERNAL_SERVER_ERROR_RESPONSE.getBytes().length);
+    exchange.getResponseBody().write(INTERNAL_SERVER_ERROR_RESPONSE.getBytes());
+    exchange.getResponseBody().close();
+  }
+
+  private void zipResponse(HttpExchange exchange) throws IOException {
+    final InputStream is = getClass().getResourceAsStream(HW_ZIP);
+    final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
+    exchange.getResponseHeaders().set("Content-Type", "application/zip");
+    exchange.sendResponseHeaders(200, bytes.length);
+    exchange.getResponseBody().write(bytes);
+    exchange.getResponseBody().close();
+  }
+
+  private void imageResponse(HttpExchange exchange) throws IOException {
+	final InputStream is = getClass().getResourceAsStream(HW_PNG);
+	final byte[] bytes = StreamUtils.inputStreamToByteArray(is);
+	exchange.getResponseHeaders().set("Content-Type", "image/png");
+	exchange.sendResponseHeaders(200, bytes.length);
+	exchange.getResponseBody().write(bytes);
+	exchange.getResponseBody().close();
+  }
+
+  private void pingResponse(HttpExchange exchange) throws IOException {
+    exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    exchange.sendResponseHeaders(200, PING_RESPONSE.getBytes().length);
+    exchange.getResponseBody().write(PING_RESPONSE.getBytes());
+    exchange.getResponseBody().close();
   }
 
   protected Map<String, String> getQueryParams(final URI uri) throws UnsupportedEncodingException {

@@ -76,6 +76,65 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
+  public void test301() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_PERM_CONTEXT).toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertArrayEquals(PING_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertEquals(PING_RESPONSE, response.getEntityAsString());
+    Assert.assertEquals(200, response.getStatus());
+  }
+
+  @Test
+  public void test301withoutRedirect() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_PERM_CONTEXT).followRedirects(false).toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertArrayEquals(MOVED_PERM_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertEquals(MOVED_PERM_RESPONSE, response.getEntityAsString());
+    Assert.assertEquals(301, response.getStatus());
+  }
+  @Test
+  public void test302() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_TEMP_CONTEXT).toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertArrayEquals(PING_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertEquals(PING_RESPONSE, response.getEntityAsString());
+    Assert.assertEquals(200, response.getStatus());
+  }
+
+  @Test
+  public void test302withoutRedirect() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_TEMP_CONTEXT).followRedirects(false).toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertArrayEquals(MOVED_TEMP_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertEquals(MOVED_TEMP_RESPONSE, response.getEntityAsString());
+    Assert.assertEquals(302, response.getStatus());
+  }
+
+  @Test
+  public void test303() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SEE_OTHER_CONTEXT).toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertArrayEquals(PING_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertEquals(PING_RESPONSE, response.getEntityAsString());
+    Assert.assertEquals(200, response.getStatus());
+  }
+
+  @Test
+  public void test303withoutRedirect() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SEE_OTHER_CONTEXT).followRedirects(false).toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertArrayEquals(SEE_OTHER_RESPONSE.getBytes(), response.getEntity());
+    Assert.assertEquals(SEE_OTHER_RESPONSE, response.getEntityAsString());
+    Assert.assertEquals(303, response.getStatus());
+  }
+
+  @Test
   public void test404() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + "/doesnt/exist").toHttpClient();
     final HttpResponse response = httpClient.invoke();

@@ -22,9 +22,9 @@ package org.missinglink.ant.task.http;
  */
 public class CredentialsNode {
 
-  protected String username;
-  protected String password;
-  protected boolean show = false;
+  private String username;
+  private String password;
+  private boolean show = false;
 
   public CredentialsNode() {
     super();

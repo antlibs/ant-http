@@ -24,8 +24,8 @@ import java.io.File;
  */
 public class KeyStoreNode {
 
-  protected File file;
-  protected String password;
+  private File file;
+  private String password;
 
   public KeyStoreNode() {
     super();

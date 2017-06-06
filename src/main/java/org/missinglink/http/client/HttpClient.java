@@ -60,7 +60,7 @@ import org.missinglink.tools.StreamUtils;
  */
 public class HttpClient {
 
-  protected static final String UTF_8 = "UTF-8";
+  private static final String UTF_8 = "UTF-8";
 
   // HTTP protocols
   public static final String HTTP = "http";
@@ -70,22 +70,23 @@ public class HttpClient {
   public static final String ACCEPT = "Accept";
   public static final String CONTENT_TYPE = "Content-Type";
 
-  protected String protocol;
-  protected String host;
-  protected Integer port;
-  protected String path;
-  protected HttpMethod method = HttpMethod.GET;
-  protected String username;
-  protected String password;
-  protected InputStream entity;
-  protected boolean binaryEntity = false;
-  protected InputStream keyStore;
-  protected String keyStorePassword;
+  private String protocol;
+  private String host;
+  private Integer port;
+  private String path;
+  private HttpMethod method = HttpMethod.GET;
+  private String username;
+  private String password;
+  private InputStream entity;
+  private boolean binaryEntity = false;
+  private boolean followRedirects = true;
+  private InputStream keyStore;
+  private String keyStorePassword;
 
-  protected final Map<String, String> queryUnencoded = new LinkedHashMap<String, String>();
-  protected final Map<String, String> queryEncoded = new LinkedHashMap<String, String>();
+  private final Map<String, String> queryUnencoded = new LinkedHashMap<String, String>();
+  private final Map<String, String> queryEncoded = new LinkedHashMap<String, String>();
 
-  protected final Map<String, String> headers = new HashMap<String, String>();
+  private final Map<String, String> headers = new HashMap<String, String>();
 
   protected HttpClient() {
     super();
@@ -161,6 +162,9 @@ public class HttpClient {
 
       // set method
       httpUrlConnection.setRequestMethod(method.name());
+
+      // follow redirects
+      httpUrlConnection.setInstanceFollowRedirects(followRedirects);
 
       // if HTTPS, check for HTTPS options
       if (HTTPS.equalsIgnoreCase(protocol)) {
@@ -347,6 +351,13 @@ public class HttpClient {
    */
   public HttpMethod getMethod() {
     return method;
+  }
+
+  /**
+   * @return if instance follows redirects
+   */
+  public boolean getFollowRedirects() {
+    return followRedirects;
   }
 
   /**
@@ -672,6 +683,10 @@ public class HttpClient {
       return this;
     }
 
+    public HttpClientBuilder followRedirects(final boolean followRedirects) {
+      httpClient.followRedirects = followRedirects;
+      return this;
+    }
   }
 
 }

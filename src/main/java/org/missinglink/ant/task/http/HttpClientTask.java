@@ -46,27 +46,30 @@ import org.missinglink.http.exception.HttpInvocationException;
 public class HttpClientTask extends Task {
 
   // ant parameters
-  protected String url;
-  protected String statusProperty;
-  protected String entityProperty;
-  protected File outFile;
-  protected HttpMethod method;
-  protected CredentialsNode credentials;
-  protected KeyStoreNode keystore;
-  protected EntityNode entity;
-  protected HeadersNode headers;
-  protected QueryNode query;
-  protected boolean printRequest;
-  protected boolean printResponse;
-  protected boolean printRequestHeaders = true;
-  protected boolean printResponseHeaders = true;
-  protected int expected = 200;
-  protected boolean failOnUnexpected = true;
-  protected boolean update = true;
-  protected int logLevel = Project.MSG_INFO;
+  private String url;
+  private String statusProperty;
+  private String entityProperty;
+  private File outFile;
+  private HttpMethod method;
+  private CredentialsNode credentials;
+  private KeyStoreNode keystore;
+  private EntityNode entity;
+  private HeadersNode headers;
+  private QueryNode query;
+  private boolean printRequest;
+  private boolean printResponse;
+  @SuppressWarnings("unused")
+  private boolean printRequestHeaders = true;
+  @SuppressWarnings("unused")
+  private boolean printResponseHeaders = true;
+  private int expected = 200;
+  private boolean failOnUnexpected = true;
+  private boolean followRedirects = true;
+  private boolean update = true;
+  private int logLevel = Project.MSG_INFO;
 
   // http task parameters
-  protected HttpClient httpClient;
+  private HttpClient httpClient;
 
   public HttpClientTask() {
     super();
@@ -304,6 +307,10 @@ public class HttpClientTask extends Task {
         }
       }
 
+      if (!followRedirects) {
+        builder.followRedirects(followRedirects);
+      }
+
       // set query parameters
       if (null != query && query.isValid()) {
         for (final QueryParameterNode qp : query.getParameters()) {
@@ -403,6 +410,10 @@ public class HttpClientTask extends Task {
 
   public void setFailonunexpected(final boolean failOnUnexpected) {
     this.failOnUnexpected = failOnUnexpected;
+  }
+
+  public void setFollowRedirects(final boolean followRedirects) {
+    this.followRedirects = followRedirects;
   }
 
   public void setPrintresponseheaders(final boolean printResponseHeaders) {

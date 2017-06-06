@@ -22,8 +22,8 @@ package org.missinglink.ant.task.http;
  */
 public class QueryParameterNode {
 
-  protected String name;
-  protected String value;
+  private String name;
+  private String value;
 
   public QueryParameterNode() {
     super();

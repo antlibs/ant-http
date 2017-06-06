@@ -29,21 +29,21 @@ import java.util.Map;
  */
 public class HttpResponse {
 
-  protected HttpClient httpClient;
+  private HttpClient httpClient;
 
-  protected int status;
-  protected String message;
+  private int status;
+  private String message;
 
-  protected byte[] entity;
+  private byte[] entity;
 
-  protected String contentEncoding;
-  protected String contentType;
-  protected int contentLength;
-  protected Date date;
-  protected Date expires;
-  protected Date lastModified;
+  private String contentEncoding;
+  private String contentType;
+  private int contentLength;
+  private Date date;
+  private Date expires;
+  private Date lastModified;
 
-  protected Map<String, List<String>> headers = new HashMap<String, List<String>>();
+  private Map<String, List<String>> headers = new HashMap<String, List<String>>();
 
   public HttpResponse(final HttpClient httpClient) {
     super();

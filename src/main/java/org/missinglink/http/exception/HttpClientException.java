@@ -24,7 +24,7 @@ public abstract class HttpClientException extends Exception {
 
   private static final long serialVersionUID = -3170616202635592971L;
 
-  protected Integer statusCode;
+  private Integer statusCode;
 
   /**
    * 
