@@ -36,7 +36,9 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.security.KeyStore;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -86,6 +88,9 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected static final String HW_ZIP = "/hw.zip";
   protected static final String HW_PNG = "/hw.png";
+
+  protected static final String ECHO_HEADERS_CONTEXT = "/echo-headers";
+  protected static final String ECHO_HEADERS_PREFIX = "X-Req-";
 
   protected final int httpServerPort = 10080;
   protected final int httpsServerPort = 10443;
@@ -265,6 +270,20 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
       }
     });
     hwPngContext.setAuthenticator(getBasicAuthenticator());
+
+    // echo the headers back with a prefix
+    server.createContext(ECHO_HEADERS_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+        final Map<String, List<String>> reqHeaders = new HashMap<String, List<String>>();
+        for (final Entry<String, List<String>> header : exchange.getRequestHeaders().entrySet()) {
+          reqHeaders.put(ECHO_HEADERS_PREFIX + header.getKey(), header.getValue());
+        }
+        exchange.getResponseHeaders().putAll(reqHeaders);
+        exchange.sendResponseHeaders(200, 0);
+        exchange.close();
+      }
+    });
   }
 
   private void echoResponse(HttpExchange exchange) throws IOException {

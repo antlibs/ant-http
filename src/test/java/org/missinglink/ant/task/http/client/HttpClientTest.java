@@ -195,4 +195,13 @@ public class HttpClientTest extends AbstractHttpServerTest {
     Assert.assertArrayEquals("Hello World".getBytes(), response.getEntity());
     Assert.assertEquals(200, response.getStatus());
   }
+
+  @Test
+  public void testHttpHeaders() throws HttpClientException, IOException {
+    final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + ECHO_HEADERS_CONTEXT).get().header("Hello", "World").toHttpClient();
+    final HttpResponse response = httpClient.invoke();
+    Assert.assertNotNull(response);
+    Assert.assertEquals("World", response.getHeader(ECHO_HEADERS_PREFIX + "Hello").get(0));
+    Assert.assertEquals(200, response.getStatus());
+  }
 }
