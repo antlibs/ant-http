@@ -66,7 +66,7 @@ public class EntityNode {
   }
 
   public boolean isValid() {
-    return null != text && text.length() > 0 || null != file;
+    return null != text && text.length() > 0 || null != file || null != value;
   }
 
 }
