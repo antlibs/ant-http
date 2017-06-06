@@ -115,7 +115,7 @@ public class HttpClientTask extends Task {
     if (null != credentials && credentials.isValid()) {
       log("Credentials:\t" + (credentials.isShow() ? credentials.getUsername() + " / " + credentials.getPassword() : "[hidden]"), Project.MSG_VERBOSE);
     }
-    if (httpClient.getHeaders().size() > 0) {
+    if (httpClient.getHeaders().size() > 0 && printRequestHeaders) {
       log("Headers:\t\tyes", Project.MSG_VERBOSE);
       for (final Entry<String, String> entry : httpClient.getHeaders().entrySet()) {
         log("\t" + entry.getKey() + ": " + entry.getValue());
