@@ -1,23 +1,21 @@
-# ant-http
-A clone of missing-link project on Google Code (https://code.google.com/p/missing-link/)
-
-# missing link Ant http task
+# ant-http library
+This is a clone of missing-link project on Google Code (https://code.google.com/p/missing-link/)
 
 ## Overview
 
-The missing link ant http task was created due to the lack of a full featured, usable and liberally licensed ant HTTP task. This ant task is coded from scratch utilizing only core Java classes; as such it does not require any third party dependencies at runtime.
+The missing link Ant HTTP task was created due to the lack of a full featured, usable and liberally licensed Ant HTTP task. This Ant task is coded from scratch utilizing only core Java classes; as such it does not require any third party dependencies at runtime.
 
-This ant task also simplifies common aspects of HTTP communication, which other libraries seem to needlessly complicate, such as: authentication, TLS/SSL and HTTP methods other then GET and POST.
+This Ant task also simplifies common aspects of HTTP communication, which other libraries seem to needlessly complicate, such as: authentication, TLS/SSL and HTTP methods other then GET and POST.
 
 
 ## License
 
-The missing link ant http task is licensed under the Apache 2.0 license, a copy of the license can be found with the missing link ant http task distribution or at http://www.apache.org/licenses/LICENSE-2.0.html.
+The missing link Ant HTTP task is licensed under the Apache 2.0 license, a copy of the license can be found with the missing link ant http task distribution or at http://www.apache.org/licenses/LICENSE-2.0.html.
 
 
 ## Features
 
-The missing link ant http task was created with the following features in mind:
+The missing link Ant HTTP task was created with the following features in mind:
 
 - No third party library dependencies.
 - TLS/SSL support on a configuration, per-connection basis, not JVM-wide.
