@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.missinglink.ant.task.http.server;
+package org.missinglink.http.server;
 
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.HttpContext;
@@ -47,7 +47,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.missinglink.ant.task.http.AbstractTest;
+import org.missinglink.http.AbstractTest;
 import org.missinglink.http.encoding.Base64;
 import org.missinglink.tools.StreamUtils;
 
@@ -78,7 +78,8 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected static final String SECURE_CONTEXT = "/secure";
 
-  protected static final String KEYSTORE = "/keystore.jks";
+  protected static final String KEYSTORE_FILE = "/keystore.jks";
+  protected static final String KEYSTORE_PASSWORD = "password";
 
   protected static final String USERNAME = "user";
   protected static final String PASSWORD = "password";
@@ -92,11 +93,11 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   protected static final String ECHO_HEADERS_CONTEXT = "/echo-headers";
   protected static final String ECHO_HEADERS_PREFIX = "X-Req-";
 
-  protected final int httpServerPort = 10080;
-  protected final int httpsServerPort = 10443;
+  private final int httpServerPort = 10080;
+  private final int httpsServerPort = 10443;
 
-  protected HttpServer httpServer;
-  protected HttpsServer httpsServer;
+  private HttpServer httpServer;
+  private HttpsServer httpsServer;
 
   protected AbstractHttpServerTest() {
     super();
@@ -124,9 +125,9 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     httpsServer.setExecutor(Executors.newCachedThreadPool());
     attachHttpHandlers(httpsServer);
 
-    final char[] passphrase = "password".toCharArray();
+    final char[] passphrase = KEYSTORE_PASSWORD.toCharArray();
     final KeyStore ks = KeyStore.getInstance("JKS");
-    ks.load(getClass().getResourceAsStream(KEYSTORE), passphrase);
+    ks.load(getKeyStore(), passphrase);
 
     final KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
     kmf.init(ks, passphrase);
@@ -275,32 +276,36 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     server.createContext(ECHO_HEADERS_CONTEXT, new HttpHandler() {
       @Override
       public void handle(final HttpExchange exchange) throws IOException {
-        final Map<String, List<String>> reqHeaders = new HashMap<String, List<String>>();
-        for (final Entry<String, List<String>> header : exchange.getRequestHeaders().entrySet()) {
-          reqHeaders.put(ECHO_HEADERS_PREFIX + header.getKey(), header.getValue());
+		  echoHeadersResponse(exchange);
         }
-        exchange.getResponseHeaders().putAll(reqHeaders);
-        exchange.sendResponseHeaders(200, 0);
-        exchange.close();
+    });
+
+    // echo the headers back with a prefix
+    final HttpContext hwHdrContext = server.createContext(SECURE_CONTEXT + ECHO_HEADERS_CONTEXT, new HttpHandler() {
+      @Override
+      public void handle(final HttpExchange exchange) throws IOException {
+		  echoHeadersResponse(exchange);
       }
     });
+    hwHdrContext.setAuthenticator(getBasicAuthenticator());
   }
 
   private void echoResponse(HttpExchange exchange) throws IOException {
-    String responseEntity = "";
-    if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
-      responseEntity = StreamUtils.inputStreamToString(exchange.getRequestBody());
+    byte[] responseEntity = new byte[0];
+    if (null != getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT)) {
+        responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT).getBytes();
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+    } else if ("POST".equalsIgnoreCase(exchange.getRequestMethod()) || "PUT".equalsIgnoreCase(exchange.getRequestMethod())) {
+      responseEntity = StreamUtils.inputStreamToByteArray(exchange.getRequestBody());
+      final List<String> contentType = exchange.getRequestHeaders().get("Content-Type");
+      exchange.getResponseHeaders().set("Content-Type", contentType != null ? contentType.get(0) : "text/plain");
     } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-      responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT);
+      responseEntity = getQueryParams(exchange.getRequestURI()).get(ECHO_TEXT).getBytes();
+      exchange.getResponseHeaders().set("Content-Type", "text/plain");
     }
-    exchange.getResponseHeaders().set("Content-Type", "text/plain");
-    exchange.sendResponseHeaders(200, responseEntity.getBytes().length);
-    writeEntity(exchange, responseEntity);
+    exchange.sendResponseHeaders(200, responseEntity.length);
+    exchange.getResponseBody().write(responseEntity);
     exchange.close();
-  }
-
-  private void writeEntity(final HttpExchange httpExchange, final String entity) throws IOException {
-    httpExchange.getResponseBody().write(entity.getBytes());
   }
 
   private void internalErrorResponse(HttpExchange exchange) throws IOException {
@@ -335,13 +340,23 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     exchange.getResponseBody().close();
   }
 
+  private void echoHeadersResponse(HttpExchange exchange) throws IOException {
+	final Map<String, List<String>> reqHeaders = new HashMap<String, List<String>>();
+	for (final Entry<String, List<String>> header : exchange.getRequestHeaders().entrySet()) {
+		reqHeaders.put(ECHO_HEADERS_PREFIX + header.getKey(), header.getValue());
+	}
+	exchange.getResponseHeaders().putAll(reqHeaders);
+	exchange.sendResponseHeaders(200, 0);
+	exchange.close();
+  }
+
   protected Map<String, String> getQueryParams(final URI uri) throws UnsupportedEncodingException {
     final Map<String, String> map = new HashMap<String, String>();
-    if (null != uri.getQuery() && uri.getQuery().length() > 0) {
-      final String[] params = uri.getQuery().split("&");
+    if (null != uri.getRawQuery() && uri.getRawQuery().length() > 0) {
+      final String[] params = uri.getRawQuery().split("&");
       for (final String param : params) {
         final String[] pair = param.split("=", 2);
-        map.put(pair[0], (pair.length > 1 && !pair[1].equals("")) ? URLDecoder.decode(pair[1], "UTF-8") : null);
+        map.put(URLDecoder.decode(pair[0], "UTF-8"), pair.length > 1 ? URLDecoder.decode(pair[1], "UTF-8") : null);
       }
     }
     return map;
@@ -363,7 +378,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
   protected void attachSSLSocketFactory(final HttpsURLConnection conn) throws Exception {
 
     final KeyStore ks = KeyStore.getInstance("JKS");
-    ks.load(getClass().getResourceAsStream(KEYSTORE), "password".toCharArray());
+    ks.load(getKeyStore(), KEYSTORE_PASSWORD.toCharArray());
     final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
     tmf.init(ks);
 
@@ -384,7 +399,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
 
   protected void addAuthenticationHeader(final HttpURLConnection con) {
     final String userpass = USERNAME + ":" + PASSWORD;
-    final String basicAuth = "Basic " + new String(Base64.encodeBytes(userpass.getBytes()));
+    final String basicAuth = "Basic " + Base64.encodeBytes(userpass.getBytes());
     con.setRequestProperty("Authorization", basicAuth);
   }
 
@@ -415,7 +430,7 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     }
 
     final KeyStore ks = KeyStore.getInstance("JKS");
-    ks.load(getClass().getResourceAsStream(KEYSTORE), "password".toCharArray());
+    ks.load(getKeyStore(), KEYSTORE_PASSWORD.toCharArray());
     final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
     tmf.init(ks);
 
@@ -430,5 +445,13 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
     out.write(entity);
     out.close();
     return con;
+  }
+
+  protected InputStream getKeyStore() {
+    return getClass().getResourceAsStream(KEYSTORE_FILE);
+  }
+
+  protected String getKeyStoreFile() {
+    return getClass().getResource(KEYSTORE_FILE).getFile();
   }
 }

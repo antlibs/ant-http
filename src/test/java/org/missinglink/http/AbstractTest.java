@@ -14,43 +14,17 @@
  *   limitations under the License.
  */
 
-package org.missinglink.http.exception;
+package org.missinglink.http;
 
 /**
+ *
  * @author alex.sherwin
- * 
+ *
  */
-public class HttpInvocationException extends HttpClientException {
+public abstract class AbstractTest {
 
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * 
-   */
-  public HttpInvocationException() {
+  protected AbstractTest() {
     super();
-  }
-
-  /**
-   * @param message String
-   * @param cause Throwable
-   */
-  public HttpInvocationException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  /**
-   * @param message String
-   */
-  public HttpInvocationException(final String message) {
-    super(message);
-  }
-
-  /**
-   * @param cause Throwable
-   */
-  public HttpInvocationException(final Throwable cause) {
-    super(cause);
   }
 
 }

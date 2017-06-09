@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.util.Date;
@@ -185,7 +186,7 @@ public class HttpClient {
       // if username is set, add BASIC authentication header
       if (null != username && username.length() > 0) {
         final String userpass = username + ":" + (null == password ? "" : password);
-        final String basicAuth = "Basic " + new String(Base64.encodeBytes(userpass.getBytes()));
+        final String basicAuth = "Basic " + Base64.encodeBytes(userpass.getBytes());
         httpUrlConnection.setRequestProperty("Authorization", basicAuth);
       }
 
@@ -410,21 +411,17 @@ public class HttpClient {
      */
     protected void parseUri(final String uri) throws InvalidUriException {
       try {
-        final int queryIndex = uri.lastIndexOf("?");
-        final boolean uriHasQuery = queryIndex != -1;
-        final String query = uriHasQuery ? uri.substring(queryIndex + 1) : null;
-        final URI safeUri = new URI(uriHasQuery ? uri.substring(0, queryIndex) : uri);
-
-        httpClient.protocol = safeUri.getScheme();
-        httpClient.host = safeUri.getHost();
-        httpClient.port = safeUri.getPort() != -1 ? safeUri.getPort() : null;
-        httpClient.path = safeUri.getPath();
-        parseQuery(query);
-        if (!safeUri.getScheme().toLowerCase().equals("http") && !safeUri.getScheme().toLowerCase().equals("https")) {
+        final URI jnUri = new URI(fixup(uri));
+        httpClient.protocol = jnUri.getScheme().toLowerCase();
+        httpClient.host = jnUri.getHost();
+        httpClient.port = jnUri.getPort() != -1 ? jnUri.getPort() : null;
+        httpClient.path = jnUri.getRawPath();
+        parseQuery(jnUri.getRawQuery());
+        if (!httpClient.protocol.equals("http") && !httpClient.protocol.equals("https")) {
           throw new InvalidUriException(uri);
         }
       } catch (final Throwable t) {
-        throw new InvalidUriException(t);
+        throw new InvalidUriException(t.getMessage() + " URI: " + uri, t);
       }
     }
 
@@ -439,12 +436,12 @@ public class HttpClient {
         final String[] queryParts = query.split("&");
         for (final String queryPart : queryParts) {
           final String[] keyValue = queryPart.split("=", 2);
-          httpClient.queryUnencoded.put(keyValue[0],
-                  (keyValue.length > 1 && !keyValue[1].equals("")) ? keyValue[1] : null);
+          httpClient.queryEncoded.put(keyValue[0],
+                  keyValue.length > 1 && keyValue[1].length() > 0 ? keyValue[1] : null);
         }
       }
-      for (final Entry<String, String> entry : httpClient.queryUnencoded.entrySet()) {
-        httpClient.queryEncoded.put(entry.getKey(), encode(entry.getValue()));
+      for (final Entry<String, String> entry : httpClient.queryEncoded.entrySet()) {
+        httpClient.queryUnencoded.put(entry.getKey(), decode(entry.getValue()));
       }
     }
 
@@ -456,6 +453,38 @@ public class HttpClient {
       }
     }
 
+    protected String decode(final String str) {
+      try {
+        return null == str ? null : URLDecoder.decode(str, UTF_8);
+      } catch (final UnsupportedEncodingException e) {
+        return null;
+      }
+    }
+
+    /**
+     * Encode any blatantly unusable chars, leave reserved chars (<code>&amp;/:;=?@</code>) as-is.
+     * This is not a normal full encode - it is just a fix-up to try to make questionable URLs usable.
+     *
+     * @param str URL String
+     */
+    protected String fixup(final String str) {
+      if (null == str) {
+        return null;
+      }
+      try {
+        return URLEncoder.encode(str, UTF_8)
+            .replace("%26", "&")
+            .replace("%2F", "/")
+            .replace("%3A", ":")
+            .replace("%3B", ";")
+            .replace("%3D", "=")
+            .replace("%3F", "?")
+            .replace("%40", "@")
+            .replace("%25", "%");
+      } catch (final UnsupportedEncodingException e) {
+        return null;
+      }
+    }
     /**
      * Return the current {@link HttpClient} that this builder represents.
      *

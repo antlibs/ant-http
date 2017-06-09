@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -58,9 +58,7 @@ public class HttpClientTask extends Task {
   private QueryNode query;
   private boolean printRequest;
   private boolean printResponse;
-  @SuppressWarnings("unused")
   private boolean printRequestHeaders = true;
-  @SuppressWarnings("unused")
   private boolean printResponseHeaders = true;
   private int expected = 200;
   private boolean failOnUnexpected = true;
@@ -174,14 +172,18 @@ public class HttpClientTask extends Task {
         log("Response Status: " + response.getStatus(), Project.MSG_INFO);
       }
 
-      if (response.getHeaders().size() > 0) {
-        log("Headers:\t\tyes", Project.MSG_VERBOSE);
+      if (printResponseHeaders) {
+        log("Headers:\t\t" + (response.getHeaders().size() == 0 ? "no" : "yes"), Project.MSG_INFO);
+      } else {
+        log("Headers:\t\t" + (response.getHeaders().size() == 0 ? "no" : "yes"), Project.MSG_VERBOSE);
+      }
+      if (response.getHeaders().size() > 0 && printResponseHeaders) {
         for (final Entry<String, List<String>> entry : response.getHeaders().entrySet()) {
           for (final String value : entry.getValue()) {
             if (null == entry.getKey()) {
-              log("\t" + value, Project.MSG_VERBOSE);
+              log("\t" + value);
             } else {
-              log("\t" + entry.getKey() + ": " + value, Project.MSG_VERBOSE);
+              log("\t" + entry.getKey() + ": " + value);
             }
           }
         }
@@ -343,7 +345,7 @@ public class HttpClientTask extends Task {
           builder = builder.entity(entity.getValue());
         } else {
           // 3. fall back to text content
-          builder = builder.entity(getProject().replaceProperties(entity.getText()), entity.getBinary());
+          builder = builder.entity(entity.getText(), entity.getBinary());
         }
       }
 
@@ -382,11 +384,11 @@ public class HttpClientTask extends Task {
     this.url = url;
   }
 
-  public File getOutfile() {
+  public File getOutFile() {
     return outFile;
   }
 
-  public void setOutfile(final File outFile) {
+  public void setOutFile(final File outFile) {
     this.outFile = outFile;
   }
 
@@ -398,11 +400,11 @@ public class HttpClientTask extends Task {
     this.method = method;
   }
 
-  public void setPrintrequest(final boolean printRequest) {
+  public void setPrintRequest(final boolean printRequest) {
     this.printRequest = printRequest;
   }
 
-  public void setPrintresponse(final boolean printResponse) {
+  public void setPrintResponse(final boolean printResponse) {
     this.printResponse = printResponse;
   }
 
@@ -410,7 +412,7 @@ public class HttpClientTask extends Task {
     this.expected = expected;
   }
 
-  public void setFailonunexpected(final boolean failOnUnexpected) {
+  public void setFailOnUnexpected(final boolean failOnUnexpected) {
     this.failOnUnexpected = failOnUnexpected;
   }
 
@@ -418,15 +420,15 @@ public class HttpClientTask extends Task {
     this.followRedirects = followRedirects;
   }
 
-  public void setPrintresponseheaders(final boolean printResponseHeaders) {
+  public void setPrintResponseHeaders(final boolean printResponseHeaders) {
     this.printResponseHeaders = printResponseHeaders;
   }
 
-  public void setPrintrequestheaders(final boolean printRequestHeaders) {
+  public void setPrintRequestHeaders(final boolean printRequestHeaders) {
     this.printRequestHeaders = printRequestHeaders;
   }
 
-  public void setSetcontentlengthheader(final boolean setHeader) {
+  public void setSetContentLengthHeader(final boolean setHeader) {
     this.setContentLengthHeader = setHeader;
   }
 

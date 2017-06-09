@@ -171,8 +171,7 @@
       <batchtest todir="${ml-ant-http.test.report.dir}">
         <fileset dir="${ml-ant-http.test.src.dir}">
           <include name="**/*Test.java"/>
-          <exclude name="**/Abstract*Test.java"/>
-          <exclude name="**/*$*"/>
+          <exclude name="**/Abstract*"/>
         </fileset>
       </batchtest>
     </junit>
