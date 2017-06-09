@@ -51,7 +51,7 @@ public class EntityNode extends DataType {
   }
 
   public void addText(final String text) {
-    this.text = text;
+    this.text = getProject().replaceProperties(text);
   }
 
   public String getText() {

@@ -58,9 +58,7 @@ public class HttpClientTask extends Task {
   private QueryNode query;
   private boolean printRequest;
   private boolean printResponse;
-  @SuppressWarnings("unused")
   private boolean printRequestHeaders = true;
-  @SuppressWarnings("unused")
   private boolean printResponseHeaders = true;
   private int expected = 200;
   private boolean failOnUnexpected = true;
@@ -174,14 +172,18 @@ public class HttpClientTask extends Task {
         log("Response Status: " + response.getStatus(), Project.MSG_INFO);
       }
 
-      if (response.getHeaders().size() > 0) {
-        log("Headers:\t\tyes", Project.MSG_VERBOSE);
+      if (printResponseHeaders) {
+        log("Headers:\t\t" + (response.getHeaders().size() == 0 ? "no" : "yes"), Project.MSG_INFO);
+      } else {
+        log("Headers:\t\t" + (response.getHeaders().size() == 0 ? "no" : "yes"), Project.MSG_VERBOSE);
+      }
+      if (response.getHeaders().size() > 0 && printResponseHeaders) {
         for (final Entry<String, List<String>> entry : response.getHeaders().entrySet()) {
           for (final String value : entry.getValue()) {
             if (null == entry.getKey()) {
-              log("\t" + value, Project.MSG_VERBOSE);
+              log("\t" + value);
             } else {
-              log("\t" + entry.getKey() + ": " + value, Project.MSG_VERBOSE);
+              log("\t" + entry.getKey() + ": " + value);
             }
           }
         }
@@ -343,7 +345,7 @@ public class HttpClientTask extends Task {
           builder = builder.entity(entity.getValue());
         } else {
           // 3. fall back to text content
-          builder = builder.entity(getProject().replaceProperties(entity.getText()), entity.getBinary());
+          builder = builder.entity(entity.getText(), entity.getBinary());
         }
       }
 
