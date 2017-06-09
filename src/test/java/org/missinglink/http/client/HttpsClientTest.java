@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,18 +14,15 @@
  *   limitations under the License.
  */
 
-package org.missinglink.ant.task.http.client;
+package org.missinglink.http.client;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.missinglink.ant.task.http.server.AbstractHttpServerTest;
-import org.missinglink.http.client.HttpClient;
-import org.missinglink.http.client.HttpResponse;
+import org.missinglink.http.server.AbstractHttpServerTest;
 import org.missinglink.http.exception.HttpCertificateException;
 import org.missinglink.http.exception.HttpClientException;
 
@@ -57,7 +54,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
 
   @Test
   public void testGetWithEntity() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + PING_CONTEXT).keyStore(getKeyStore(), "password").toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + PING_CONTEXT).keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertArrayEquals(PING_RESPONSE.getBytes(), response.getEntity());
@@ -67,7 +64,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
 
   @Test
   public void testGetSecureWithEntityAuthFailure() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT).keyStore(getKeyStore(), "password").toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT).keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertEquals(401, response.getStatus());
@@ -75,7 +72,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
 
   @Test
   public void testGetSecureWithEntity() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT).credentials(USERNAME, PASSWORD).keyStore(getKeyStore(), "password")
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT).credentials(USERNAME, PASSWORD).keyStore(getKeyStore(), KEYSTORE_PASSWORD)
         .toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -86,7 +83,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
 
   @Test
   public void test404() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + "/doesnt/exist").keyStore(getKeyStore(), "password").toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + "/doesnt/exist").keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertEquals(404, response.getStatus());
@@ -94,7 +91,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
 
   @Test
   public void test500() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + INTERNAL_SERVER_ERROR_CONTEXT).keyStore(getKeyStore(), "password").toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + INTERNAL_SERVER_ERROR_CONTEXT).keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertArrayEquals(INTERNAL_SERVER_ERROR_RESPONSE.getBytes(), response.getEntity());
@@ -104,7 +101,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   @Test
   public void test500Secured() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + INTERNAL_SERVER_ERROR_CONTEXT).credentials(USERNAME, PASSWORD)
-        .keyStore(getKeyStore(), "password").toHttpClient();
+        .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertArrayEquals(INTERNAL_SERVER_ERROR_RESPONSE.getBytes(), response.getEntity());
@@ -113,7 +110,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
 
   @Test
   public void testPostWithResponseEntity() throws HttpClientException, IOException {
-    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + ECHO_CONTEXT).post().entity("Hello World").keyStore(getKeyStore(), "password").toHttpClient();
+    final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + ECHO_CONTEXT).post().entity("Hello World").keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertArrayEquals("Hello World".getBytes(), response.getEntity());
@@ -123,7 +120,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   @Test
   public void testPostSecuredWithResponseEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).post().entity("Hello World").credentials(USERNAME, PASSWORD)
-        .keyStore(getKeyStore(), "password").toHttpClient();
+        .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertArrayEquals("Hello World".getBytes(), response.getEntity());
@@ -154,14 +151,10 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   @Test
   public void testPutSecuredWithResponseEntity() throws HttpClientException, IOException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).put().entity("Hello World").credentials(USERNAME, PASSWORD)
-        .keyStore(getKeyStore(), "password").toHttpClient();
+        .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
     Assert.assertArrayEquals("Hello World".getBytes(), response.getEntity());
     Assert.assertEquals(200, response.getStatus());
-  }
-
-  protected InputStream getKeyStore() {
-    return getClass().getResourceAsStream(KEYSTORE);
   }
 }

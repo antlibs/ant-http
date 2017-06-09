@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package org.missinglink.ant.task.http;
 
+import org.apache.tools.ant.types.DataType;
 /**
  * @author alex.sherwin
  *
  */
-public class QueryParameterNode {
+public class QueryParameterNode extends DataType {
 
   private String name;
   private String value;

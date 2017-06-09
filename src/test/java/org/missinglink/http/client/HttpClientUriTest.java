@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@
  *   limitations under the License.
  */
 
-package org.missinglink.ant.task.http.client;
+package org.missinglink.http.client;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.missinglink.http.client.HttpClient;
 import org.missinglink.http.exception.InvalidUriException;
 
 /**
@@ -34,6 +33,7 @@ public class HttpClientUriTest {
   @Test
   public void testValidHttpUris() throws InvalidUriException {
     HttpClient.uri("http://host");
+    HttpClient.uri("HTTP://host");
     HttpClient.uri("http://host/");
     HttpClient.uri("http://host:80");
     HttpClient.uri("http://host:80/");
@@ -50,6 +50,7 @@ public class HttpClientUriTest {
   @Test
   public void testValidHttpsUris() throws InvalidUriException {
     HttpClient.uri("https://host");
+    HttpClient.uri("HTTPS://host");
     HttpClient.uri("https://host/");
     HttpClient.uri("https://host:443");
     HttpClient.uri("https://host:443/");
@@ -80,6 +81,8 @@ public class HttpClientUriTest {
     Assert.assertEquals("http://host/context/longer", client.getUri());
     client = HttpClient.uri("http://host/context/longer/").toHttpClient();
     Assert.assertEquals("http://host/context/longer/", client.getUri());
+    client = HttpClient.uri("http://host/con text/longer/").toHttpClient();
+    Assert.assertEquals("http://host/con+text/longer/", client.getUri());
     client = HttpClient.uri("http://host/context/longer/file.html").toHttpClient();
     Assert.assertEquals("http://host/context/longer/file.html", client.getUri());
     client = HttpClient.uri("http://host/context/longer/?qp").toHttpClient();
@@ -105,6 +108,6 @@ public class HttpClientUriTest {
     client = HttpClient.uri("http://host/context/longer/file.html?qp3=value3&qp2=value2&qp=value with spaces").toHttpClient();
     Assert.assertEquals("http://host/context/longer/file.html?qp3=value3&qp2=value2&qp=value+with+spaces", client.getUri());
     client = HttpClient.uri("http://host/context/longer/file.html?qp3=value3&qp2=value=stuff&qp=value").toHttpClient();
-    Assert.assertEquals("http://host/context/longer/file.html?qp3=value3&qp2=value%3Dstuff&qp=value", client.getUri());
+    Assert.assertEquals("http://host/context/longer/file.html?qp3=value3&qp2=value=stuff&qp=value", client.getUri());
   }
 }

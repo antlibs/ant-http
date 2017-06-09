@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.missinglink.ant.task.http.client;
+package org.missinglink.http.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.missinglink.http.client.HttpClient;
 import org.missinglink.http.exception.InvalidStreamException;
 import org.missinglink.http.exception.InvalidUriException;
 

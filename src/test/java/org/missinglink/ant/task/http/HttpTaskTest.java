@@ -1,5 +1,5 @@
 /**
- *   Copyright 2011 Alex Sherwin
+ *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,15 +16,28 @@
 
 package org.missinglink.ant.task.http;
 
-/**
- *
- * @author alex.sherwin
- *
- */
-public abstract class AbstractTest {
+import java.io.IOException;
 
-  protected AbstractTest() {
-    super();
+import org.junit.After;
+import org.junit.Before;
+
+public class HttpTaskTest extends AbstractHttpTaskTest {
+
+  public HttpTaskTest() throws IOException {
+    super("<target name=\"simple_get\">\n" +
+        "  <http url=\"${server_uri}${server_context}\" />\n" +
+        "</target>");
+  }
+
+  @Before
+  public void beforeTask() throws Exception {
+    startHttpServer();
+    project.setNewProperty("server_uri", getHttpServerUri());
+  }
+
+  @After
+  public void afterTask() throws IOException {
+    stopHttpServer();
   }
 
 }
