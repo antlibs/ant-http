@@ -382,11 +382,11 @@ public class HttpClientTask extends Task {
     this.url = url;
   }
 
-  public File getOutfile() {
+  public File getOutFile() {
     return outFile;
   }
 
-  public void setOutfile(final File outFile) {
+  public void setOutFile(final File outFile) {
     this.outFile = outFile;
   }
 
@@ -398,11 +398,11 @@ public class HttpClientTask extends Task {
     this.method = method;
   }
 
-  public void setPrintrequest(final boolean printRequest) {
+  public void setPrintRequest(final boolean printRequest) {
     this.printRequest = printRequest;
   }
 
-  public void setPrintresponse(final boolean printResponse) {
+  public void setPrintResponse(final boolean printResponse) {
     this.printResponse = printResponse;
   }
 
@@ -410,7 +410,7 @@ public class HttpClientTask extends Task {
     this.expected = expected;
   }
 
-  public void setFailonunexpected(final boolean failOnUnexpected) {
+  public void setFailOnUnexpected(final boolean failOnUnexpected) {
     this.failOnUnexpected = failOnUnexpected;
   }
 
@@ -418,15 +418,15 @@ public class HttpClientTask extends Task {
     this.followRedirects = followRedirects;
   }
 
-  public void setPrintresponseheaders(final boolean printResponseHeaders) {
+  public void setPrintResponseHeaders(final boolean printResponseHeaders) {
     this.printResponseHeaders = printResponseHeaders;
   }
 
-  public void setPrintrequestheaders(final boolean printRequestHeaders) {
+  public void setPrintRequestHeaders(final boolean printRequestHeaders) {
     this.printRequestHeaders = printRequestHeaders;
   }
 
-  public void setSetcontentlengthheader(final boolean setHeader) {
+  public void setSetContentLengthHeader(final boolean setHeader) {
     this.setContentLengthHeader = setHeader;
   }
 
