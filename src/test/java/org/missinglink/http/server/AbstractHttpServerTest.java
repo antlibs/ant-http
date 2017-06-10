@@ -356,7 +356,8 @@ public abstract class AbstractHttpServerTest extends AbstractTest {
       final String[] params = uri.getRawQuery().split("&");
       for (final String param : params) {
         final String[] pair = param.split("=", 2);
-        map.put(URLDecoder.decode(pair[0], "UTF-8"), pair.length > 1 ? URLDecoder.decode(pair[1], "UTF-8") : null);
+        map.put(URLDecoder.decode(pair[0], "UTF-8"),
+                pair.length > 1 && !pair[1].equals("") ? URLDecoder.decode(pair[1], "UTF-8") : null);
       }
     }
     return map;
