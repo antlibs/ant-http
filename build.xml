@@ -23,14 +23,14 @@
   <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
   <available property="has.ivy" file="${ivy.dir}/${ivy.jar.name}" type="file"/>
 
-  <target name="get-ivy" description="o Get Ivy jar unless already cached" unless="has.ivy">
+  <target name="get-ivy" unless="has.ivy">
     <mkdir dir="${ivy.dir}"/>
     <get usetimestamp="true" src="https://repository.apache.org/content/repositories/releases/org/apache/ivy/ivy/${ivy.version}/${ivy.jar.name}"
          skipexisting="true"
          dest="${ivy.dir}/${ivy.jar.name}"/>
   </target>
 
-  <target name="init-ivy" description="o Initialize Ivy" depends="get-ivy">
+  <target name="init-ivy" depends="get-ivy">
     <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpath="${ivy.dir}/${ivy.jar.name}"/>
     <ivy:settings file="${basedir}/ivy.settings.xml"/>
   </target>
@@ -41,13 +41,15 @@
   <property name="ml-ant-http.test.resources.dir" location="${ml-ant-http.src.dir}/test/resources"/>
   <property name="ml-ant-http.build.dir" location="build"/>
   <property name="ml-ant-http.build.classes.dir" location="${ml-ant-http.build.dir}/classes"/>
-  <property name="ml-ant-http.build.test.classes.dir" location="${ml-ant-http.build.dir}/test/classes"/>
+  <property name="ml-ant-http.build.test.classes.dir" location="${ml-ant-http.build.dir}/test-classes"/>
   <property name="ml-ant-http.build.docs.dir" location="${ml-ant-http.build.dir}/docs"/>
+  <property name="ml-ant-http.javadoc.dir" location="${ml-ant-http.build.dir}/api"/>
+  <property name="ml-ant-http.test.report.dir" location="${ml-ant-http.build.dir}/test-report"/>
   <property name="ml-ant-http.dist.dir" location="dist"/>
   <property name="ml-ant-http.site.dir" location="${ml-ant-http.src.dir}/site/resources"/>
   <property name="ml-ant-http.license.dir" location="${basedir}"/>
   <property name="ml-ant-http.license.file" value="LICENSE"/>
-  <property name="ml-ant-http.test.report.dir" location="${ml-ant-http.build.dir}/test/report"/>
+  <property name="ml-ant-http.java.baseline" value="1.5"/>
 
   <target name="clean">
     <delete dir="${ml-ant-http.build.dir}"/>
@@ -71,7 +73,9 @@
   </target>
 
   <target name="compile" depends="resolve">
-    <javac debug="yes" destdir="${ml-ant-http.build.classes.dir}" classpathref="compile.classpath" includeantruntime="false">
+    <javac debug="yes" destdir="${ml-ant-http.build.classes.dir}"
+           classpathref="compile.classpath" includeantruntime="false"
+           source="${ml-ant-http.java.baseline}" target="${ml-ant-http.java.baseline}">
       <src path="${ml-ant-http.java.src.dir}"/>
     </javac>
   </target>
@@ -99,19 +103,19 @@
   </target>
 
   <target name="javadoc" depends="resolve">
-    <javadoc destdir="${ml-ant-http.build.docs.dir}" author="true" version="true" use="true" windowtitle="missing link ant http task ${ivy.revision}">
+    <javadoc destdir="${ml-ant-http.javadoc.dir}" author="true" version="true" use="true" windowtitle="missing link Ant HTTP task ${ivy.revision}">
 
       <packageset dir="${ml-ant-http.java.src.dir}" defaultexcludes="yes">
         <include name="org/missinglink/**"/>
       </packageset>
 
-      <doctitle><![CDATA[<h1>missing link ant http task ${ivy.revision}</h1>]]></doctitle>
-      <bottom><![CDATA[<i>missing link ant http task ${ivy.revision}</i>]]></bottom>
+      <doctitle><![CDATA[<h1>missing link Ant HTTP task ${ivy.revision}</h1>]]></doctitle>
+      <bottom><![CDATA[<i>missing link Ant HTTP task ${ivy.revision}</i>]]></bottom>
       <tag name=".todo" scope="all" description="To do:"/>
       <link href="http://download.oracle.com/javase/6/docs/api/"/>
     </javadoc>
 
-    <zip destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-api.zip" basedir="${ml-ant-http.build.docs.dir}"/>
+    <zip destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-api.zip" basedir="${ml-ant-http.javadoc.dir}"/>
   </target>
 
   <target name="copy.dist.files" depends="jar.src">
@@ -143,7 +147,8 @@
 
   <target name="compile-tests" depends="compile">
     <mkdir dir="${ml-ant-http.build.test.classes.dir}"/>
-    <javac debug="yes" destdir="${ml-ant-http.build.test.classes.dir}" includeantruntime="false">
+    <javac debug="yes" destdir="${ml-ant-http.build.test.classes.dir}" includeantruntime="false"
+           source="${ml-ant-http.java.baseline}" target="${ml-ant-http.java.baseline}">
       <classpath>
         <pathelement location="${ml-ant-http.build.classes.dir}"/>
         <path refid="test.classpath"/>

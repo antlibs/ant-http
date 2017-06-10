@@ -465,7 +465,8 @@ public class HttpClient {
      * Encode any blatantly unusable chars, leave reserved chars (<code>&amp;/:;=?@</code>) as-is.
      * This is not a normal full encode - it is just a fix-up to try to make questionable URLs usable.
      *
-     * @param str URL String
+     * @param str String an URL
+     * @return String encoded URL except for reserved characters
      */
     protected String fixup(final String str) {
       if (null == str) {

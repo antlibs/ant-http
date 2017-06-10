@@ -10,7 +10,7 @@ This Ant task also simplifies common aspects of HTTP communication, which other 
 
 ## License
 
-The missing link Ant HTTP task is licensed under the Apache 2.0 license, a copy of the license can be found with the missing link ant http task distribution or at http://www.apache.org/licenses/LICENSE-2.0.html.
+The missing link Ant HTTP task is licensed under the Apache 2.0 license, a copy of the license can be found with the missing link Ant HTTP task distribution or at http://www.apache.org/licenses/LICENSE-2.0.html.
 
 
 ## Features
@@ -170,7 +170,7 @@ The missing link Ant HTTP task was created with the following features in mind:
 
 ## Ant configuration
 
-The following is a basic example of how to import and use the missing link ant http task:
+The following is a basic example of how to import and use the missing link Ant HTTP task:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
