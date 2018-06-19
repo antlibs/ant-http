@@ -300,7 +300,7 @@ public class HttpClientTask extends Task {
 
       // set keystore
       if (null != keystore && keystore.isValid()) {
-        builder = builder.keyStore(new FileInputStream(keystore.getFile()), keystore.getPassword());
+        builder = builder.keyStore(keystore.getFile() != null ? new FileInputStream(keystore.getFile()) : null, keystore.getPassword(), keystore.getTrustAll());
       }
 
       // set headers
