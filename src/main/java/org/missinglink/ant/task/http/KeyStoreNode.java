@@ -19,6 +19,7 @@ package org.missinglink.ant.task.http;
 import java.io.File;
 
 import org.apache.tools.ant.types.DataType;
+
 /**
  * @author alex.sherwin
  *
@@ -27,9 +28,18 @@ public class KeyStoreNode extends DataType {
 
   private File file;
   private String password;
+  private boolean trustAll = false;
 
   public KeyStoreNode() {
     super();
+  }
+
+  public boolean getTrustAll() {
+    return trustAll;
+  }
+
+  public void setTrustAll(final boolean trustall) {
+    trustAll = trustall;
   }
 
   public File getFile() {
@@ -49,7 +59,7 @@ public class KeyStoreNode extends DataType {
   }
 
   public boolean isValid() {
-    return null != file;
+    return null != file || trustAll == true;
   }
 
 }

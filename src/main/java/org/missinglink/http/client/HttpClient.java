@@ -27,6 +27,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -34,10 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import org.missinglink.http.encoding.Base64;
 import org.missinglink.http.exception.HttpCertificateException;
@@ -84,6 +90,7 @@ public class HttpClient {
   private boolean setContentLength = false;
   private InputStream keyStore;
   private String keyStorePassword;
+  private boolean trustAll = false;
 
   private final Map<String, String> queryUnencoded = new LinkedHashMap<String, String>();
   private final Map<String, String> queryEncoded = new LinkedHashMap<String, String>();
@@ -146,6 +153,31 @@ public class HttpClient {
     return result;
   }
 
+  private static class TrustAllTrustManager implements TrustManager, X509TrustManager {
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+      return null;
+    }
+
+    public boolean isServerTrusted(final X509Certificate[] certs) {
+      return true;
+    }
+
+    public boolean isClientTrusted(final X509Certificate[] certs) {
+      return true;
+    }
+
+    @Override
+    public void checkServerTrusted(final X509Certificate[] certs, final String authType) throws CertificateException {
+      return;
+    }
+
+    @Override
+    public void checkClientTrusted(final X509Certificate[] certs, final String authType) throws CertificateException {
+      return;
+    }
+  }
+
   /**
    * Invoke the HTTP service represented by this {@link HttpClient}.
    *
@@ -170,16 +202,36 @@ public class HttpClient {
 
       // if HTTPS, check for HTTPS options
       if (HTTPS.equalsIgnoreCase(protocol)) {
-        if (null != keyStore) {
-          final KeyStore ks = KeyStore.getInstance("JKS");
-          ks.load(keyStore, null == keyStorePassword ? new char[]{} : keyStorePassword.toCharArray());
-          final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-          tmf.init(ks);
+        if (trustAll == true) {
+          final HostnameVerifier hv = new HostnameVerifier() {
+            @Override
+            public boolean verify(final String urlHostName, final SSLSession session) {
+              return true;
+            }
+          };
 
-          final SSLContext ssl = SSLContext.getInstance("TLS");
-          ssl.init(null, tmf.getTrustManagers(), null);
+          final TrustManager[] trustAllCerts = new TrustManager[] {new TrustAllTrustManager()};
 
-          ((HttpsURLConnection) httpUrlConnection).setSSLSocketFactory(ssl.getSocketFactory());
+          // Create the SSL context
+          final SSLContext sc = SSLContext.getInstance("SSL");
+          sc.init(null, trustAllCerts, null);
+
+          ((HttpsURLConnection) httpUrlConnection).setSSLSocketFactory(sc.getSocketFactory());
+
+          // Set the default host name verifier to enable the connection.
+          ((HttpsURLConnection) httpUrlConnection).setHostnameVerifier(hv);
+        } else {
+          if (null != keyStore) {
+            final KeyStore ks = KeyStore.getInstance("JKS");
+            ks.load(keyStore, null == keyStorePassword ? new char[]{} : keyStorePassword.toCharArray());
+            final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(ks);
+
+            final SSLContext ssl = SSLContext.getInstance("TLS");
+            ssl.init(null, tmf.getTrustManagers(), null);
+
+            ((HttpsURLConnection) httpUrlConnection).setSSLSocketFactory(ssl.getSocketFactory());
+          }
         }
       }
 
@@ -462,8 +514,9 @@ public class HttpClient {
     }
 
     /**
-     * Encode any blatantly unusable chars, leave reserved chars (<code>&amp;/:;=?@</code>) as-is.
-     * This is not a normal full encode - it is just a fix-up to try to make questionable URLs usable.
+     * Encode any blatantly unusable chars, leave reserved chars
+     * (<code>&amp;/:;=?@</code>) as-is. This is not a normal full encode - it is
+     * just a fix-up to try to make questionable URLs usable.
      *
      * @param str String an URL
      * @return String encoded URL except for reserved characters
@@ -486,6 +539,7 @@ public class HttpClient {
         return null;
       }
     }
+
     /**
      * Return the current {@link HttpClient} that this builder represents.
      *
@@ -720,8 +774,21 @@ public class HttpClient {
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder keyStore(final InputStream is, final String password) {
+      return keyStore(is, password, false);
+    }
+
+    /**
+     * Set the {@link InputStream} to use when creating a {@link KeyStore}
+     *
+     * @param is InputStream
+     * @param password String
+     * @param trustAll boolean
+     * @return The new {@link HttpClientBuilder}
+     */
+    public HttpClientBuilder keyStore(final InputStream is, final String password, final boolean trustAll) {
       httpClient.keyStore = is;
       httpClient.keyStorePassword = password;
+      httpClient.trustAll = trustAll;
       return this;
     }
 

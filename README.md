@@ -89,8 +89,11 @@ The missing link Ant HTTP task was created with the following features in mind:
 
 | Name | Description | Required | Default | Example |
 |------|-------------|----------|---------|---------|
-| **`file`** | KeyStore file | Yes |   | `/path/to/keystore.jks` |
+| **`file`** | KeyStore file | Yes (unless `trustall="true"`) |   | `/path/to/keystore.jks` |
 | **`password`** | KeyStore password | No |   | `p@55w0rd` |
+| **`trustall`** | Accept all certificates | No |   | `true` or `false` |
+
+**NB:** use `trustall` with caution in production environments!
 
 #### example:
 
