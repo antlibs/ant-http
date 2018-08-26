@@ -4,4 +4,3 @@ script: ant test
 jdk:
   - openjdk7
   - openjdk8
-  - openjdk9
