@@ -68,7 +68,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     attachSSLSocketFactory(conn);
     try {
       StreamUtils.inputStreamToString(conn.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
     }
@@ -106,7 +106,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     attachSSLSocketFactory(conn);
     try {
       StreamUtils.inputStreamToString(conn.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
     }
@@ -138,7 +138,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("POST", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {
       StreamUtils.inputStreamToString(con.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
     }
@@ -166,7 +166,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     final HttpsURLConnection con = createAndWriteToHttpsURLConnection("PUT", getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {
       StreamUtils.inputStreamToString(con.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
     }
@@ -199,7 +199,7 @@ public class HttpsServerTest extends AbstractHttpServerTest {
     attachSSLSocketFactory(conn);
     try {
       StreamUtils.inputStreamToByteArray(conn.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
     }

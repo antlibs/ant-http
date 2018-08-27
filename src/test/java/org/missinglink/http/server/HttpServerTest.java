@@ -64,7 +64,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     try {
       StreamUtils.inputStreamToString(conn.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
     }
@@ -98,7 +98,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     try {
       StreamUtils.inputStreamToString(conn.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
     }
@@ -129,7 +129,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
     final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {
       StreamUtils.inputStreamToString(con.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
     }
@@ -157,7 +157,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
     final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {
       StreamUtils.inputStreamToString(con.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, con.getResponseCode());
     }
@@ -180,7 +180,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     try {
       StreamUtils.inputStreamToByteArray(conn.getInputStream());
-      Assert.assertTrue("Authentication should have failed", false);
+      Assert.fail("Authentication should have failed");
     } catch (final IOException e) {
       Assert.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, conn.getResponseCode());
     }

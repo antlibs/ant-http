@@ -33,25 +33,25 @@ public class HttpClientQueryTest {
   @Test
   public void testNoQuery() throws InvalidUriException {
     final HttpClient httpClient = HttpClient.uri("http://host/context").toHttpClient();
-    Assert.assertTrue(httpClient.getQueryEncoded().size() == 0);
-    Assert.assertTrue(httpClient.getQueryUnencoded().size() == 0);
+    Assert.assertEquals(0, httpClient.getQueryEncoded().size());
+    Assert.assertEquals(0, httpClient.getQueryUnencoded().size());
   }
 
   @Test
   public void testNoQueryInUriNullParam() throws InvalidUriException {
     HttpClient httpClient = HttpClient.uri("http://host/context").toHttpClient();
-    Assert.assertTrue(httpClient.getQueryEncoded().size() == 0);
-    Assert.assertTrue(httpClient.getQueryUnencoded().size() == 0);
+    Assert.assertEquals(0, httpClient.getQueryEncoded().size());
+    Assert.assertEquals(0, httpClient.getQueryUnencoded().size());
     httpClient = httpClient.build().query(null, null).toHttpClient();
-    Assert.assertTrue(httpClient.getQueryEncoded().size() == 0);
-    Assert.assertTrue(httpClient.getQueryUnencoded().size() == 0);
+    Assert.assertEquals(0, httpClient.getQueryEncoded().size());
+    Assert.assertEquals(0, httpClient.getQueryUnencoded().size());
   }
 
   @Test
   public void testNoQueryInUriNullValue() throws InvalidUriException {
     HttpClient httpClient = HttpClient.uri("http://host/context").toHttpClient();
-    Assert.assertTrue(httpClient.getQueryEncoded().size() == 0);
-    Assert.assertTrue(httpClient.getQueryUnencoded().size() == 0);
+    Assert.assertEquals(0, httpClient.getQueryEncoded().size());
+    Assert.assertEquals(0, httpClient.getQueryUnencoded().size());
     httpClient = httpClient.build().query("qp", null).toHttpClient();
     Assert.assertTrue(httpClient.getQueryEncoded().containsKey("qp"));
     Assert.assertTrue(httpClient.getQueryUnencoded().containsKey("qp"));
