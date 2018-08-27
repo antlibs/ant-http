@@ -74,7 +74,7 @@ public class QueryNodeTest extends AbstractAntTest {
   }
 
   @After
-  public void after() throws IOException {
+  public void after() {
     stopHttpServer();
   }
 

@@ -65,7 +65,7 @@ public class HeaderNodeTest extends AbstractAntTest {
   }
 
   @After
-  public void after() throws IOException {
+  public void after() {
     stopHttpServer();
   }
 

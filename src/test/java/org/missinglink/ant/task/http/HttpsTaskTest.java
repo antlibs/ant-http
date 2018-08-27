@@ -40,7 +40,7 @@ public class HttpsTaskTest extends AbstractHttpTaskTest {
   }
 
   @After
-  public void afterTask() throws IOException {
+  public void afterTask() {
     stopHttpsServer();
   }
 

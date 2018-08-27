@@ -81,7 +81,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoGet() throws IOException, InterruptedException {
+  public void echoGet() throws IOException {
     final String text = "Hello World";
     final String path = getHttpServerUri() + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
     final URL url = new URL(path);
@@ -91,7 +91,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoGetSecureAuthFailure() throws IOException, InterruptedException {
+  public void echoGetSecureAuthFailure() throws IOException {
     final String text = "Hello World";
     final String path = getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
     final URL url = new URL(path);
@@ -105,7 +105,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoGetSecure() throws IOException, InterruptedException {
+  public void echoGetSecure() throws IOException {
     final String text = "Hello World";
     final String path = getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT + "?" + ECHO_TEXT + "=" + URLEncoder.encode(text, "UTF-8");
     final URL url = new URL(path);
@@ -116,7 +116,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoPost() throws IOException, InterruptedException {
+  public void echoPost() throws IOException {
     final String text = "Hello World";
     final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", getHttpServerUri() + ECHO_CONTEXT, text, false);
     final String response = StreamUtils.inputStreamToString(con.getInputStream());
@@ -124,7 +124,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoPostSecureAuthFailure() throws IOException, InterruptedException {
+  public void echoPostSecureAuthFailure() throws IOException {
     final String text = "Hello World";
     final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {
@@ -136,7 +136,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoPostSecure() throws IOException, InterruptedException {
+  public void echoPostSecure() throws IOException {
     final String text = "Hello World";
     final HttpURLConnection con = createAndWriteToHttpURLConnection("POST", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, true);
     final String response = StreamUtils.inputStreamToString(con.getInputStream());
@@ -144,7 +144,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoPut() throws IOException, InterruptedException {
+  public void echoPut() throws IOException {
     final String text = "Hello World";
     final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + ECHO_CONTEXT, text, false);
     final String response = StreamUtils.inputStreamToString(con.getInputStream());
@@ -152,7 +152,7 @@ public class HttpServerTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void echoPutSecureAuthFailure() throws IOException, InterruptedException {
+  public void echoPutSecureAuthFailure() throws IOException {
     final String text = "Hello World";
     final HttpURLConnection con = createAndWriteToHttpURLConnection("PUT", getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT, text, false);
     try {

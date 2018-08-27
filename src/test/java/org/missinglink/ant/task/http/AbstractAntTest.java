@@ -51,7 +51,7 @@ public abstract class AbstractAntTest extends AbstractHttpServerTest {
   }
 
   @Before
-  public void beforeBuildfile() throws Exception {
+  public void beforeBuildfile() {
 
     buildRule.configureProject(buildfile);
     project = buildRule.getProject();

@@ -41,12 +41,12 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @After
-  public void after() throws IOException {
+  public void after() {
     stopHttpServer();
   }
 
   @Test
-  public void testGetWithEntity() throws HttpClientException, IOException {
+  public void testGetWithEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + PING_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -56,7 +56,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testGetSecureWithEntityAuthFailure() throws HttpClientException, IOException {
+  public void testGetSecureWithEntityAuthFailure() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + PING_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -64,7 +64,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testGetSecureWithEntity() throws HttpClientException, IOException {
+  public void testGetSecureWithEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + PING_CONTEXT).credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -74,7 +74,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test301() throws HttpClientException, IOException {
+  public void test301() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_PERM_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -84,7 +84,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test301withoutRedirect() throws HttpClientException, IOException {
+  public void test301withoutRedirect() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_PERM_CONTEXT).followRedirects(false).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -93,7 +93,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
     Assert.assertEquals(301, response.getStatus());
   }
   @Test
-  public void test302() throws HttpClientException, IOException {
+  public void test302() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_TEMP_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -103,7 +103,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test302withoutRedirect() throws HttpClientException, IOException {
+  public void test302withoutRedirect() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + MOVED_TEMP_CONTEXT).followRedirects(false).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -113,7 +113,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test303() throws HttpClientException, IOException {
+  public void test303() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SEE_OTHER_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -123,7 +123,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test303withoutRedirect() throws HttpClientException, IOException {
+  public void test303withoutRedirect() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SEE_OTHER_CONTEXT).followRedirects(false).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -133,7 +133,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test404() throws HttpClientException, IOException {
+  public void test404() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + "/doesnt/exist").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -141,7 +141,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test500() throws HttpClientException, IOException {
+  public void test500() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + INTERNAL_SERVER_ERROR_CONTEXT).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -150,7 +150,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test500Secured() throws HttpClientException, IOException {
+  public void test500Secured() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + INTERNAL_SERVER_ERROR_CONTEXT).credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -159,7 +159,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPostWithResponseEntity() throws HttpClientException, IOException {
+  public void testPostWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + ECHO_CONTEXT).post().entity("Hello World").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -168,7 +168,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPostSecuredWithResponseEntity() throws HttpClientException, IOException {
+  public void testPostSecuredWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).post().entity("Hello World").credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -177,7 +177,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPutWithResponseEntity() throws HttpClientException, IOException {
+  public void testPutWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + ECHO_CONTEXT).put().entity("Hello World").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -186,7 +186,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPutSecuredWithResponseEntity() throws HttpClientException, IOException {
+  public void testPutSecuredWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).put().entity("Hello World").credentials(USERNAME, PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
@@ -195,7 +195,7 @@ public class HttpClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testHttpHeaders() throws HttpClientException, IOException {
+  public void testHttpHeaders() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpServerUri() + ECHO_HEADERS_CONTEXT).get().header("Hello", "World").toHttpClient();
     final HttpResponse response = httpClient.invoke();
     Assert.assertNotNull(response);
