@@ -44,10 +44,10 @@ The missing link Ant HTTP task was created with the following features in mind:
 | **`printResponseHeaders`** | Print response headers | No | `true` | `true` or `false` | `expected` | Expected HTTP status | No | `200` | `200`, `201`, `404`, etc. |
 | **`failOnUnexpected`** | Fail on unexpected status | No | `true` | `true` or `false` | `outfile` | Write response to file | No |   | Any filename |
 | **`followRedirects`** | Follow redirections | No | `true` | `true` or `false` |
-| **`setContentLengthHeader`** | Set Content-Length header | No |`false`| `true` or `false` |
+| **`setContentLengthHeader`** | Set `Content-Length` header | No |`false`| `true` or `false` |
 | **`statusProperty`** | Property to save status to | No |   | `http.status` |
 | **`update`** | Update/overwrite outfile | No | `true` | `true` or `false` |
-| **`entityProperty`** | Write response entity to prop | No |   | `response.entity` |
+| **`entityProperty`** | Property to save response entity to | No |   | `response.entity` |
 
 #### example:
 
@@ -91,7 +91,7 @@ The missing link Ant HTTP task was created with the following features in mind:
 |------|-------------|----------|---------|---------|
 | **`file`** | KeyStore file | Yes (unless `trustall="true"`) |   | `/path/to/keystore.jks` |
 | **`password`** | KeyStore password | No |   | `p@55w0rd` |
-| **`trustall`** | Accept all certificates | No |   | `true` or `false` |
+| **`trustall`** | Accept all certificates | No | `false` | `true` or `false` |
 
 **NB:** use `trustall` with caution in production environments!
 
@@ -185,7 +185,7 @@ The following is a basic example of how to import and use the missing link Ant H
     <include name="${ml-ant-http.jar}"/>
   </fileset>
   
-  <path id="runtime.classpa<th">
+  <path id="runtime.classpath">
     <fileset refid="runtime.libs"/>
   </path>
   
