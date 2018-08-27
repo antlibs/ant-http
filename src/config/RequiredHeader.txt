@@ -13,31 +13,3 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
-package org.missinglink.ant.task.http;
-
-import java.io.IOException;
-
-import org.junit.After;
-import org.junit.Before;
-
-public class HttpTaskTest extends AbstractHttpTaskTest {
-
-  public HttpTaskTest() throws IOException {
-    super("<target name=\"simple_get\">\n" +
-        "  <http url=\"${server_uri}${server_context}\" />\n" +
-        "</target>");
-  }
-
-  @Before
-  public void beforeTask() throws Exception {
-    startHttpServer();
-    project.setNewProperty("server_uri", getHttpServerUri());
-  }
-
-  @After
-  public void afterTask() throws IOException {
-    stopHttpServer();
-  }
-
-}
