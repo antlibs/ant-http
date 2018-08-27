@@ -169,12 +169,10 @@ public class HttpClient {
 
     @Override
     public void checkServerTrusted(final X509Certificate[] certs, final String authType) throws CertificateException {
-      return;
     }
 
     @Override
     public void checkClientTrusted(final X509Certificate[] certs, final String authType) throws CertificateException {
-      return;
     }
   }
 
@@ -202,7 +200,7 @@ public class HttpClient {
 
       // if HTTPS, check for HTTPS options
       if (HTTPS.equalsIgnoreCase(protocol)) {
-        if (trustAll == true) {
+        if (trustAll) {
           final HostnameVerifier hv = new HostnameVerifier() {
             @Override
             public boolean verify(final String urlHostName, final SSLSession session) {
@@ -243,7 +241,7 @@ public class HttpClient {
       }
 
       // set headers
-      if (null != headers && headers.size() > 0) {
+      if (headers.size() > 0) {
         for (final Entry<String, String> header : headers.entrySet()) {
           httpUrlConnection.setRequestProperty(header.getKey(), header.getValue());
         }
