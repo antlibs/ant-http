@@ -1,4 +1,6 @@
 language: java
+install: true
 script: ant test
 jdk:
-  - openjdk6
+  - openjdk7
+  - openjdk8

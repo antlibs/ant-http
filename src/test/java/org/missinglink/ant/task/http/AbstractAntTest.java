@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ public abstract class AbstractAntTest extends AbstractHttpServerTest {
   }
 
   @Before
-  public void beforeBuildfile() throws Exception {
+  public void beforeBuildfile() {
 
     buildRule.configureProject(buildfile);
     project = buildRule.getProject();

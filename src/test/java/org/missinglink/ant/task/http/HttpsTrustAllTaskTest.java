@@ -16,32 +16,30 @@
 
 package org.missinglink.ant.task.http;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.tools.ant.types.DataType;
+import org.junit.After;
+import org.junit.Before;
 
-/**
- * @author alex.sherwin
- *
- */
-public class HeadersNode extends DataType {
+import java.io.IOException;
 
-  private final List<HeaderNode> headers = new ArrayList<HeaderNode>();
+public class HttpsTrustAllTaskTest extends AbstractHttpTaskTest {
 
-  public HeadersNode() {
-    super();
+  public HttpsTrustAllTaskTest() throws IOException {
+    super("<target name=\"simple_get\">\n" +
+        "  <http url=\"${server_uri}${server_context}\">\n" +
+        "    <keystore trustall=\"true\" />\n" +
+        "  </http>\n" +
+        "</target>");
   }
 
-  public void addConfiguredHeader(final HeaderNode header) {
-    headers.add(header);
+  @Before
+  public void beforeTask() throws Exception {
+    startHttpsServer();
+    project.setNewProperty("server_uri", getHttpsServerUri());
   }
 
-  public List<HeaderNode> getHeaders() {
-    return headers;
-  }
-
-  public boolean isValid() {
-    return headers.size() > 0;
+  @After
+  public void afterTask() {
+    stopHttpsServer();
   }
 
 }

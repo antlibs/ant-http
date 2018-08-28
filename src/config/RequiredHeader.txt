@@ -13,35 +13,3 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
-package org.missinglink.ant.task.http;
-
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.tools.ant.types.DataType;
-
-/**
- * @author alex.sherwin
- *
- */
-public class HeadersNode extends DataType {
-
-  private final List<HeaderNode> headers = new ArrayList<HeaderNode>();
-
-  public HeadersNode() {
-    super();
-  }
-
-  public void addConfiguredHeader(final HeaderNode header) {
-    headers.add(header);
-  }
-
-  public List<HeaderNode> getHeaders() {
-    return headers;
-  }
-
-  public boolean isValid() {
-    return headers.size() > 0;
-  }
-
-}

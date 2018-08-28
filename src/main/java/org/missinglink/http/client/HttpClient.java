@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,7 +41,9 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import org.missinglink.http.encoding.Base64;
 import org.missinglink.http.exception.HttpCertificateException;
@@ -153,28 +157,26 @@ public class HttpClient {
     return result;
   }
 
-  private static class TrustAllTrustManager implements javax.net.ssl.TrustManager, javax.net.ssl.X509TrustManager {
+  private static class TrustAllTrustManager implements TrustManager, X509TrustManager {
     @Override
-    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+    public X509Certificate[] getAcceptedIssuers() {
       return null;
     }
 
-    public boolean isServerTrusted(final java.security.cert.X509Certificate[] certs) {
+    public boolean isServerTrusted(final X509Certificate[] certs) {
       return true;
     }
 
-    public boolean isClientTrusted(final java.security.cert.X509Certificate[] certs) {
+    public boolean isClientTrusted(final X509Certificate[] certs) {
       return true;
     }
 
     @Override
-    public void checkServerTrusted(final java.security.cert.X509Certificate[] certs, final String authType) throws java.security.cert.CertificateException {
-      return;
+    public void checkServerTrusted(final X509Certificate[] certs, final String authType) throws CertificateException {
     }
 
     @Override
-    public void checkClientTrusted(final java.security.cert.X509Certificate[] certs, final String authType) throws java.security.cert.CertificateException {
-      return;
+    public void checkClientTrusted(final X509Certificate[] certs, final String authType) throws CertificateException {
     }
   }
 
@@ -204,7 +206,7 @@ public class HttpClient {
 
       // if HTTPS, check for HTTPS options
       if (HTTPS.equalsIgnoreCase(protocol)) {
-        if (trustAll == true) {
+        if (trustAll) {
           final HostnameVerifier hv = new HostnameVerifier() {
             @Override
             public boolean verify(final String urlHostName, final SSLSession session) {
@@ -212,12 +214,10 @@ public class HttpClient {
             }
           };
 
-          final javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
-          final javax.net.ssl.TrustManager tm = new TrustAllTrustManager();
-          trustAllCerts[0] = tm;
+          final TrustManager[] trustAllCerts = new TrustManager[] {new TrustAllTrustManager()};
 
           // Create the SSL context
-          final javax.net.ssl.SSLContext sc = SSLContext.getInstance("SSL");
+          final SSLContext sc = SSLContext.getInstance("SSL");
           sc.init(null, trustAllCerts, null);
 
           ((HttpsURLConnection) httpUrlConnection).setSSLSocketFactory(sc.getSocketFactory());
@@ -247,7 +247,7 @@ public class HttpClient {
       }
 
       // set headers
-      if (null != headers && headers.size() > 0) {
+      if (headers.size() > 0) {
         for (final Entry<String, String> header : headers.entrySet()) {
           httpUrlConnection.setRequestProperty(header.getKey(), header.getValue());
         }
@@ -787,6 +787,18 @@ public class HttpClient {
      *          InputStream
      * @param password
      *          String
+     * @return The new {@link HttpClientBuilder}
+     */
+    public HttpClientBuilder keyStore(final InputStream is, final String password) {
+      return keyStore(is, password, false);
+    }
+
+    /**
+     * Set the {@link InputStream} to use when creating a {@link KeyStore}
+     *
+     * @param is InputStream
+     * @param password String
+     * @param trustAll boolean
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder keyStore(final InputStream is, final String password, final boolean trustAll) {

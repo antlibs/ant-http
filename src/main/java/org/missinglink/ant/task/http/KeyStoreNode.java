@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,7 @@ public class KeyStoreNode extends DataType {
   }
 
   public boolean isValid() {
-    return null != file || trustAll == true;
+    return null != file || trustAll;
   }
 
 }

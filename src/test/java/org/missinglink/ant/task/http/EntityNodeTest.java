@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,7 @@ public class EntityNodeTest extends AbstractAntTest {
   }
 
   @After
-  public void after() throws IOException {
+  public void after() {
     stopHttpServer();
   }
 

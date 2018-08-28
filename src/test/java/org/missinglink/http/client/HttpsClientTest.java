@@ -1,4 +1,4 @@
-/**
+/*
  *   Copyright Alex Sherwin and other contributors as noted.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,6 @@
  */
 
 package org.missinglink.http.client;
-
-import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -42,18 +40,18 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @After
-  public void after() throws IOException {
+  public void after() {
     stopHttpsServer();
   }
 
   @Test(expected = HttpCertificateException.class)
-  public void testInvalidTrustStore() throws HttpClientException, IOException {
+  public void testInvalidTrustStore() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + PING_CONTEXT).toHttpClient();
     httpClient.invoke();
   }
 
   @Test
-  public void testGetWithEntity() throws HttpClientException, IOException {
+  public void testGetWithEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + PING_CONTEXT)
             .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -64,7 +62,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testGetSecureWithEntityAuthFailure() throws HttpClientException, IOException {
+  public void testGetSecureWithEntityAuthFailure() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT)
             .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -73,7 +71,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testGetSecureWithEntity() throws HttpClientException, IOException {
+  public void testGetSecureWithEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + PING_CONTEXT)
             .credentials(USERNAME, PASSWORD).keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -84,7 +82,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test404() throws HttpClientException, IOException {
+  public void test404() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + "/doesnt/exist")
             .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -93,7 +91,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test500() throws HttpClientException, IOException {
+  public void test500() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + INTERNAL_SERVER_ERROR_CONTEXT)
             .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -103,7 +101,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void test500Secured() throws HttpClientException, IOException {
+  public void test500Secured() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + INTERNAL_SERVER_ERROR_CONTEXT)
             .credentials(USERNAME, PASSWORD).keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -113,7 +111,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPostWithResponseEntity() throws HttpClientException, IOException {
+  public void testPostWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + ECHO_CONTEXT).post().entity("Hello World")
             .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -123,7 +121,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPostSecuredWithResponseEntity() throws HttpClientException, IOException {
+  public void testPostSecuredWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).post().entity("Hello World")
             .credentials(USERNAME, PASSWORD).keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -133,7 +131,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPutWithResponseEntity() throws HttpClientException, IOException {
+  public void testPutWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + ECHO_CONTEXT).put().entity("Hello World")
             .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
@@ -143,7 +141,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPutWithEntity() throws HttpClientException, IOException {
+  public void testPutWithEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + ECHO_CONTEXT).put().setContentLength(true).entity("Hello World")
             .keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     Assert.assertNotNull(httpClient.getHeaders().get("Content-Length"));
@@ -155,7 +153,7 @@ public class HttpsClientTest extends AbstractHttpServerTest {
   }
 
   @Test
-  public void testPutSecuredWithResponseEntity() throws HttpClientException, IOException {
+  public void testPutSecuredWithResponseEntity() throws HttpClientException {
     final HttpClient httpClient = HttpClient.uri(getHttpsServerUri() + SECURE_CONTEXT + ECHO_CONTEXT).put().entity("Hello World")
             .credentials(USERNAME, PASSWORD).keyStore(getKeyStore(), KEYSTORE_PASSWORD).toHttpClient();
     final HttpResponse response = httpClient.invoke();
