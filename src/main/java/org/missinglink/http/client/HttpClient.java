@@ -104,9 +104,11 @@ public class HttpClient {
   /**
    * Start building a {@link HttpClient} instance.
    *
-   * @param uri String
+   * @param uri
+   *          String
    * @return Returns the {@link HttpClientBuilder}
-   * @throws InvalidUriException if uri is incorrect
+   * @throws InvalidUriException
+   *           if uri is incorrect
    */
   public static HttpClientBuilder uri(final String uri) throws InvalidUriException {
     return new HttpClientBuilder(new HttpClient(), uri);
@@ -125,7 +127,8 @@ public class HttpClient {
    * Return the {@link #entity} {@link InputStream} as a String.
    *
    * @return Convert the request entity as a String
-   * @throws IOException on failure
+   * @throws IOException
+   *           on failure
    */
   public String getEntityAsString() throws IOException {
     if (null == entity || entity.available() == 0) {
@@ -141,7 +144,8 @@ public class HttpClient {
    * Return the {@link #entity} {@link InputStream} as byte array.
    *
    * @return Convert the request entity as a byte array
-   * @throws IOException on failure
+   * @throws IOException
+   *           on failure
    */
   public byte[] getEntityAsByteArray() throws IOException {
     if (null == entity || entity.available() == 0) {
@@ -180,8 +184,10 @@ public class HttpClient {
    * Invoke the HTTP service represented by this {@link HttpClient}.
    *
    * @return The {@link HttpResponse} for the HTTP invocation
-   * @throws HttpInvocationException on failure
-   * @throws HttpCertificateException on HTTPS failure
+   * @throws HttpInvocationException
+   *           on failure
+   * @throws HttpCertificateException
+   *           on HTTPS failure
    */
   public HttpResponse invoke() throws HttpInvocationException, HttpCertificateException {
     try {
@@ -455,7 +461,8 @@ public class HttpClient {
     /**
      * Parse the URI into its components.
      *
-     * @param uri String
+     * @param uri
+     *          String
      * @throws InvalidUriException
      *           On any failure/invalid URI
      */
@@ -479,15 +486,15 @@ public class HttpClient {
      * Parse a query string into its components, split components by "&amp;" and
      * their key, value parts with "="
      *
-     * @param query String
+     * @param query
+     *          String
      */
     protected void parseQuery(final String query) {
       if (null != query && query.length() > 0) {
         final String[] queryParts = query.split("&");
         for (final String queryPart : queryParts) {
           final String[] keyValue = queryPart.split("=", 2);
-          httpClient.queryEncoded.put(keyValue[0],
-                  keyValue.length > 1 && keyValue[1].length() > 0 ? keyValue[1] : null);
+          httpClient.queryEncoded.put(keyValue[0], keyValue.length > 1 && keyValue[1].length() > 0 ? keyValue[1] : null);
         }
       }
       for (final Entry<String, String> entry : httpClient.queryEncoded.entrySet()) {
@@ -516,7 +523,8 @@ public class HttpClient {
      * (<code>&amp;/:;=?@</code>) as-is. This is not a normal full encode - it is
      * just a fix-up to try to make questionable URLs usable.
      *
-     * @param str String an URL
+     * @param str
+     *          String an URL
      * @return String encoded URL except for reserved characters
      */
     protected String fixup(final String str) {
@@ -524,15 +532,8 @@ public class HttpClient {
         return null;
       }
       try {
-        return URLEncoder.encode(str, UTF_8)
-            .replace("%26", "&")
-            .replace("%2F", "/")
-            .replace("%3A", ":")
-            .replace("%3B", ";")
-            .replace("%3D", "=")
-            .replace("%3F", "?")
-            .replace("%40", "@")
-            .replace("%25", "%");
+        return URLEncoder.encode(str, UTF_8).replace("%26", "&").replace("%2F", "/").replace("%3A", ":").replace("%3B", ";").replace("%3D", "=").replace("%3F", "?")
+            .replace("%40", "@").replace("%25", "%");
       } catch (final UnsupportedEncodingException e) {
         return null;
       }
@@ -548,11 +549,13 @@ public class HttpClient {
     }
 
     /**
-     * Add a query parameter to the {@link HttpClient}. The value can be null,
-     * and is null safe for null params (no-op).
+     * Add a query parameter to the {@link HttpClient}. The value can be null, and
+     * is null safe for null params (no-op).
      *
-     * @param param String
-     * @param value String
+     * @param param
+     *          String
+     * @param value
+     *          String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder query(final String param, final String value) {
@@ -564,11 +567,13 @@ public class HttpClient {
     }
 
     /**
-     * Add a header to the {@link HttpClient}. The value can be null, and is
-     * null safe for header values (no-op).
+     * Add a header to the {@link HttpClient}. The value can be null, and is null
+     * safe for header values (no-op).
      *
-     * @param header String
-     * @param value String
+     * @param header
+     *          String
+     * @param value
+     *          String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder header(final String header, final String value) {
@@ -581,7 +586,8 @@ public class HttpClient {
     /**
      * Add an "Accept" header to the {@link HttpClient}.
      *
-     * @param value String
+     * @param value
+     *          String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder accept(final String value) {
@@ -592,7 +598,8 @@ public class HttpClient {
     /**
      * Add an "Content-Type" header to the {@link HttpClient}.
      *
-     * @param value String
+     * @param value
+     *          String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder contentType(final String value) {
@@ -603,7 +610,8 @@ public class HttpClient {
     /**
      * Set the method on the {@link HttpClient}.
      *
-     * @param method HttpMethod
+     * @param method
+     *          HttpMethod
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder method(final HttpMethod method) {
@@ -684,8 +692,10 @@ public class HttpClient {
     /**
      * Set the authentication credentials to use on the {@link HttpClient}.
      *
-     * @param username String
-     * @param password String
+     * @param username
+     *          String
+     * @param password
+     *          String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder credentials(final String username, final String password) {
@@ -697,12 +707,14 @@ public class HttpClient {
     /**
      * Set the request entity on the {@link HttpClient}.
      *
-     * @param is InputStream
-     * @param binary boolean
-     *          tell whether or not the entity has to be considered as binary
-     *          stream
+     * @param is
+     *          InputStream
+     * @param binary
+     *          boolean tell whether or not the entity has to be considered as
+     *          binary stream
      * @return The new {@link HttpClientBuilder}
-     * @throws InvalidStreamException on failure
+     * @throws InvalidStreamException
+     *           on failure
      */
     public HttpClientBuilder entity(final InputStream is, final boolean binary) throws InvalidStreamException {
       if (null != is && !is.markSupported()) {
@@ -721,12 +733,14 @@ public class HttpClient {
     }
 
     /**
-     * Set the request entity on the {@link HttpClient}. This method is a
-     * wrapper to {@link #entity(InputStream, boolean)} with binary set to false
+     * Set the request entity on the {@link HttpClient}. This method is a wrapper to
+     * {@link #entity(InputStream, boolean)} with binary set to false
      *
-     * @param is InputStream
+     * @param is
+     *          InputStream
      * @return The new {@link HttpClientBuilder}
-     * @throws InvalidStreamException on failure
+     * @throws InvalidStreamException
+     *           on failure
      */
     public HttpClientBuilder entity(final InputStream is) throws InvalidStreamException {
       return entity(is, false);
@@ -736,10 +750,11 @@ public class HttpClient {
      * Calls {@link #entity(InputStream)} with str wrapped in a
      * {@link ByteArrayInputStream}.
      *
-     * @param str String
-     * @param binary boolean
-     *          tell whether or not the entity has to be considered as binary
-     *          stream
+     * @param str
+     *          String
+     * @param binary
+     *          boolean tell whether or not the entity has to be considered as
+     *          binary stream
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder entity(final String str, final boolean binary) {
@@ -757,7 +772,8 @@ public class HttpClient {
     /**
      * Calls {@link #entity(String, boolean)} with binary set to false
      *
-     * @param str String
+     * @param str
+     *          String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder entity(final String str) {
@@ -767,8 +783,10 @@ public class HttpClient {
     /**
      * Set the {@link InputStream} to use when creating a {@link KeyStore}
      *
-     * @param is InputStream
-     * @param password String
+     * @param is
+     *          InputStream
+     * @param password
+     *          String
      * @return The new {@link HttpClientBuilder}
      */
     public HttpClientBuilder keyStore(final InputStream is, final String password) {
