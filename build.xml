@@ -17,7 +17,7 @@
 <project name="ml-ant-http" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <!-- Ivy -->
-  <property name="ivy.version" value="2.4.0"/>
+  <property name="ivy.version" value="2.5.0"/>
   <property name="ivy.dir" value="${user.home}/.ivy2/cache/org.apache.ivy/jars"/>
   <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
   <property name="ivy.jar.name" value="ivy-${ivy.version}.jar"/>
@@ -25,7 +25,7 @@
 
   <target name="get-ivy" unless="has.ivy">
     <mkdir dir="${ivy.dir}"/>
-    <get usetimestamp="true" src="http://apache.mirrors.spacedump.net//ant/ivy/${ivy.version}/maven2/${ivy.version}/${ivy.jar.name}"
+    <get usetimestamp="true" src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/${ivy.jar.name}"
          skipexisting="true"
          dest="${ivy.dir}/${ivy.jar.name}"/>
   </target>
