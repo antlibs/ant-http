@@ -103,6 +103,10 @@
   </target>
 
   <target name="javadoc" depends="resolve">
+    <!-- A workaround for a "unnamed module" error -->
+    <condition property="ant.build.javac.source" value="1.8" else="${java.baseline}">
+      <javaversion atleast="9"/>
+    </condition>
     <javadoc destdir="${ml-ant-http.javadoc.dir}" author="true" version="true" use="true" windowtitle="missing link Ant HTTP task ${ivy.revision}">
 
       <packageset dir="${ml-ant-http.java.src.dir}" defaultexcludes="yes">
@@ -112,7 +116,8 @@
       <doctitle><![CDATA[<h1>missing link Ant HTTP task ${ivy.revision}</h1>]]></doctitle>
       <bottom><![CDATA[<i>missing link Ant HTTP task ${ivy.revision}</i>]]></bottom>
       <tag name=".todo" scope="all" description="To do:"/>
-      <link href="http://download.oracle.com/javase/6/docs/api/"/>
+      <link href="https://docs.oracle.com/javase/6/docs/api/"/>
+      <!-- for Java 11 or later: https://docs.oracle.com/en/java/javase/11/docs/api/ -->
     </javadoc>
 
     <zip destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-api.zip" basedir="${ml-ant-http.javadoc.dir}"/>
