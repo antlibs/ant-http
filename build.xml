@@ -14,7 +14,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<project name="ml-ant-http" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="ml-ant-http" default="test" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <!-- Ivy -->
   <property name="ivy.version" value="2.5.0"/>
@@ -50,8 +50,10 @@
   <property name="ml-ant-http.license.dir" location="${basedir}"/>
   <property name="ml-ant-http.license.file" value="LICENSE"/>
   <property name="ml-ant-http.java.baseline" value="1.6"/>
+  <property name="jacoco.log" value="${ml-ant-http.build.dir}/jacoco.data"/>
+  <property name="jacoco.version" value="0.8.5"/>
 
-  <target name="clean">
+  <target name="clean" description="o Clean build tree">
     <delete dir="${ml-ant-http.build.dir}"/>
     <delete dir="${ml-ant-http.dist.dir}"/>
   </target>
@@ -72,7 +74,7 @@
     <mkdir dir="${ml-ant-http.dist.jar.dir}"/>
   </target>
 
-  <target name="compile" depends="resolve">
+  <target name="compile" depends="resolve" description="o Java source build">
     <javac debug="yes" destdir="${ml-ant-http.build.classes.dir}"
            classpathref="compile.classpath" includeantruntime="false"
            source="${ml-ant-http.java.baseline}" target="${ml-ant-http.java.baseline}">
@@ -91,7 +93,7 @@
     </jar>
   </target>
 
-  <target name="jar.src" depends="jar">
+  <target name="jar-src" depends="jar">
     <jar destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-sources.jar" basedir="${ml-ant-http.java.src.dir}">
       <metainf dir="${ml-ant-http.license.dir}">
         <include name="${ml-ant-http.license.file}"/>
@@ -102,7 +104,7 @@
     </jar>
   </target>
 
-  <target name="javadoc" depends="resolve">
+  <target name="javadoc" depends="resolve" description="o Javadoc build">
     <!-- A workaround for a "unnamed module" error -->
     <condition property="ant.build.javac.source" value="1.8" else="${java.baseline}">
       <javaversion atleast="9"/>
@@ -123,7 +125,7 @@
     <zip destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-api.zip" basedir="${ml-ant-http.javadoc.dir}"/>
   </target>
 
-  <target name="copy.dist.files" depends="jar.src">
+  <target name="copy-dist-files" depends="jar-src">
     <!-- license -->
     <copy filtering="false" flatten="false" todir="${ml-ant-http.dist.jar.dir}">
       <fileset dir="${ml-ant-http.license.dir}">
@@ -146,11 +148,11 @@
     </copy>
   </target>
 
-  <target name="dist" depends="copy.dist.files,javadoc">
+  <target name="dist" depends="copy-dist-files,javadoc" description="o Build distribution archive">
     <zip destfile="${ml-ant-http.dist.dir}/${ivy.module}-${ivy.revision}.zip" basedir="${ml-ant-http.dist.jar.dir}"/>
   </target>
 
-  <target name="compile-tests" depends="compile">
+  <target name="compile-tests" depends="compile" description="o Java test source build">
     <mkdir dir="${ml-ant-http.build.test.classes.dir}"/>
     <javac debug="yes" destdir="${ml-ant-http.build.test.classes.dir}" includeantruntime="false"
            source="${ml-ant-http.java.baseline}" target="${ml-ant-http.java.baseline}">
@@ -165,34 +167,48 @@
     </copy>
   </target>
 
-  <target name="test-internal" depends="compile-tests">
-    <mkdir dir="${ml-ant-http.test.report.dir}"/>
-    <junit printsummary="yes" haltonerror="false" haltonfailure="false"
-	   errorproperty="junit.error" failureproperty="junit.failure"
-	   fork="true" tempdir="${ml-ant-http.build.dir}">
-      <classpath>
-        <pathelement location="${ml-ant-http.test.resources.dir}"/>
-        <pathelement location="${ml-ant-http.build.test.classes.dir}"/>
-        <pathelement location="${ml-ant-http.build.classes.dir}"/>
-        <path refid="test.classpath"/>
-      </classpath>
-      <formatter type="plain" usefile="no"/>
-      <formatter type="xml"/>
-      <batchtest todir="${ml-ant-http.test.report.dir}">
-        <fileset dir="${ml-ant-http.test.src.dir}">
-          <include name="**/*Test.java"/>
-          <exclude name="**/Abstract*"/>
-        </fileset>
-      </batchtest>
-    </junit>
+  <target name="init-jacoco" depends="compile-tests">
+    <ivy:cachepath organisation="org.jacoco" module="org.jacoco.ant" revision="${jacoco.version}"
+                   inline="true" conf="default" pathid="jacoco.classpath" log="download-only"/>
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml"
+             classpathref="jacoco.classpath"/>
   </target>
 
-  <target name="test" depends="test-internal">
+  <target name="test-internal" depends="init-jacoco">
+    <mkdir dir="${ml-ant-http.test.report.dir}"/>
+    <!-- multiple runs saving into the same logfile cause report generation failures -->
+    <delete file="${jacoco.log}"/>
+    <jacoco:coverage xmlns:jacoco="antlib:org.jacoco.ant" destfile="${jacoco.log}"
+                     exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader">
+      <junit printsummary="yes" haltonerror="false" haltonfailure="false"
+	         errorproperty="junit.error" failureproperty="junit.failure"
+             fork="true" tempdir="${ml-ant-http.build.dir}">
+        <classpath>
+          <pathelement location="${ml-ant-http.test.resources.dir}"/>
+          <pathelement location="${ml-ant-http.build.test.classes.dir}"/>
+          <pathelement location="${ml-ant-http.build.classes.dir}"/>
+          <path refid="test.classpath"/>
+        </classpath>
+        <formatter type="plain" usefile="no"/>
+        <formatter type="xml"/>
+        <batchtest todir="${ml-ant-http.test.report.dir}">
+          <fileset dir="${ml-ant-http.test.src.dir}">
+            <include name="**/*Test.java"/>
+            <exclude name="**/Abstract*"/>
+          </fileset>
+        </batchtest>
+      </junit>
+    </jacoco:coverage>
+  </target>
+
+  <target name="test" depends="test-internal" description="o JUnit tests">
     <fail message="JUnit error (${junit.error}) encountered. See logs (in ${ml-ant-http.test.report.dir}) for details (use the target test-report to run the test with a report)" if="junit.error"/>
     <fail message="JUnit failure (${junit.failure}) encountered. See logs (in ${ml-ant-http.test.report.dir}) for details (use the target test-report to run the test with a report)" if="junit.failure"/>
   </target>
 
-  <target name="test-report" depends="test-internal" description="o Make report of JUnit tests">
+  <target name="main" depends="test,javadoc" description="o Complete build and test"/>
+
+  <target name="test-report" depends="test-internal" description="o Report of JUnit tests">
     <junitreport todir="${ml-ant-http.test.report.dir}">
       <fileset dir="${ml-ant-http.test.report.dir}">
         <include name="TEST-*.xml"/>
@@ -202,5 +218,24 @@
     <fail message="JUnit error (${junit.error}) encountered. See logs (in ${ml-ant-http.test.report.dir}) or report (in ${ml-ant-http.build.docs.dir}/test-report)" if="junit.error"/>
     <fail message="JUnit failure (${junit.failure}) encountered. See logs (in ${ml-ant-http.test.report.dir}) or report (in ${ml-ant-http.build.docs.dir}/test-report)" if="junit.failure"/>
   </target>
+
+  <target name="coverage-report" depends="test-internal" description="o Coverage report of JUnit tests">
+    <jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
+      <executiondata>
+        <file file="${jacoco.log}"/>
+      </executiondata>
+      <structure name="${ant.project.name}">
+        <classfiles>
+          <fileset dir="${ml-ant-http.build.classes.dir}"/>
+        </classfiles>
+        <sourcefiles encoding="UTF-8">
+          <fileset dir="${ml-ant-http.java.src.dir}"/>
+        </sourcefiles>
+      </structure>
+      <html destdir="${ml-ant-http.build.docs.dir}/coverage-report/"/>
+    </jacoco:report>
+  </target>
+
+  <target name="report" depends="test-report,coverage-report" description="o Complete test report"/>
 
 </project>
