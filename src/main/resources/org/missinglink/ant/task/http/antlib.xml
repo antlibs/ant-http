@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<!-- Ant lib for http task -->
+<antlib>
+    <taskdef name="http" classname="org.missinglink.ant.task.http.HttpClientTask"/>
+</antlib>
