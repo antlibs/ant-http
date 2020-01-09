@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project name="xmltask"
+         xmlns="http://maven.apache.org/DECORATION/1.8.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.8</version>
+    </skin>
+    <bannerLeft>
+        <name>missing link Ant HTTP Task</name>
+    </bannerLeft>
+    <publishDate/>
+    <version/>
+    <body>
+        <menu ref="reports"/>
+    </body>
+</project>
