@@ -37,6 +37,7 @@
 
   <property name="ml-ant-http.src.dir" location="src"/>
   <property name="ml-ant-http.java.src.dir" location="${ml-ant-http.src.dir}/main/java"/>
+  <property name="ml-ant-http.resources.dir" location="${ml-ant-http.src.dir}/main/resources"/>
   <property name="ml-ant-http.test.src.dir" location="${ml-ant-http.src.dir}/test/java"/>
   <property name="ml-ant-http.test.resources.dir" location="${ml-ant-http.src.dir}/test/resources"/>
   <property name="ml-ant-http.build.dir" location="build"/>
@@ -83,6 +84,9 @@
   </target>
 
   <target name="jar" depends="compile">
+    <copy todir="${ml-ant-http.build.classes.dir}">
+      <fileset dir="${ml-ant-http.resources.dir}" includes="org/missinglink/**/*.xml"/>
+    </copy>
     <jar destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}.jar"
          basedir="${ml-ant-http.build.classes.dir}" index="true">
       <metainf dir="${ml-ant-http.license.dir}">
