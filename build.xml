@@ -83,18 +83,21 @@
   </target>
 
   <target name="jar" depends="compile">
-    <jar destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}.jar" basedir="${ml-ant-http.build.classes.dir}">
+    <jar destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}.jar"
+         basedir="${ml-ant-http.build.classes.dir}" index="true">
       <metainf dir="${ml-ant-http.license.dir}">
         <include name="${ml-ant-http.license.file}"/>
       </metainf>
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Automatic-Module-Name" value="org.missinglink.http"/>
       </manifest>
     </jar>
   </target>
 
   <target name="jar-src" depends="jar">
-    <jar destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-sources.jar" basedir="${ml-ant-http.java.src.dir}">
+    <jar destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-sources.jar"
+         basedir="${ml-ant-http.java.src.dir}">
       <metainf dir="${ml-ant-http.license.dir}">
         <include name="${ml-ant-http.license.file}"/>
       </metainf>
@@ -109,7 +112,8 @@
     <condition property="ant.build.javac.source" value="1.8" else="${java.baseline}">
       <javaversion atleast="9"/>
     </condition>
-    <javadoc destdir="${ml-ant-http.javadoc.dir}" author="true" version="true" use="true" windowtitle="missing link Ant HTTP task ${ivy.revision}">
+    <javadoc destdir="${ml-ant-http.javadoc.dir}" author="true" version="true" use="true"
+             windowtitle="missing link Ant HTTP task ${ivy.revision}">
 
       <packageset dir="${ml-ant-http.java.src.dir}" defaultexcludes="yes">
         <include name="org/missinglink/**"/>
@@ -122,7 +126,8 @@
       <!-- for Java 11 or later: https://docs.oracle.com/en/java/javase/11/docs/api/ -->
     </javadoc>
 
-    <zip destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-api.zip" basedir="${ml-ant-http.javadoc.dir}"/>
+    <zip destfile="${ml-ant-http.dist.jar.dir}/${ivy.module}-${ivy.revision}-api.zip"
+         basedir="${ml-ant-http.javadoc.dir}"/>
   </target>
 
   <target name="copy-dist-files" depends="jar-src">
@@ -149,7 +154,8 @@
   </target>
 
   <target name="dist" depends="copy-dist-files,javadoc" description="o Build distribution archive">
-    <zip destfile="${ml-ant-http.dist.dir}/${ivy.module}-${ivy.revision}.zip" basedir="${ml-ant-http.dist.jar.dir}"/>
+    <zip destfile="${ml-ant-http.dist.dir}/${ivy.module}-${ivy.revision}.zip"
+         basedir="${ml-ant-http.dist.jar.dir}"/>
   </target>
 
   <target name="compile-tests" depends="compile" description="o Java test source build">
