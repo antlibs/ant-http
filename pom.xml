@@ -100,6 +100,26 @@
         <configuration>
           <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
+        <executions>
+          <execution>
+            <id>copy-readme</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/src/site/markdown</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}</directory>
+                  <includes>
+                    <include>README.md</include>
+                  </includes>
+                 </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <!-- Attach source jars -->
       <plugin>

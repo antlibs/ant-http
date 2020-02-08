@@ -6,3 +6,4 @@ lib/
 target/
 *.iml
 .idea/
+src/site/markdown/

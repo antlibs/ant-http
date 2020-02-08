@@ -7,11 +7,9 @@ The missing link Ant HTTP task was created due to the lack of a full featured, u
 
 This Ant task also simplifies common aspects of HTTP communication, which other libraries seem to needlessly complicate, such as: authentication, TLS/SSL and HTTP methods other then GET and POST.
 
-
 ## License
 
 The missing link Ant HTTP task is licensed under the Apache 2.0 license, a copy of the license can be found with the missing link Ant HTTP task distribution or at http://www.apache.org/licenses/LICENSE-2.0.html.
-
 
 ## Features
 
@@ -27,7 +25,6 @@ The missing link Ant HTTP task was created with the following features in mind:
 - Options on what information to print to the output.
 - Options to govern what response status codes are expected, and what should cause a build-failing exception.
 
-
 ## Ant task XML elements
 
 ### http
@@ -41,8 +38,10 @@ The missing link Ant HTTP task was created with the following features in mind:
 | **`printRequest`** | Print request entity | No | `false` | `true` or `false` |
 | **`printResponse`** | Print response entity | No | `false` | `true` or `false` |
 | **`printRequestHeaders`** | Print request headers | No | `true` | `true` or `false` |
-| **`printResponseHeaders`** | Print response headers | No | `true` | `true` or `false` | `expected` | Expected HTTP status | No | `200` | `200`, `201`, `404`, etc. |
-| **`failOnUnexpected`** | Fail on unexpected status | No | `true` | `true` or `false` | `outfile` | Write response to file | No |   | Any filename |
+| **`printResponseHeaders`** | Print response headers | No | `true` | `true` or `false` |
+| **`expected`** | Expected HTTP status | No | `200` | `200`, `201`, `404`, etc. |
+| **`failOnUnexpected`** | Fail on unexpected status | No | `true` | `true` or `false` |
+| **`outfile`** | Write response to file | No |   | Any filename |
 | **`followRedirects`** | Follow redirections | No | `true` | `true` or `false` |
 | **`setContentLengthHeader`** | Set `Content-Length` header | No |`false`| `true` or `false` |
 | **`statusProperty`** | Property to save status to | No |   | `http.status` |
@@ -52,16 +51,14 @@ The missing link Ant HTTP task was created with the following features in mind:
 #### example:
 
 ```xml
-<http
-  url="http://google.com"
-  method="GET"
-  printRequest="false"
-  printResponse="true"
-  printRequestHeaders="true"
-  printResponseHeaders="true"
-  expected="200"
-  failOnUnexpected="false"
-/>
+<http url="http://google.com"
+      method="GET"
+      printRequest="false"
+      printResponse="true"
+      printRequestHeaders="true"
+      printResponseHeaders="true"
+      expected="200"
+      failOnUnexpected="false"/>
 ```
 
 ### http/credentials
@@ -103,7 +100,6 @@ The missing link Ant HTTP task was created with the following features in mind:
 </http>
 ```
 
-
 ### http/headers/header
 
 #### supported parameters:
@@ -124,7 +120,6 @@ The missing link Ant HTTP task was created with the following features in mind:
 </http>
 ```
 
-
 ### http/query/parameter
 
 #### supported parameters:
@@ -144,7 +139,6 @@ The missing link Ant HTTP task was created with the following features in mind:
   </query>
 </http>
 ```
-
 
 ### http/entity
 
@@ -169,7 +163,6 @@ The missing link Ant HTTP task was created with the following features in mind:
   <entity><![CDATA[Request Entity]]></entity>
 </http>
 ```
-
 
 ## Ant configuration
 
