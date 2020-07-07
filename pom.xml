@@ -50,12 +50,12 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.9.14</version>
+      <version>1.9.15</version>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-testutil</artifactId>
-      <version>1.9.14</version>
+      <version>1.9.15</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -125,7 +125,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1</version>
         <configuration>
           <archive>
             <manifest>
@@ -185,7 +185,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.8.2</version>
+        <version>3.9.1</version>
       </plugin>
       <plugin>
         <artifactId>maven-scm-publish-plugin</artifactId>
@@ -210,7 +210,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.0</version>
         <configuration>
           <show>private</show>
           <source>${project.build.source}</source>
@@ -222,7 +222,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -262,7 +262,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.0</version>
         <configuration>
           <source>${project.build.source}</source>
         </configuration>
