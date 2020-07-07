@@ -5,7 +5,7 @@ This is a clone of missing-link project on Google Code (https://code.google.com/
 
 The missing link Ant HTTP task was created due to the lack of a full featured, usable and liberally licensed Ant HTTP task. This Ant task is coded from scratch utilizing only core Java classes; as such it does not require any third party dependencies at runtime.
 
-This Ant task also simplifies common aspects of HTTP communication, which other libraries seem to needlessly complicate, such as: authentication, TLS/SSL and HTTP methods other then GET and POST.
+This Ant task also simplifies common aspects of HTTP communication, which other libraries seem to needlessly complicate, such as: authentication, TLS/SSL and HTTP methods other than GET and POST.
 
 ## License
 
