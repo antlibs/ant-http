@@ -26,7 +26,7 @@
     <dependencies>
         <dependency org="org.apache.ant" name="ant" rev="1.9.15" conf="compile"/>
         <dependency org="org.apache.ant" name="ant-testutil" rev="1.9.15" conf="test"/>
-        <dependency org="junit" name="junit" rev="4.13.1" conf="test"/>
+        <dependency org="junit" name="junit" rev="4.13.2" conf="test"/>
         <dependency org="org.hamcrest" name="hamcrest-core" rev="1.3" conf="test"/>
     </dependencies>
 </ivy-module>

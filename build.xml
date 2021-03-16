@@ -52,7 +52,7 @@
   <property name="ml-ant-http.license.file" value="LICENSE"/>
   <property name="ml-ant-http.java.baseline" value="1.6"/>
   <property name="jacoco.log" value="${ml-ant-http.build.dir}/jacoco.data"/>
-  <property name="jacoco.version" value="0.8.5"/>
+  <property name="jacoco.version" value="0.8.6"/>
 
   <target name="clean" description="o Clean build tree">
     <delete dir="${ml-ant-http.build.dir}"/>
